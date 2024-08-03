@@ -1,0 +1,37 @@
+<div class="player">
+    <div class="energy counter">
+      <mat-icon svgIcon="lightningBoltSvgRepo" aria-hidden="false" aria-label="Lightning Bolt SVG Repo"></mat-icon>
+      <mat-progress-bar mode="determinate" [value]="(player.current_energy/player.energy)*100"></mat-progress-bar>
+      <div class="value">{{player.current_energy}}</div>
+    </div>
+    <div class="counter life">
+      <mat-icon svgIcon="heartsSvgRepo" aria-hidden="false" aria-label="Hearts SVG Repo"></mat-icon>
+      <mat-progress-bar mode="determinate" [value]="(player.current_life/player.life)*100"></mat-progress-bar>
+      <div class="value">{{player.current_life}}</div>
+    </div>
+    <div class="counter mana">
+      <mat-icon svgIcon="corkedTubeSvgRepo" aria-hidden="false" aria-label="Corked Tube SVG Repo"></mat-icon>
+      <mat-progress-bar mode="determinate" [value]="(player.current_mana/player.mana)*100"></mat-progress-bar>
+      <div class="value">{{player.current_mana}}</div>
+    </div>
+    <div class="counter armor">
+      <mat-icon svgIcon="shieldSvgRepo" aria-hidden="false" aria-label="Shield SVG Repo"></mat-icon>
+      <mat-progress-bar mode="determinate" [value]="(player.current_armor/player.armor)*100"></mat-progress-bar>
+      <div class="value">{{player.current_armor}}</div>
+    </div>
+    <div class="counter damage">
+      <mat-icon svgIcon="bombExplosionSvgRepo" aria-hidden="false" aria-label="Bomb Explosion SVG Repo"></mat-icon>
+      <mat-progress-bar mode="determinate" [value]="(player.current_damage/player.damage)*100"></mat-progress-bar>
+      <div class="value">{{player.current_damage}}</div>
+    </div>
+    <div class="counter reputation">
+      <mat-icon svgIcon="trophySvgRepo" aria-hidden="false" aria-label="Trophy SVG Repo"></mat-icon>
+      <mat-progress-bar mode="determinate" [value]="(player.current_reputation/player.reputation)*100"></mat-progress-bar>
+      <div class="value">{{player.current_reputation}}</div>
+    </div>
+    <div class="counter experience">
+      <mat-icon svgIcon="underhandSvgRepo" aria-hidden="false" aria-label="Underhand SVG Repo"></mat-icon>
+      <mat-progress-bar mode="determinate" [value]="(player.current_experience/player.experience_next_level)*100"></mat-progress-bar>
+      <div class="value">{{player.current_experience}}</div>
+    </div>
+  </div>

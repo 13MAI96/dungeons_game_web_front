@@ -1,0 +1,57 @@
+.dungeon{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    box-sizing: border-box;
+    max-height: 100%;
+    overflow: scroll;
+
+    .row{
+        display: flex;
+        
+        .column{
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 4rem;
+            width: 4rem;
+            
+            box-sizing: border-box;
+            background-color: #252525;
+            cursor: default;
+        }
+        .entrance{
+            background-color: aquamarine;
+            cursor: default !important;
+        }
+        .monster{
+            background-color: #d48a8a;
+        }
+        .block{
+            background-color: #000;
+            cursor: default !important;
+        }
+        .quest{
+            background-color: #6d5433;
+        }
+        .sanctuary{
+            background-color: #f8fa70 !important;
+        }
+        .visited{
+            background-color: #bbbbbb;
+        }
+        .canVisit{
+            cursor: pointer;
+        }
+        .current{
+            background-color: #83e77a;
+        }
+        .cantShow{
+            visibility: hidden;
+        }
+    }
+}

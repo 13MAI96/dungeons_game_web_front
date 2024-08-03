@@ -1,0 +1,14 @@
+<div class="dungeon">
+    <div *ngFor="let row of rows" class="row">
+      <div *ngFor="let location of row" [ngClass]="'show'" id="{{location.type == 'ENTRANCE' ? 'entrance' : ''}}">
+        <div [class]="isVisited(location)" (click)="visitLocation(location)">
+          <img 
+            *ngIf="location.type != 'BLOCK' && location.type != 'ENTRANCE'" 
+            [src]="getImg(location)" 
+            [alt]="location.type?.toLowerCase()" 
+            width="50%"
+          >
+        </div>
+      </div>
+    </div>
+  </div>
