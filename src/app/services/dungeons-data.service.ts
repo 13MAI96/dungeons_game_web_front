@@ -19,4 +19,6 @@ export class DungeonsDataService {
   getDungeon(): Observable<any>{
     return this._http.get(this.local_url)
   }
+
+  
 }
