@@ -1,7 +1,7 @@
 # visual-assets Specification
 
 ## Purpose
-TBD - created by archiving change ui-updates. Update Purpose after archive.
+Define the icon and character artwork the mobile UI uses and the fallbacks for missing assets.
 ## Requirements
 ### Requirement: UI uses local visual assets
 The mobile app SHALL use local Godot-importable assets for character, monster, stat, location, and damage feedback visuals.

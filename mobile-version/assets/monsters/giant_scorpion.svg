@@ -1,1 +1,90 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="18" fill="#17100d"/><ellipse cx="126" cy="156" rx="59" ry="36" fill="#8d553c"/><path d="M168 133c39-47-3-73-30-45" stroke="#a96745" stroke-width="17" fill="none"/><path d="m126 95 18-31 15 35" fill="#a96745"/><g stroke="#b87952" stroke-width="10"><path d="M76 150 36 126"/><path d="M82 171 43 198"/><path d="M176 150l40-24"/><path d="M170 171l39 27"/></g><circle cx="109" cy="147" r="6" fill="#f0d26e"/><circle cx="143" cy="147" r="6" fill="#f0d26e"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <title>Giant scorpion</title>
+  <desc>Low-poly giant scorpion seen from the front with raised pincers, segmented tail arching overhead and a glowing venom stinger.</desc>
+  <defs>
+    <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E08A4A"/>
+      <stop offset="0.5" stop-color="#A9532A"/>
+      <stop offset="1" stop-color="#5A2612"/>
+    </linearGradient>
+    <linearGradient id="shellDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8C401F"/>
+      <stop offset="1" stop-color="#40190B"/>
+    </linearGradient>
+    <radialGradient id="venom" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#E6FF8A"/>
+      <stop offset="1" stop-color="#5E9A12"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Legs -->
+  <g fill="none" stroke="#24100A" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="300,480 200,470 130,560"/>
+    <polyline points="306,520 220,540 170,630"/>
+    <polyline points="330,550 270,610 250,690"/>
+    <polyline points="468,480 568,470 638,560"/>
+    <polyline points="462,520 548,540 598,630"/>
+    <polyline points="438,550 498,610 518,690"/>
+  </g>
+  <g fill="none" stroke="#B5622F" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="300,480 200,470 130,560"/>
+    <polyline points="306,520 220,540 170,630"/>
+    <polyline points="330,550 270,610 250,690"/>
+    <polyline points="468,480 568,470 638,560"/>
+    <polyline points="462,520 548,540 598,630"/>
+    <polyline points="438,550 498,610 518,690"/>
+  </g>
+
+  <!-- Tail arching over -->
+  <g stroke="#24100A" stroke-width="12" stroke-linejoin="round">
+    <polygon points="350,420 418,420 430,350 338,350" fill="url(#shellDark)"/>
+    <polygon points="338,350 430,350 450,280 334,270" fill="url(#shell)"/>
+    <polygon points="334,270 450,280 486,210 360,184" fill="url(#shellDark)"/>
+    <polygon points="360,184 486,210 540,160 420,110" fill="url(#shell)"/>
+    <polygon points="420,110 540,160 560,96 480,60" fill="url(#shellDark)"/>
+  </g>
+  <!-- Stinger bulb and barb -->
+  <polygon points="480,60 560,96 600,150 560,190 520,150" fill="url(#venom)" stroke="#24100A" stroke-width="12" stroke-linejoin="round"/>
+  <polygon points="560,190 520,250 540,180" fill="#F2E8D0" stroke="#24100A" stroke-width="8" stroke-linejoin="round"/>
+  <circle cx="530" cy="262" r="8" fill="#C6FF4A"/>
+
+  <!-- Claws arms -->
+  <g stroke="#24100A" stroke-width="12" stroke-linejoin="round">
+    <polygon points="300,430 220,380 170,330 200,300 260,340 320,400" fill="url(#shell)"/>
+    <polygon points="468,430 548,380 598,330 568,300 508,340 448,400" fill="url(#shell)"/>
+  </g>
+  <!-- Pincers -->
+  <g stroke="#24100A" stroke-width="12" stroke-linejoin="round">
+    <polygon points="190,320 100,270 70,180 120,150 150,220 210,260 230,300" fill="url(#shell)"/>
+    <polygon points="190,320 120,330 60,290 80,250 140,270" fill="url(#shellDark)"/>
+    <polygon points="578,320 668,270 698,180 648,150 618,220 558,260 538,300" fill="url(#shell)"/>
+    <polygon points="578,320 648,330 708,290 688,250 628,270" fill="url(#shellDark)"/>
+  </g>
+  <g stroke="#24100A" stroke-width="5" stroke-linejoin="round">
+    <polygon points="100,270 70,180 120,150 110,220" fill="#F0A066"/>
+    <polygon points="668,270 698,180 648,150 658,220" fill="#F0A066"/>
+  </g>
+
+  <!-- Body carapace -->
+  <g stroke="#24100A" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,400 470,420 500,500 470,580 384,610 298,580 268,500 298,420" fill="url(#shell)"/>
+  </g>
+  <g stroke="#24100A" stroke-width="5" stroke-linejoin="round">
+    <polygon points="298,420 384,400 470,420 384,450" fill="#F0A066"/>
+    <polygon points="298,580 384,610 470,580 384,560" fill="#5A2612"/>
+    <line x1="280" y1="500" x2="488" y2="500"/>
+    <line x1="290" y1="540" x2="478" y2="540"/>
+  </g>
+  <!-- Eyes -->
+  <g fill="#1A0805" stroke="#24100A" stroke-width="4">
+    <polygon points="340,456 370,450 366,476 344,476"/>
+    <polygon points="428,456 398,450 402,476 424,476"/>
+  </g>
+  <polygon points="346,458 358,456 356,466 348,466" fill="#FF4A3A"/>
+  <polygon points="422,458 410,456 412,466 420,466" fill="#FF4A3A"/>
+  <!-- Mandibles -->
+  <g fill="#40190B" stroke="#24100A" stroke-width="6" stroke-linejoin="round">
+    <polygon points="356,592 370,640 384,610"/>
+    <polygon points="412,592 398,640 384,610"/>
+  </g>
+</svg>

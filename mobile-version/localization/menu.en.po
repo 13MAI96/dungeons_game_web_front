@@ -210,3 +210,48 @@ msgstr "Monster attacks"
 
 msgid "ENCOUNTER_MONSTER_ATTACK_LINE"
 msgstr "%s - Damage %s, Mana %s, Lv. %s, Effects: %s"
+
+msgid "HUB_LEVEL"
+msgstr "Level %s"
+
+msgid "AD_PLACEHOLDER"
+msgstr "Advertisement"
+
+msgid "ENCOUNTER_MONSTER_INFO_CLOSE"
+msgstr "Close"
+
+msgid "ENCOUNTER_MONSTER_NO_EFFECTS"
+msgstr "none"
+
+msgid "ENCOUNTER_MONSTER_NO_ATTACKS"
+msgstr "No attacks"
+
+msgid "COMBAT_FEEDBACK_PLAYER_CRITICAL"
+msgstr "Your attack was a critical hit."
+
+msgid "COMBAT_FEEDBACK_PLAYER_HIT"
+msgstr "Your attack hit."
+
+msgid "COMBAT_FEEDBACK_PLAYER_DODGED"
+msgstr "Your attack was dodged."
+
+msgid "COMBAT_FEEDBACK_PLAYER_PROTECTED"
+msgstr "Your attack was protected."
+
+msgid "COMBAT_FEEDBACK_PLAYER_MISSED"
+msgstr "Your attack missed."
+
+msgid "COMBAT_FEEDBACK_MONSTER_CRITICAL"
+msgstr "%s was a critical hit."
+
+msgid "COMBAT_FEEDBACK_MONSTER_HIT"
+msgstr "%s hit you."
+
+msgid "COMBAT_FEEDBACK_MONSTER_DODGED"
+msgstr "%s was dodged."
+
+msgid "COMBAT_FEEDBACK_MONSTER_PROTECTED"
+msgstr "%s was protected."
+
+msgid "COMBAT_FEEDBACK_MONSTER_MISSED"
+msgstr "%s missed."

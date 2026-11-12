@@ -1,1 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="18" fill="#1b1010"/><path fill="#76383b" d="M49 151c0-53 33-93 79-93s79 40 79 93v49H49v-49z"/><circle cx="101" cy="132" r="13" fill="#f6e3a1"/><circle cx="155" cy="132" r="13" fill="#f6e3a1"/><path fill="#1b1010" d="M96 174h64v12H96z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <title>Unknown creature</title>
+  <desc>Low-poly hooded shadow silhouette with glowing eyes and a question mark rune, used when a monster has no artwork.</desc>
+  <defs>
+    <linearGradient id="cloak" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5B4C7A"/>
+      <stop offset="0.5" stop-color="#3A2F55"/>
+      <stop offset="1" stop-color="#1C1630"/>
+    </linearGradient>
+    <radialGradient id="void" cx="0.5" cy="0.45" r="0.6">
+      <stop offset="0" stop-color="#0A0712"/>
+      <stop offset="1" stop-color="#231B38"/>
+    </radialGradient>
+    <radialGradient id="eyeGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#E6FFFB"/>
+      <stop offset="0.5" stop-color="#5CF2D6"/>
+      <stop offset="1" stop-color="#0E7C74" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Wisps -->
+  <g fill="#2A2142" stroke="#0E0A18" stroke-width="10" stroke-linejoin="round">
+    <polygon points="200,620 150,700 240,660"/>
+    <polygon points="568,620 618,700 528,660"/>
+    <polygon points="330,660 310,730 370,680"/>
+    <polygon points="438,660 458,730 398,680"/>
+  </g>
+
+  <!-- Cloak body -->
+  <g stroke="#0E0A18" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,90 500,160 560,300 600,520 568,640 470,680 384,650 298,680 200,640 168,520 208,300 268,160" fill="url(#cloak)"/>
+  </g>
+  <g stroke="#0E0A18" stroke-width="6" stroke-linejoin="round">
+    <polygon points="268,160 384,90 500,160 384,140" fill="#7A6A9E"/>
+    <polygon points="208,300 268,160 300,330 220,520 168,520" fill="#4A3D68"/>
+    <polygon points="560,300 500,160 468,330 548,520 600,520" fill="#2A2142"/>
+    <polygon points="300,420 384,400 468,420 470,680 384,650 298,680" fill="#2E2548"/>
+  </g>
+
+  <!-- Hood opening -->
+  <polygon points="384,170 460,220 480,320 440,400 384,420 328,400 288,320 308,220" fill="url(#void)" stroke="#0E0A18" stroke-width="10" stroke-linejoin="round"/>
+
+  <!-- Eyes -->
+  <circle cx="344" cy="300" r="36" fill="url(#eyeGlow)"/>
+  <circle cx="424" cy="300" r="36" fill="url(#eyeGlow)"/>
+  <polygon points="326,292 362,288 356,310 332,312" fill="#E6FFFB"/>
+  <polygon points="442,292 406,288 412,310 436,312" fill="#E6FFFB"/>
+
+  <!-- Question rune -->
+  <g fill="none" stroke="#5CF2D6" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="344,480 360,452 408,452 424,480 384,520 384,550"/>
+  </g>
+  <circle cx="384" cy="588" r="12" fill="#5CF2D6"/>
+</svg>

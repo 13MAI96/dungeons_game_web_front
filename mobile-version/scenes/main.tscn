@@ -38,35 +38,31 @@ size_flags_stretch_ratio = 1.8
 [node name="MenuArea" type="MarginContainer" parent="MainMenuView"]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 1.0
-theme_override_constants/margin_left = 48
+theme_override_constants/margin_left = 40
 theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 64
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 32
 
 [node name="MenuButtons" type="VBoxContainer" parent="MainMenuView/MenuArea"]
 layout_mode = 2
-size_flags_horizontal = 4
 size_flags_vertical = 8
 theme_override_constants/separation = 14
 alignment = 1
 
 [node name="StartGameButton" type="Button" parent="MainMenuView/MenuArea/MenuButtons"]
-custom_minimum_size = Vector2(248, 52)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_type_variation = &"PrimaryButton"
 text = "Start Game"
 
 [node name="LoadGameButton" type="Button" parent="MainMenuView/MenuArea/MenuButtons"]
-custom_minimum_size = Vector2(248, 52)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
 text = "Load Game"
 
 [node name="SettingsButton" type="Button" parent="MainMenuView/MenuArea/MenuButtons"]
-custom_minimum_size = Vector2(248, 52)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
 text = "Settings"
 
 [node name="NewGameView" type="VBoxContainer" parent="."]
@@ -82,25 +78,23 @@ theme_override_constants/separation = 0
 [node name="CharacterArea" type="MarginContainer" parent="NewGameView"]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 1.35
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 32
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
 
 [node name="CharacterColumns" type="HBoxContainer" parent="NewGameView/CharacterArea"]
 layout_mode = 2
-theme_override_constants/separation = 18
+theme_override_constants/separation = 12
 
 [node name="CharacterImageSlot" type="PanelContainer" parent="NewGameView/CharacterArea/CharacterColumns"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-size_flags_stretch_ratio = 0.85
+theme_type_variation = &"CardPanel"
 
 [node name="CharacterImagePlaceholder" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/CharacterImageSlot"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
 text = "Character"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -109,178 +103,48 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_constants/separation = 5
-
-[node name="EnergyStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
-layout_mode = 2
-
-[node name="EnergyLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/EnergyStat"]
-custom_minimum_size = Vector2(82, 0)
-layout_mode = 2
-text = "Energy"
-
-[node name="EnergyBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/EnergyStat"]
-layout_mode = 2
-size_flags_horizontal = 3
-show_percentage = false
-
-[node name="EnergyValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/EnergyStat"]
-custom_minimum_size = Vector2(36, 0)
-layout_mode = 2
-horizontal_alignment = 2
-
-[node name="LifeStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
-layout_mode = 2
-
-[node name="LifeLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/LifeStat"]
-custom_minimum_size = Vector2(82, 0)
-layout_mode = 2
-text = "Life"
-
-[node name="LifeBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/LifeStat"]
-layout_mode = 2
-size_flags_horizontal = 3
-show_percentage = false
-
-[node name="LifeValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/LifeStat"]
-custom_minimum_size = Vector2(36, 0)
-layout_mode = 2
-horizontal_alignment = 2
-
-[node name="ManaStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
-layout_mode = 2
-
-[node name="ManaLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ManaStat"]
-custom_minimum_size = Vector2(82, 0)
-layout_mode = 2
-text = "Mana"
-
-[node name="ManaBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ManaStat"]
-layout_mode = 2
-size_flags_horizontal = 3
-show_percentage = false
-
-[node name="ManaValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ManaStat"]
-custom_minimum_size = Vector2(36, 0)
-layout_mode = 2
-horizontal_alignment = 2
-
-[node name="ArmorStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
-layout_mode = 2
-
-[node name="ArmorLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ArmorStat"]
-custom_minimum_size = Vector2(82, 0)
-layout_mode = 2
-text = "Armor"
-
-[node name="ArmorBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ArmorStat"]
-layout_mode = 2
-size_flags_horizontal = 3
-show_percentage = false
-
-[node name="ArmorValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ArmorStat"]
-custom_minimum_size = Vector2(36, 0)
-layout_mode = 2
-horizontal_alignment = 2
-
-[node name="DamageStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
-layout_mode = 2
-
-[node name="DamageLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/DamageStat"]
-custom_minimum_size = Vector2(82, 0)
-layout_mode = 2
-text = "Damage"
-
-[node name="DamageBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/DamageStat"]
-layout_mode = 2
-size_flags_horizontal = 3
-show_percentage = false
-
-[node name="DamageValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/DamageStat"]
-custom_minimum_size = Vector2(36, 0)
-layout_mode = 2
-horizontal_alignment = 2
-
-[node name="ReputationStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
-layout_mode = 2
-
-[node name="ReputationLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ReputationStat"]
-custom_minimum_size = Vector2(82, 0)
-layout_mode = 2
-text = "Reputation"
-
-[node name="ReputationBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ReputationStat"]
-layout_mode = 2
-size_flags_horizontal = 3
-show_percentage = false
-
-[node name="ReputationValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ReputationStat"]
-custom_minimum_size = Vector2(36, 0)
-layout_mode = 2
-horizontal_alignment = 2
-
-[node name="ExperienceStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
-layout_mode = 2
-
-[node name="ExperienceLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ExperienceStat"]
-custom_minimum_size = Vector2(82, 0)
-layout_mode = 2
-text = "Experience"
-
-[node name="ExperienceBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ExperienceStat"]
-layout_mode = 2
-size_flags_horizontal = 3
-show_percentage = false
-
-[node name="ExperienceValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ExperienceStat"]
-custom_minimum_size = Vector2(36, 0)
-layout_mode = 2
-horizontal_alignment = 2
+theme_override_constants/separation = 6
 
 [node name="ActionArea" type="MarginContainer" parent="NewGameView"]
 layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 1.0
-theme_override_constants/margin_left = 48
+size_flags_vertical = 8
+theme_override_constants/margin_left = 32
 theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 36
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 16
 
 [node name="ActionButtons" type="VBoxContainer" parent="NewGameView/ActionArea"]
 layout_mode = 2
-size_flags_horizontal = 4
 size_flags_vertical = 8
 theme_override_constants/separation = 10
 alignment = 1
 
 [node name="ExploreDungeonButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
-custom_minimum_size = Vector2(248, 42)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"PrimaryButton"
 text = "Explore Dungeon"
 
 [node name="ChallengeDungeonButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
-custom_minimum_size = Vector2(248, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"ComingSoonButton"
 text = "Challenge Dungeon"
 
 [node name="ManageEquipmentButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
-custom_minimum_size = Vector2(248, 42)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
 text = "Manage Equipment"
 
 [node name="ShopButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
-custom_minimum_size = Vector2(248, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"ComingSoonButton"
 text = "Shop"
 
 [node name="ExitButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
-custom_minimum_size = Vector2(248, 42)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
 text = "Exit"
 
 [node name="DungeonExploreView" type="VBoxContainer" parent="."]
@@ -296,14 +160,15 @@ theme_override_constants/separation = 0
 [node name="MapArea" type="MarginContainer" parent="DungeonExploreView"]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 1.7
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
 
 [node name="MapFrame" type="PanelContainer" parent="DungeonExploreView/MapArea"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 
 [node name="MapGrid" type="GridContainer" parent="DungeonExploreView/MapArea/MapFrame"]
 layout_mode = 2
@@ -312,30 +177,31 @@ size_flags_vertical = 4
 
 [node name="ExploreActions" type="MarginContainer" parent="DungeonExploreView"]
 layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 1.0
-theme_override_constants/margin_left = 40
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 40
-theme_override_constants/margin_bottom = 36
+size_flags_vertical = 8
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
 
 [node name="ExploreActionStack" type="VBoxContainer" parent="DungeonExploreView/ExploreActions"]
 layout_mode = 2
 size_flags_vertical = 8
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="ExploreFeedback" type="Label" parent="DungeonExploreView/ExploreActions/ExploreActionStack"]
-custom_minimum_size = Vector2(312, 24)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_type_variation = &"FeedbackLabel"
 horizontal_alignment = 1
-autowrap_mode = 2
+vertical_alignment = 1
+autowrap_mode = 3
+max_lines_visible = 2
 
 [node name="DirectionPad" type="VBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack"]
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="DirectionRow" type="HBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad"]
@@ -345,10 +211,11 @@ theme_override_constants/separation = 8
 alignment = 1
 
 [node name="MoveLeftButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow"]
-custom_minimum_size = Vector2(72, 104)
+custom_minimum_size = Vector2(76, 140)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "<"
+theme_type_variation = &"DPadButton"
+icon_alignment = 1
+expand_icon = true
 
 [node name="VerticalDirections" type="VBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow"]
 layout_mode = 2
@@ -356,40 +223,46 @@ theme_override_constants/separation = 8
 alignment = 1
 
 [node name="MoveUpButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow/VerticalDirections"]
-custom_minimum_size = Vector2(152, 48)
+custom_minimum_size = Vector2(168, 66)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "^"
+theme_type_variation = &"DPadButton"
+icon_alignment = 1
+expand_icon = true
 
 [node name="MoveDownButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow/VerticalDirections"]
-custom_minimum_size = Vector2(152, 48)
+custom_minimum_size = Vector2(168, 66)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = "v"
+theme_type_variation = &"DPadButton"
+icon_alignment = 1
+expand_icon = true
 
 [node name="MoveRightButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow"]
-custom_minimum_size = Vector2(72, 104)
+custom_minimum_size = Vector2(76, 140)
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
-text = ">"
+theme_type_variation = &"DPadButton"
+icon_alignment = 1
+expand_icon = true
 
-[node name="ExploreSecondaryActions" type="VBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack"]
+[node name="ExploreSecondaryActions" type="HBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack"]
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 alignment = 1
 
 [node name="RestButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/ExploreSecondaryActions"]
-custom_minimum_size = Vector2(312, 44)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+size_flags_horizontal = 3
+theme_type_variation = &"CompactButton"
 text = "Rest"
+autowrap_mode = 2
 
 [node name="RetreatButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/ExploreSecondaryActions"]
-custom_minimum_size = Vector2(312, 44)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+size_flags_horizontal = 3
+theme_type_variation = &"CompactButton"
 text = "Retreat"
+autowrap_mode = 2
 
 [node name="MonsterEncounterView" type="VBoxContainer" parent="."]
 visible = false
@@ -404,26 +277,24 @@ theme_override_constants/separation = 0
 [node name="EncounterInfoArea" type="MarginContainer" parent="MonsterEncounterView"]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 1.5
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 28
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
 
 [node name="EncounterStack" type="VBoxContainer" parent="MonsterEncounterView/EncounterInfoArea"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 12
 
 [node name="MonsterRow" type="HBoxContainer" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
 [node name="MonsterImage" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/MonsterRow"]
 custom_minimum_size = Vector2(132, 112)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
 text = "Monster"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -431,13 +302,14 @@ vertical_alignment = 1
 [node name="MonsterPanel" type="VBoxContainer" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/MonsterRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 alignment = 1
 
 [node name="MonsterName" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/MonsterRow/MonsterPanel"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"HeaderLabel"
 horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="MonsterStats" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/MonsterRow/MonsterPanel"]
 layout_mode = 2
@@ -446,17 +318,17 @@ horizontal_alignment = 1
 [node name="PlayerRow" type="HBoxContainer" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
 [node name="EncounterPlayerPanel" type="VBoxContainer" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/PlayerRow"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 alignment = 1
 
 [node name="EncounterPlayerTitle" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/PlayerRow/EncounterPlayerPanel"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"HeaderLabel"
 text = "Player"
 horizontal_alignment = 1
 
@@ -469,44 +341,43 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(132, 112)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 16
 text = "Player"
 horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="EncounterActions" type="MarginContainer" parent="MonsterEncounterView"]
 layout_mode = 2
-size_flags_vertical = 3
-size_flags_stretch_ratio = 1.0
-theme_override_constants/margin_left = 48
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 44
+size_flags_vertical = 8
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 16
 
 [node name="EncounterActionButtons" type="VBoxContainer" parent="MonsterEncounterView/EncounterActions"]
 layout_mode = 2
-size_flags_horizontal = 4
 size_flags_vertical = 8
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 alignment = 1
 
 [node name="EncounterFeedback" type="Label" parent="MonsterEncounterView/EncounterActions/EncounterActionButtons"]
-custom_minimum_size = Vector2(248, 28)
+custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_type_variation = &"FeedbackLabel"
 horizontal_alignment = 1
-autowrap_mode = 2
+vertical_alignment = 1
+autowrap_mode = 3
+max_lines_visible = 3
 
 [node name="FightButton" type="Button" parent="MonsterEncounterView/EncounterActions/EncounterActionButtons"]
-custom_minimum_size = Vector2(248, 46)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"PrimaryButton"
 text = "Fight"
 
 [node name="FleeButton" type="Button" parent="MonsterEncounterView/EncounterActions/EncounterActionButtons"]
-custom_minimum_size = Vector2(248, 46)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"DangerButton"
 text = "Flee"
 
 [connection signal="pressed" from="MainMenuView/MenuArea/MenuButtons/StartGameButton" to="." method="_request_new_game"]

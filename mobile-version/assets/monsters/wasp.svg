@@ -1,1 +1,91 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="18" fill="#181409"/><ellipse cx="104" cy="106" rx="46" ry="32" fill="#d8d6c8" opacity=".55"/><ellipse cx="152" cy="106" rx="46" ry="32" fill="#d8d6c8" opacity=".55"/><ellipse cx="128" cy="151" rx="40" ry="58" fill="#d9a826"/><path fill="#191919" d="M95 130h66v12H95zm-5 28h76v12H90zm17 28h42v12h-42z"/><path fill="#d9a826" d="m167 151 52-17-45 33z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <title>Giant wasp</title>
+  <desc>Low-poly giant wasp in profile with translucent wings, striped abdomen, mandibles and a long stinger.</desc>
+  <defs>
+    <linearGradient id="yellow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFE14D"/>
+      <stop offset="0.5" stop-color="#F2B01E"/>
+      <stop offset="1" stop-color="#A66A0C"/>
+    </linearGradient>
+    <linearGradient id="black" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3D3A33"/>
+      <stop offset="1" stop-color="#14120F"/>
+    </linearGradient>
+    <linearGradient id="wingFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E8F4FF" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#8FB4D6" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Back wings -->
+  <g stroke="#1A1814" stroke-width="8" stroke-linejoin="round">
+    <polygon points="360,300 470,120 600,90 620,150 500,280" fill="url(#wingFill)"/>
+    <polygon points="380,310 560,220 690,230 680,290 520,330" fill="url(#wingFill)"/>
+  </g>
+  <g stroke="#3A4A5A" stroke-width="4" fill="none" opacity="0.8">
+    <polyline points="380,290 480,170 600,110"/>
+    <polyline points="400,310 560,250 680,260"/>
+  </g>
+
+  <!-- Legs -->
+  <g fill="none" stroke="#1A1814" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="300,430 250,520 270,600"/>
+    <polyline points="350,440 340,540 380,610"/>
+    <polyline points="390,430 440,520 470,580"/>
+  </g>
+  <g fill="none" stroke="#F2B01E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="300,430 250,520 270,600"/>
+    <polyline points="350,440 340,540 380,610"/>
+    <polyline points="390,430 440,520 470,580"/>
+  </g>
+
+  <!-- Abdomen -->
+  <g stroke="#1A1814" stroke-width="12" stroke-linejoin="round">
+    <polygon points="420,360 520,330 630,370 690,450 670,530 590,560 500,520 430,450" fill="url(#yellow)"/>
+  </g>
+  <g fill="url(#black)" stroke="#1A1814" stroke-width="5" stroke-linejoin="round">
+    <polygon points="478,342 520,330 556,346 520,510 500,520 470,490 480,420"/>
+    <polygon points="590,354 630,370 656,402 618,548 590,560 560,540"/>
+  </g>
+  <polygon points="520,330 630,370 590,400 520,380" fill="#FFF08A" stroke="#1A1814" stroke-width="4" opacity="0.7"/>
+  <!-- Stinger -->
+  <polygon points="670,530 740,610 650,552" fill="#1A1814" stroke="#1A1814" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- Waist -->
+  <polygon points="400,370 440,360 446,430 410,440" fill="url(#black)" stroke="#1A1814" stroke-width="10" stroke-linejoin="round"/>
+
+  <!-- Thorax -->
+  <g stroke="#1A1814" stroke-width="12" stroke-linejoin="round">
+    <polygon points="260,330 330,290 400,310 420,390 380,450 300,450 250,400" fill="url(#black)"/>
+  </g>
+  <g stroke="#1A1814" stroke-width="5" stroke-linejoin="round">
+    <polygon points="290,330 330,300 380,316 350,350" fill="#F2B01E"/>
+    <polygon points="300,420 340,400 380,430 350,450" fill="#C78714"/>
+  </g>
+
+  <!-- Front wing (over body) -->
+  <g stroke="#1A1814" stroke-width="8" stroke-linejoin="round">
+    <polygon points="340,300 380,110 470,60 500,110 420,290" fill="url(#wingFill)"/>
+  </g>
+  <polyline points="360,290 400,150 470,80" fill="none" stroke="#3A4A5A" stroke-width="4" opacity="0.8"/>
+
+  <!-- Head -->
+  <g stroke="#1A1814" stroke-width="12" stroke-linejoin="round">
+    <polygon points="160,300 220,260 280,290 290,360 250,410 180,410 140,360" fill="url(#yellow)"/>
+  </g>
+  <!-- Compound eye -->
+  <polygon points="170,290 224,272 250,320 220,360 180,350" fill="#B3121E" stroke="#1A1814" stroke-width="7" stroke-linejoin="round"/>
+  <g fill="#FF5A4E" opacity="0.8">
+    <polygon points="190,296 214,288 220,310 198,318"/>
+  </g>
+  <!-- Antennae -->
+  <g fill="none" stroke="#1A1814" stroke-width="9" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="210,270 170,190 110,160"/>
+    <polyline points="240,270 230,180 190,130"/>
+  </g>
+  <!-- Mandibles -->
+  <g fill="#3D3A33" stroke="#1A1814" stroke-width="7" stroke-linejoin="round">
+    <polygon points="150,380 100,420 130,440 178,404"/>
+    <polygon points="190,410 160,462 194,466 220,412"/>
+  </g>
+</svg>

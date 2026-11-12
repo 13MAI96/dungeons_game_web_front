@@ -1,1 +1,119 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="18" fill="#16110d"/><path fill="#8f5b39" d="M69 88 43 49l52 19c20-17 47-17 67 0l52-19-26 39c8 15 9 34 0 54-14 33-44 52-60 52s-46-19-60-52c-9-20-8-39 1-54z"/><circle cx="105" cy="118" r="9" fill="#efd36d"/><circle cx="151" cy="118" r="9" fill="#efd36d"/><path fill="#2b1710" d="M104 153h48v10h-48z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <title>Kobold scavenger</title>
+  <desc>Low-poly reptilian kobold with horns, frilled ears, a crude spear and a leather harness.</desc>
+  <defs>
+    <linearGradient id="scales" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#D9813A"/>
+      <stop offset="0.5" stop-color="#A3561E"/>
+      <stop offset="1" stop-color="#5C2C0E"/>
+    </linearGradient>
+    <linearGradient id="belly" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2CC85"/>
+      <stop offset="1" stop-color="#B88A44"/>
+    </linearGradient>
+    <linearGradient id="leather" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6B4428"/>
+      <stop offset="1" stop-color="#3A2314"/>
+    </linearGradient>
+    <linearGradient id="iron" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#D2D8DC"/>
+      <stop offset="1" stop-color="#5D666C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Tail -->
+  <polygon points="430,560 560,600 680,560 600,630 470,620" fill="url(#scales)" stroke="#2A1406" stroke-width="12" stroke-linejoin="round"/>
+
+  <!-- Spear shaft -->
+  <polygon points="572,120 588,120 596,700 566,700" fill="#7A5230" stroke="#2A1406" stroke-width="10" stroke-linejoin="round"/>
+  <polygon points="580,40 616,120 580,150 544,120" fill="url(#iron)" stroke="#2A1406" stroke-width="10" stroke-linejoin="round"/>
+  <polygon points="580,40 616,120 580,120" fill="#EEF1F3" opacity="0.6"/>
+  <g stroke="#2A1406" stroke-width="6">
+    <rect x="564" y="150" width="32" height="16" fill="#B33A2A"/>
+    <rect x="564" y="170" width="32" height="12" fill="#3A2314"/>
+  </g>
+
+  <!-- Legs -->
+  <g stroke="#2A1406" stroke-width="12" stroke-linejoin="round">
+    <polygon points="300,540 360,540 360,630 380,690 280,690 300,630" fill="url(#scales)"/>
+    <polygon points="408,540 468,540 468,630 488,690 388,690 408,630" fill="url(#scales)"/>
+  </g>
+  <g fill="#F2E8D0" stroke="#2A1406" stroke-width="4" stroke-linejoin="round">
+    <polygon points="280,690 292,710 304,690"/>
+    <polygon points="318,690 330,710 342,690"/>
+    <polygon points="388,690 400,710 412,690"/>
+    <polygon points="426,690 438,710 450,690"/>
+  </g>
+
+  <!-- Torso -->
+  <g stroke="#2A1406" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,320 470,346 486,450 470,550 298,550 282,450 298,346" fill="url(#scales)"/>
+    <polygon points="384,350 436,370 444,460 430,540 338,540 324,460 332,370" fill="url(#belly)"/>
+  </g>
+  <g stroke="#8A6630" stroke-width="5" fill="none" opacity="0.8">
+    <line x1="330" y1="410" x2="438" y2="410"/>
+    <line x1="326" y1="460" x2="442" y2="460"/>
+    <line x1="332" y1="505" x2="436" y2="505"/>
+  </g>
+  <!-- Harness -->
+  <polygon points="298,346 330,340 470,520 440,530" fill="url(#leather)" stroke="#2A1406" stroke-width="7" stroke-linejoin="round"/>
+  <polygon points="284,500 484,500 486,540 282,540" fill="url(#leather)" stroke="#2A1406" stroke-width="7" stroke-linejoin="round"/>
+  <rect x="368" y="504" width="32" height="30" fill="#C9A23A" stroke="#2A1406" stroke-width="6"/>
+
+  <!-- Arms -->
+  <g stroke="#2A1406" stroke-width="12" stroke-linejoin="round">
+    <polygon points="298,360 236,400 220,490 260,500 284,430 320,400" fill="url(#scales)"/>
+    <polygon points="470,360 540,380 574,300 600,316 572,420 468,420" fill="url(#scales)"/>
+  </g>
+  <!-- Hand gripping spear -->
+  <polygon points="558,286 604,280 612,322 566,330" fill="url(#scales)" stroke="#2A1406" stroke-width="10" stroke-linejoin="round"/>
+  <!-- Left claw -->
+  <g fill="#F2E8D0" stroke="#2A1406" stroke-width="4" stroke-linejoin="round">
+    <polygon points="220,490 214,516 232,498"/>
+    <polygon points="240,496 240,524 254,500"/>
+  </g>
+
+  <!-- Horns -->
+  <g stroke="#2A1406" stroke-width="10" stroke-linejoin="round">
+    <polygon points="330,140 280,60 352,118" fill="#E8DCC0"/>
+    <polygon points="438,140 488,60 416,118" fill="#E8DCC0"/>
+  </g>
+  <!-- Frill ears -->
+  <g stroke="#2A1406" stroke-width="10" stroke-linejoin="round">
+    <polygon points="296,170 196,150 236,220 290,230" fill="#C24A2A"/>
+    <polygon points="472,170 572,150 532,220 478,230" fill="#C24A2A"/>
+  </g>
+  <g stroke="#2A1406" stroke-width="4" fill="none">
+    <line x1="290" y1="180" x2="220" y2="170"/>
+    <line x1="290" y1="205" x2="236" y2="200"/>
+    <line x1="478" y1="180" x2="548" y2="170"/>
+    <line x1="478" y1="205" x2="532" y2="200"/>
+  </g>
+
+  <!-- Head with snout -->
+  <g stroke="#2A1406" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,110 456,136 480,206 456,262 420,300 348,300 312,262 288,206 312,136" fill="url(#scales)"/>
+  </g>
+  <g stroke="#2A1406" stroke-width="5" stroke-linejoin="round">
+    <polygon points="312,136 384,110 456,136 384,160" fill="#E79A55"/>
+    <polygon points="336,244 432,244 420,300 348,300" fill="url(#belly)"/>
+  </g>
+  <!-- Nostrils -->
+  <g fill="#2A1406">
+    <polygon points="364,252 376,250 374,262"/>
+    <polygon points="404,252 392,250 394,262"/>
+  </g>
+  <!-- Eyes -->
+  <g stroke="#2A1406" stroke-width="7" stroke-linejoin="round">
+    <polygon points="310,186 362,194 354,222 320,218" fill="#FFD23A"/>
+    <polygon points="458,186 406,194 414,222 448,218" fill="#FFD23A"/>
+  </g>
+  <rect x="332" y="194" width="8" height="26" fill="#2A1406"/>
+  <rect x="428" y="194" width="8" height="26" fill="#2A1406"/>
+  <g stroke="#2A1406" stroke-width="10" stroke-linecap="round">
+    <line x1="304" y1="172" x2="366" y2="186"/>
+    <line x1="464" y1="172" x2="402" y2="186"/>
+  </g>
+  <!-- Teeth -->
+  <polyline points="350,284 362,296 374,284 384,296 394,284 406,296 418,284" fill="#F5F1E4" stroke="#2A1406" stroke-width="4" stroke-linejoin="round"/>
+</svg>

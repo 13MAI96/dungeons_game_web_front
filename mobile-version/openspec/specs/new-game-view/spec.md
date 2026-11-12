@@ -1,7 +1,9 @@
 ## Purpose
 
 Define the post-start-game mobile view where the player sees a character summary and the first set of in-game action options.
+
 ## Requirements
+
 ### Requirement: New game view opens from start game
 The app SHALL display the new game view after the user selects the start-game option from the main menu.
 
@@ -94,3 +96,28 @@ The new game view SHALL provide access to the progression flow from the manage e
 - **AND** the user opens progression
 - **THEN** the progression view shows class choices before class-gated ability unlocks are applied
 
+### Requirement: Pending progression is visually indicated
+The new game view SHALL visually indicate when the player has reserved progression points available to assign.
+
+#### Scenario: Progression indicator is visible with reserved points
+- **WHEN** the new game view displays the progression or manage-equipment action
+- **AND** the player has one or more reserved progression points
+- **THEN** the action shows a small visible pending indicator such as a red dot or equivalent badge
+
+#### Scenario: Progression indicator is hidden without reserved points
+- **WHEN** the new game view displays the progression or manage-equipment action
+- **AND** the player has no reserved progression points
+- **THEN** the pending indicator is not shown
+
+#### Scenario: Progression indicator updates after allocation
+- **WHEN** the player assigns all reserved progression points
+- **AND** the app returns to the new game view
+- **THEN** the pending indicator is no longer shown
+
+### Requirement: Deferred actions are clearly unavailable
+The new game view SHALL identify unimplemented actions without allowing interaction.
+
+#### Scenario: Player views deferred game actions
+- **WHEN** the new game view displays Challenge Dungeon and Shop
+- **THEN** both actions are marked Coming Soon in the active language
+- **AND** both actions are disabled

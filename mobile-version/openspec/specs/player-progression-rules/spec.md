@@ -1,8 +1,10 @@
 # player-progression-rules Specification
 
 ## Purpose
-TBD - created by archiving change rules. Update Purpose after archive.
+Define base player stats, experience and reputation thresholds, and how experience accumulates across dungeon runs.
+
 ## Requirements
+
 ### Requirement: Player starts with rule-defined base stats
 The mobile game SHALL create a new player with the rule-defined base stats needed for exploration, combat, and progression.
 
@@ -126,3 +128,15 @@ The mobile game SHALL allow converted progression points to remain unassigned fo
 - **THEN** unassigned points remain reserved on the player
 - **THEN** those points are available the next time the player enters progression
 
+### Requirement: Experience accumulates across dungeon runs
+The mobile game SHALL maintain permanent experience as a cumulative total across completed or voluntarily exited dungeon runs.
+
+#### Scenario: Consecutive dungeons grant experience
+- **WHEN** the player completes or retreats from a dungeon with provisional experience
+- **THEN** that experience is added to the permanent total
+- **AND** experience committed by earlier dungeon runs remains in the total
+
+#### Scenario: A failed dungeon follows successful runs
+- **WHEN** the player loses life or energy after accumulating permanent experience in earlier runs
+- **THEN** only experience gained during the failed active run is discarded
+- **AND** the earlier permanent experience remains unchanged

@@ -1,1 +1,98 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="18" fill="#101018"/><path fill="#343451" d="M128 82c-34-38-80-20-105 25 34-3 58 10 80 37h50c22-27 46-40 80-37-25-45-71-63-105-25z"/><circle cx="128" cy="137" r="33" fill="#4b4b70"/><circle cx="116" cy="132" r="6" fill="#f1d66b"/><circle cx="140" cy="132" r="6" fill="#f1d66b"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <title>Cave bat</title>
+  <desc>Low-poly cave bat with spread membrane wings, large ears, red eyes and fangs.</desc>
+  <defs>
+    <linearGradient id="fur" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6E6890"/>
+      <stop offset="0.5" stop-color="#4A4468"/>
+      <stop offset="1" stop-color="#2A2640"/>
+    </linearGradient>
+    <linearGradient id="wing" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5A4F7A"/>
+      <stop offset="1" stop-color="#2B2340"/>
+    </linearGradient>
+    <linearGradient id="wingLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7A6E9E"/>
+      <stop offset="1" stop-color="#40365C"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Wings -->
+  <g stroke="#15111F" stroke-width="12" stroke-linejoin="round">
+    <polygon points="318,330 220,214 40,250 66,330 30,430 120,404 150,486 230,430 300,470" fill="url(#wing)"/>
+    <polygon points="450,330 548,214 728,250 702,330 738,430 648,404 618,486 538,430 468,470" fill="url(#wing)"/>
+  </g>
+  <g stroke="#15111F" stroke-width="6" stroke-linejoin="round" opacity="0.9">
+    <polygon points="220,214 66,330 120,404" fill="url(#wingLight)"/>
+    <polygon points="220,214 150,486 230,430" fill="url(#wingLight)"/>
+    <polygon points="548,214 702,330 648,404" fill="url(#wingLight)"/>
+    <polygon points="548,214 618,486 538,430" fill="url(#wingLight)"/>
+  </g>
+  <!-- Wing bones -->
+  <g stroke="#1A1528" stroke-width="10" stroke-linecap="round" fill="none">
+    <polyline points="318,330 220,214 40,250"/>
+    <line x1="220" y1="214" x2="66" y2="330"/>
+    <line x1="220" y1="214" x2="120" y2="404"/>
+    <line x1="220" y1="214" x2="230" y2="430"/>
+    <polyline points="450,330 548,214 728,250"/>
+    <line x1="548" y1="214" x2="702" y2="330"/>
+    <line x1="548" y1="214" x2="648" y2="404"/>
+    <line x1="548" y1="214" x2="538" y2="430"/>
+  </g>
+  <g fill="#D9D2EA" stroke="#15111F" stroke-width="5" stroke-linejoin="round">
+    <polygon points="212,198 226,180 232,206"/>
+    <polygon points="556,198 542,180 536,206"/>
+  </g>
+
+  <!-- Body -->
+  <g stroke="#15111F" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,300 456,340 470,440 430,540 384,566 338,540 298,440 312,340" fill="url(#fur)"/>
+  </g>
+  <g stroke="#15111F" stroke-width="5" stroke-linejoin="round" opacity="0.85">
+    <polygon points="384,380 430,420 420,500 384,530 348,500 338,420" fill="#7F78A3"/>
+    <polygon points="384,380 430,420 384,450 338,420" fill="#948DB6"/>
+  </g>
+  <!-- Feet -->
+  <g fill="#2A2640" stroke="#15111F" stroke-width="8" stroke-linejoin="round">
+    <polygon points="352,548 336,606 356,592 366,612 372,560"/>
+    <polygon points="416,548 432,606 412,592 402,612 396,560"/>
+  </g>
+
+  <!-- Ears -->
+  <g stroke="#15111F" stroke-width="12" stroke-linejoin="round">
+    <polygon points="320,232 282,96 368,196" fill="#4A4468"/>
+    <polygon points="448,232 486,96 400,196" fill="#4A4468"/>
+  </g>
+  <g stroke="#15111F" stroke-width="5" stroke-linejoin="round">
+    <polygon points="322,214 298,136 352,198" fill="#C78A9C"/>
+    <polygon points="446,214 470,136 416,198" fill="#C78A9C"/>
+  </g>
+
+  <!-- Head -->
+  <g stroke="#15111F" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,178 452,206 474,270 444,336 384,358 324,336 294,270 316,206" fill="url(#fur)"/>
+  </g>
+  <g stroke="#15111F" stroke-width="5" stroke-linejoin="round" opacity="0.9">
+    <polygon points="384,178 452,206 384,236 316,206" fill="#7A73A0"/>
+    <polygon points="352,290 416,290 404,326 384,338 364,326" fill="#8A6878"/>
+  </g>
+  <!-- Snout -->
+  <polygon points="372,280 396,280 390,296 378,296" fill="#2A1A24" stroke="#15111F" stroke-width="4"/>
+  <!-- Eyes -->
+  <g stroke="#15111F" stroke-width="7" stroke-linejoin="round">
+    <polygon points="318,244 366,250 358,276 326,272" fill="#E2242F"/>
+    <polygon points="450,244 402,250 410,276 442,272" fill="#E2242F"/>
+  </g>
+  <polygon points="334,252 350,254 346,266 336,264" fill="#FFE27A"/>
+  <polygon points="434,252 418,254 422,266 432,264" fill="#FFE27A"/>
+  <!-- Brow -->
+  <g stroke="#15111F" stroke-width="10" stroke-linecap="round">
+    <line x1="312" y1="232" x2="368" y2="246"/>
+    <line x1="456" y1="232" x2="400" y2="246"/>
+  </g>
+  <!-- Fangs -->
+  <g fill="#F3EEE2" stroke="#15111F" stroke-width="5" stroke-linejoin="round">
+    <polygon points="360,318 374,318 366,350"/>
+    <polygon points="408,318 394,318 402,350"/>
+  </g>
+</svg>

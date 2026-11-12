@@ -20,28 +20,28 @@ msgid "SETTINGS_LANGUAGE"
 msgstr "Idioma"
 
 msgid "SETTINGS_ENGLISH"
-msgstr "Ingles"
+msgstr "Inglés"
 
 msgid "SETTINGS_SPANISH"
-msgstr "Espanol"
+msgstr "Español"
 
 msgid "SETTINGS_BACK"
 msgstr "Volver"
 
 msgid "COMING_SOON"
-msgstr "Proximamente"
+msgstr "Próximamente"
 
 msgid "CONFIRM_NEW_GAME_TITLE"
-msgstr "Iniciar una partida nueva?"
+msgstr "¿Iniciar una partida nueva?"
 
 msgid "CONFIRM_NEW_GAME_MESSAGE"
-msgstr "La partida guardada actual sera reemplazada. Esta accion no se puede deshacer."
+msgstr "La partida guardada actual será reemplazada. Esta acción no se puede deshacer."
 
 msgid "CONFIRM_EXIT_TITLE"
-msgstr "Volver al menu principal?"
+msgstr "¿Volver al menú principal?"
 
 msgid "CONFIRM_EXIT_MESSAGE"
-msgstr "Tu progreso esta guardado. Los cambios de atributos sin confirmar se descartaran."
+msgstr "Tu progreso está guardado. Los cambios de atributos sin confirmar se descartarán."
 
 msgid "CONFIRM_ACCEPT"
 msgstr "Confirmar"
@@ -56,13 +56,13 @@ msgid "RESULT_COMPLETED_TITLE"
 msgstr "Mazmorra completada"
 
 msgid "RESULT_RETREATED_TITLE"
-msgstr "Expedicion finalizada"
+msgstr "Expedición finalizada"
 
 msgid "RESULT_RETREATED_MESSAGE"
 msgstr "Regresaste a salvo de la mazmorra."
 
 msgid "RESULT_ENDED_TITLE"
-msgstr "Expedicion finalizada"
+msgstr "Expedición finalizada"
 
 msgid "RESULT_DEFEAT_TITLE"
 msgstr "Derrota"
@@ -80,7 +80,7 @@ msgid "NEW_GAME_CHALLENGE_DUNGEON"
 msgstr "Desafiar Mazmorra"
 
 msgid "NEW_GAME_MANAGE_EQUIPMENT"
-msgstr "Progresion"
+msgstr "Progresión"
 
 msgid "NEW_GAME_SHOP"
 msgstr "Tienda"
@@ -116,10 +116,10 @@ msgid "COMBAT_HIT"
 msgstr "Golpeaste"
 
 msgid "COMBAT_CRITICAL_HIT"
-msgstr "Golpe critico"
+msgstr "Golpe crítico"
 
 msgid "COMBAT_COUNTERATTACK_HIT"
-msgstr "El monstruo te golpeo"
+msgstr "El monstruo te golpeó"
 
 msgid "COMBAT_MISS"
 msgstr "Fallaste"
@@ -143,31 +143,31 @@ msgid "COMBAT_QUEST_SUCCESS"
 msgstr "Obtuviste experiencia"
 
 msgid "COMBAT_QUEST_TRAP"
-msgstr "Caiste en una trampa"
+msgstr "Caíste en una trampa"
 
 msgid "COMBAT_REST"
 msgstr "Descansaste"
 
 msgid "COMBAT_INSUFFICIENT_MANA"
-msgstr "Mana insuficiente"
+msgstr "Maná insuficiente"
 
 msgid "COMBAT_INSUFFICIENT_RESOURCES"
-msgstr "No tenes suficiente energia o mana para este ataque"
+msgstr "No tenés suficiente energía o maná para este ataque"
 
 msgid "COMBAT_SANCTUARY"
-msgstr "El santuario te restauro"
+msgstr "El santuario te restauró"
 
 msgid "EXPLORE_RETREAT_ENTRANCE_ONLY"
-msgstr "Solo podes retirarte desde la entrada"
+msgstr "Solo podés retirarte desde la entrada"
 
 msgid "EXPLORE_RETREAT_SUCCESS"
 msgstr "Te retiraste"
 
 msgid "EXPLORE_RETREAT_DEPLETED"
-msgstr "Te quedaste sin energia"
+msgstr "Te quedaste sin energía"
 
 msgid "DUNGEON_COMPLETED_REWARDS"
-msgstr "Mazmorra completa: +%s experiencia, +%s reputacion"
+msgstr "Mazmorra completa: +%s experiencia, +%s reputación"
 
 msgid "COMBAT_DEATH_SEQUEL"
 msgstr "Sobreviviste con una secuela permanente de vida"
@@ -194,10 +194,10 @@ msgid "LEVEL_CLASS_CHOICE_TITLE"
 msgstr "Elegir Clase"
 
 msgid "LEVEL_PROGRESSION_PENDING"
-msgstr "Puntos de progresion pendientes"
+msgstr "Puntos de progresión pendientes"
 
 msgid "DUNGEON_ENERGY_DEPLETED"
-msgstr "Te quedaste sin energia"
+msgstr "Te quedaste sin energía"
 
 msgid "DUNGEON_LIFE_DEPLETED"
 msgstr "Perdiste toda la vida"
@@ -210,3 +210,48 @@ msgstr "Ataques del monstruo"
 
 msgid "ENCOUNTER_MONSTER_ATTACK_LINE"
 msgstr "%s - Dano %s, Mana %s, Lv. %s, Efectos: %s"
+
+msgid "HUB_LEVEL"
+msgstr "Nivel %s"
+
+msgid "AD_PLACEHOLDER"
+msgstr "Publicidad"
+
+msgid "ENCOUNTER_MONSTER_INFO_CLOSE"
+msgstr "Cerrar"
+
+msgid "ENCOUNTER_MONSTER_NO_EFFECTS"
+msgstr "ninguno"
+
+msgid "ENCOUNTER_MONSTER_NO_ATTACKS"
+msgstr "Sin ataques"
+
+msgid "COMBAT_FEEDBACK_PLAYER_CRITICAL"
+msgstr "¡Tu ataque fue un golpe crítico!"
+
+msgid "COMBAT_FEEDBACK_PLAYER_HIT"
+msgstr "Tu ataque acertó."
+
+msgid "COMBAT_FEEDBACK_PLAYER_DODGED"
+msgstr "Tu ataque fue esquivado."
+
+msgid "COMBAT_FEEDBACK_PLAYER_PROTECTED"
+msgstr "Tu ataque fue bloqueado por la armadura."
+
+msgid "COMBAT_FEEDBACK_PLAYER_MISSED"
+msgstr "Tu ataque falló."
+
+msgid "COMBAT_FEEDBACK_MONSTER_CRITICAL"
+msgstr "¡%s fue un golpe crítico!"
+
+msgid "COMBAT_FEEDBACK_MONSTER_HIT"
+msgstr "%s te golpeó."
+
+msgid "COMBAT_FEEDBACK_MONSTER_DODGED"
+msgstr "Esquivaste %s."
+
+msgid "COMBAT_FEEDBACK_MONSTER_PROTECTED"
+msgstr "Tu armadura detuvo %s."
+
+msgid "COMBAT_FEEDBACK_MONSTER_MISSED"
+msgstr "%s falló."

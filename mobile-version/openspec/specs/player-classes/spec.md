@@ -1,7 +1,7 @@
 # player-classes Specification
 
 ## Purpose
-TBD - created by archiving change leveling-player. Update Purpose after archive.
+Define the selectable player classes and the abilities and bonuses each one unlocks.
 ## Requirements
 ### Requirement: Player classes are data driven
 The mobile game SHALL load player class definitions from a local JSON file.

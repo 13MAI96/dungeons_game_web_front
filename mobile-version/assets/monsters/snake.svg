@@ -1,1 +1,83 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="18" fill="#101610"/><path fill="#4e8b4b" d="M50 162c28-70 125-93 154-26 15 34-15 68-55 57-22-6-21-29 2-29h28c-29-26-85-5-104 33H50z"/><circle cx="177" cy="119" r="7" fill="#f8df6b"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <title>Pit viper</title>
+  <desc>Low-poly coiled viper rearing to strike, with banded scales, slit eyes, fangs and a forked tongue.</desc>
+  <defs>
+    <linearGradient id="scale" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8CC63F"/>
+      <stop offset="0.5" stop-color="#4E8A2A"/>
+      <stop offset="1" stop-color="#22481A"/>
+    </linearGradient>
+    <linearGradient id="belly" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E9DC8A"/>
+      <stop offset="1" stop-color="#B49A45"/>
+    </linearGradient>
+    <linearGradient id="hood" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7DB83A"/>
+      <stop offset="1" stop-color="#2E5B1E"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Coils (back to front) -->
+  <g stroke="#13240C" stroke-width="12" stroke-linejoin="round">
+    <polygon points="150,560 230,500 384,488 538,500 618,560 600,628 520,668 384,680 248,668 168,628" fill="url(#scale)"/>
+    <polygon points="210,566 270,530 384,522 498,530 558,566 540,612 470,636 384,642 298,636 228,612" fill="#3C6E22"/>
+    <polygon points="232,500 300,452 384,444 468,452 536,500 510,548 440,570 384,574 328,570 258,548" fill="url(#scale)"/>
+  </g>
+  <!-- Coil bands -->
+  <g fill="#1F3A12" stroke="#13240C" stroke-width="5" stroke-linejoin="round">
+    <polygon points="176,600 210,566 228,612 194,636"/>
+    <polygon points="300,664 298,636 344,640 344,676"/>
+    <polygon points="452,676 452,640 498,632 506,662"/>
+    <polygon points="574,628 558,566 600,580 604,618"/>
+    <polygon points="280,470 316,452 328,500 290,520"/>
+    <polygon points="488,470 452,452 440,500 478,520"/>
+  </g>
+  <!-- Tail tip -->
+  <polygon points="600,628 680,640 720,610 662,604" fill="url(#scale)" stroke="#13240C" stroke-width="10" stroke-linejoin="round"/>
+
+  <!-- Rearing neck -->
+  <g stroke="#13240C" stroke-width="12" stroke-linejoin="round">
+    <polygon points="330,470 438,470 452,380 430,300 338,300 316,380" fill="url(#scale)"/>
+    <polygon points="352,470 416,470 420,390 404,310 364,310 348,390" fill="url(#belly)"/>
+  </g>
+  <g stroke="#8A7330" stroke-width="5" fill="none" opacity="0.8">
+    <line x1="350" y1="430" x2="418" y2="430"/>
+    <line x1="349" y1="390" x2="419" y2="390"/>
+    <line x1="356" y1="350" x2="412" y2="350"/>
+  </g>
+
+  <!-- Hood -->
+  <g stroke="#13240C" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,150 500,200 540,300 470,360 384,330 298,360 228,300 268,200" fill="url(#hood)"/>
+  </g>
+  <g stroke="#13240C" stroke-width="5" stroke-linejoin="round" opacity="0.9">
+    <polygon points="268,200 228,300 300,290" fill="#9AD14A"/>
+    <polygon points="500,200 540,300 468,290" fill="#9AD14A"/>
+    <polygon points="300,290 340,320 298,360 228,300" fill="#2E5B1E"/>
+    <polygon points="468,290 428,320 470,360 540,300" fill="#2E5B1E"/>
+  </g>
+
+  <!-- Head -->
+  <g stroke="#13240C" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,110 454,140 474,210 440,272 384,292 328,272 294,210 314,140" fill="url(#scale)"/>
+  </g>
+  <g stroke="#13240C" stroke-width="5" stroke-linejoin="round">
+    <polygon points="384,110 454,140 384,170 314,140" fill="#A6DA55"/>
+    <polygon points="384,170 420,200 384,236 348,200" fill="#6FA834"/>
+  </g>
+  <!-- Eyes -->
+  <g stroke="#13240C" stroke-width="7" stroke-linejoin="round">
+    <polygon points="314,186 360,194 352,222 320,216" fill="#F4C21B"/>
+    <polygon points="454,186 408,194 416,222 448,216" fill="#F4C21B"/>
+  </g>
+  <rect x="334" y="192" width="8" height="28" fill="#13240C"/>
+  <rect x="426" y="192" width="8" height="28" fill="#13240C"/>
+  <!-- Mouth and fangs -->
+  <polygon points="334,252 434,252 410,282 358,282" fill="#5A1420" stroke="#13240C" stroke-width="7" stroke-linejoin="round"/>
+  <g fill="#F5F1E4" stroke="#13240C" stroke-width="4" stroke-linejoin="round">
+    <polygon points="346,254 362,254 356,300"/>
+    <polygon points="422,254 406,254 412,300"/>
+  </g>
+  <!-- Tongue -->
+  <polyline points="384,276 384,334 368,358 M384,334 400,358" fill="none" stroke="#D8283C" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

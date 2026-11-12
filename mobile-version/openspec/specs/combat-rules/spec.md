@@ -1,8 +1,10 @@
 # combat-rules Specification
 
 ## Purpose
-TBD - created by archiving change combat-rules. Update Purpose after archive.
+Define the turn-level combat loop between the player and a monster, including resource costs, counterattacks, fleeing, recovery, and death.
+
 ## Requirements
+
 ### Requirement: Combat attack follows web damage rules
 The mobile combat system SHALL resolve player and monster attacks using the new D20 attack-resolution rules.
 
@@ -126,3 +128,16 @@ The mobile combat system SHALL end the active dungeon run when the player's curr
 - **THEN** the player loses all current experience gained during the dungeon run
 - **THEN** current life, current energy, and current mana are restored to their maximum values
 
+### Requirement: Player attacks require full resources
+The mobile combat system SHALL reject a player attack unless its complete energy and mana costs can be paid.
+
+#### Scenario: Attack has sufficient resources
+- **WHEN** current energy and mana meet or exceed the selected attack costs
+- **THEN** both costs are consumed
+- **AND** the attack resolves normally
+
+#### Scenario: Attack lacks energy or mana
+- **WHEN** either current resource is below its selected attack cost
+- **THEN** the attack is rejected with readable feedback
+- **AND** no resource is consumed
+- **AND** no monster counterattack occurs

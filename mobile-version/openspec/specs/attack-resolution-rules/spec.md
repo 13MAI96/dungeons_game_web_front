@@ -1,55 +1,73 @@
 # attack-resolution-rules Specification
 
 ## Purpose
-TBD - created by archiving change rules. Update Purpose after archive.
+Define how a single attack is resolved: D20 accuracy against armor and Strength, critical thresholds, dodge, and damage taken from attack definitions.
+
 ## Requirements
-### Requirement: Attacks resolve with D20 armor strength formula
-The mobile combat system SHALL resolve attacks with a D20 roll, defender armor, attacker strength, and selected attack damage.
-
-#### Scenario: Attack misses when resolved value is not positive
-- **WHEN** an attacker rolls a D20 for an attack
-- **AND** `roll - defender armor - attacker strength` is less than or equal to 0
-- **THEN** the attack misses
-- **THEN** the defender loses no life from that attack
-
-#### Scenario: Attack can hit when resolved value is positive
-- **WHEN** an attacker rolls a D20 for an attack
-- **AND** `roll - defender armor - attacker strength` is greater than 0
-- **AND** the defender does not dodge the attack
-- **THEN** the attack hits
-- **THEN** the defender loses life according to the selected attack definition
 
 ### Requirement: Critical attacks bypass armor and dodge
-The mobile combat system SHALL treat a natural D20 roll of 20 as a critical hit.
+The mobile combat system SHALL treat an attack roll greater than or equal to the selected attack's critical threshold as a critical hit.
 
-#### Scenario: Natural twenty is critical
-- **WHEN** an attacker rolls exactly 20 on the D20
+#### Scenario: Attack reaches configured critical threshold
+- **WHEN** an attacker uses an attack with critical threshold 19
+- **AND** the attacker rolls 19 on the D20
 - **THEN** the attack is a critical hit
 - **THEN** defender armor does not prevent the hit
 - **THEN** defender dodge does not prevent the hit
 
-### Requirement: Defenders can dodge non-critical attacks
-The mobile combat system SHALL allow a defender to dodge a non-critical attack using the defender speed formula.
+#### Scenario: Natural twenty is critical
+- **WHEN** an attacker uses an attack with the default critical threshold 20
+- **AND** the attacker rolls exactly 20 on the D20
+- **THEN** the attack is a critical hit
+- **THEN** defender armor does not prevent the hit
+- **THEN** defender dodge does not prevent the hit
 
-#### Scenario: Defender dodges attack
-- **WHEN** an attack has a positive resolved value
-- **AND** the attack is not a critical hit
-- **AND** the defender rolls a D20 for dodge
-- **AND** `dodge roll * defender speed / 100` is greater than the attack resolved value
-- **THEN** the attack is dodged
-- **THEN** the defender loses no life from that attack
-
-#### Scenario: Defender fails to dodge attack
-- **WHEN** an attack has a positive resolved value
-- **AND** the attack is not a critical hit
-- **AND** the dodge formula result is less than or equal to the attack resolved value
-- **THEN** the attack is not dodged
+#### Scenario: Attack below configured critical threshold is not critical
+- **WHEN** an attacker uses an attack with critical threshold 19
+- **AND** the attacker rolls 18 on the D20
+- **THEN** the attack is not a critical hit
+- **THEN** normal armor and dodge rules apply
 
 ### Requirement: Attack definitions own damage
-The mobile combat system SHALL use attack definitions to determine damage instead of a persistent player damage statistic.
+The mobile combat system SHALL use attack definitions to determine base damage and critical damage instead of a persistent player damage statistic.
 
 #### Scenario: Attack damage is selected from attack definition
 - **WHEN** an actor performs an attack
 - **THEN** the selected attack definition provides the life damage amount
 - **THEN** the actor's persistent stats do not include a standalone damage stat
 
+#### Scenario: Critical damage uses selected attack percent
+- **WHEN** an actor lands a critical hit
+- **THEN** the selected attack definition provides the critical damage percent
+- **THEN** the final damage is the selected attack damage plus the configured critical extra damage
+
+#### Scenario: Decimal critical damage is rounded down
+- **WHEN** critical damage calculation produces a decimal value
+- **THEN** the final damage is rounded down to the lower integer
+
+### Requirement: Attack accuracy uses bounded half-scaled Strength and armor
+The mobile combat system SHALL make half-scaled Strength improve attack accuracy while half-scaled armor and a fixed difficulty oppose the attack, with hit chance bounded between 10 and 90 percent.
+
+#### Scenario: Attack misses
+- **WHEN** an attacker rolls a non-critical D20 attack
+- **AND** the D20 is below `clamp(10 + floor(defender armor / 2) - floor(attacker strength / 2), 3, 19)`
+- **THEN** the attack misses
+- **AND** the defender loses no life
+
+#### Scenario: Attack can hit
+- **WHEN** an attacker rolls a non-critical D20 attack
+- **AND** the D20 meets or exceeds `clamp(10 + floor(defender armor / 2) - floor(attacker strength / 2), 3, 19)`
+- **AND** the defender does not dodge
+- **THEN** the attack hits for the selected attack damage
+
+### Requirement: Dodge uses bounded half-scaled opposed Speed
+The mobile combat system SHALL resolve dodge using half-scaled opposed Speed with dodge chance bounded between 5 and 35 percent.
+
+#### Scenario: Defender dodges
+- **WHEN** a non-critical attack passes its accuracy check
+- **AND** the D20 meets or exceeds `clamp(20 + floor(attacker speed / 2) - floor(defender speed / 2), 14, 20)`
+- **THEN** the defender dodges and loses no life
+
+#### Scenario: Defender fails to dodge
+- **WHEN** the D20 is below the bounded required dodge roll
+- **THEN** the attack is not dodged

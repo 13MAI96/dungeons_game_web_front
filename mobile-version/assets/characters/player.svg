@@ -1,1 +1,119 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 420"><rect width="256" height="420" rx="20" fill="#1c1712"/><circle cx="128" cy="62" r="34" fill="#d8b48b"/><path fill="#8b6b3f" d="M90 54c5-27 22-42 45-37 20 4 31 19 31 40-21-13-49-12-76-3z"/><path fill="#3d4f6b" d="M77 121c13-25 31-37 51-37s38 12 51 37l-18 115H95L77 121z"/><path fill="#d7d2c5" d="M105 118h46l-23 36-23-36z"/><path fill="#d8b48b" d="M72 126h25l-10 111H61l11-111zm87 0h25l11 111h-26l-10-111z"/><path fill="#2b3345" d="M100 236h24v128H82l18-128zm32 0h24l18 128h-42V236z"/><path fill="#3b2a1e" d="M75 363h51v25H68c0-13 3-21 7-25zm55 0h51c4 4 7 12 7 25h-58v-25z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 768">
+  <title>Adventurer</title>
+  <desc>Low-poly adventurer standing ready with a sword, round shield, leather armor, cape and boots.</desc>
+  <defs>
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F2CFA6"/>
+      <stop offset="1" stop-color="#B9875C"/>
+    </linearGradient>
+    <linearGradient id="tunic" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4F72A8"/>
+      <stop offset="0.5" stop-color="#34507E"/>
+      <stop offset="1" stop-color="#1D2E4C"/>
+    </linearGradient>
+    <linearGradient id="leather" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8B5A32"/>
+      <stop offset="1" stop-color="#4A2C16"/>
+    </linearGradient>
+    <linearGradient id="cape" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#B8342E"/>
+      <stop offset="1" stop-color="#5E1414"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F0F3F5"/>
+      <stop offset="0.5" stop-color="#A9B3BA"/>
+      <stop offset="1" stop-color="#5C666D"/>
+    </linearGradient>
+    <linearGradient id="hair" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8A5A2E"/>
+      <stop offset="1" stop-color="#3F240F"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Cape -->
+  <polygon points="160,220 320,220 372,640 300,610 240,650 180,610 108,640" fill="url(#cape)" stroke="#1A120C" stroke-width="10" stroke-linejoin="round"/>
+  <polygon points="240,240 300,610 240,650 180,610" fill="#8A2420" stroke="#1A120C" stroke-width="5" stroke-linejoin="round" opacity="0.8"/>
+
+  <!-- Sword (behind right hand, raised) -->
+  <polygon points="372,60 392,60 396,330 368,330" fill="url(#steel)" stroke="#1A120C" stroke-width="8" stroke-linejoin="round"/>
+  <polygon points="382,30 392,60 372,60" fill="#F0F3F5" stroke="#1A120C" stroke-width="6" stroke-linejoin="round"/>
+  <line x1="382" y1="70" x2="382" y2="320" stroke="#FFFFFF" stroke-width="4" opacity="0.6"/>
+  <polygon points="340,330 424,330 420,350 344,350" fill="#C9A23A" stroke="#1A120C" stroke-width="7" stroke-linejoin="round"/>
+  <rect x="372" y="350" width="20" height="54" fill="url(#leather)" stroke="#1A120C" stroke-width="6"/>
+  <polygon points="382,404 396,420 382,436 368,420" fill="#C9A23A" stroke="#1A120C" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- Legs -->
+  <g stroke="#1A120C" stroke-width="10" stroke-linejoin="round">
+    <polygon points="186,470 236,470 232,610 190,610" fill="#3A3A44"/>
+    <polygon points="244,470 294,470 290,610 248,610" fill="#2C2C35"/>
+  </g>
+  <!-- Boots -->
+  <g stroke="#1A120C" stroke-width="10" stroke-linejoin="round">
+    <polygon points="182,600 236,600 240,700 220,724 150,724 156,690 184,680" fill="url(#leather)"/>
+    <polygon points="244,600 298,600 296,680 324,690 330,724 260,724 240,700" fill="url(#leather)"/>
+  </g>
+  <g fill="#B07A44" stroke="#1A120C" stroke-width="4">
+    <rect x="182" y="604" width="54" height="16"/>
+    <rect x="244" y="604" width="54" height="16"/>
+  </g>
+
+  <!-- Torso armor -->
+  <g stroke="#1A120C" stroke-width="10" stroke-linejoin="round">
+    <polygon points="170,240 310,240 326,360 304,480 176,480 154,360" fill="url(#tunic)"/>
+    <polygon points="186,260 294,260 306,360 290,430 190,430 174,360" fill="url(#leather)"/>
+  </g>
+  <g stroke="#1A120C" stroke-width="5" stroke-linejoin="round">
+    <polygon points="186,260 240,250 294,260 240,300" fill="#A87244"/>
+    <line x1="240" y1="300" x2="240" y2="430"/>
+  </g>
+  <!-- Belt -->
+  <polygon points="168,430 312,430 314,462 166,462" fill="#3A2314" stroke="#1A120C" stroke-width="7" stroke-linejoin="round"/>
+  <rect x="224" y="432" width="32" height="28" fill="#C9A23A" stroke="#1A120C" stroke-width="5"/>
+  <!-- Tunic skirt -->
+  <polygon points="166,462 314,462 326,510 154,510" fill="url(#tunic)" stroke="#1A120C" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- Right arm holding sword -->
+  <g stroke="#1A120C" stroke-width="10" stroke-linejoin="round">
+    <polygon points="310,250 352,280 376,350 350,370 324,320 300,300" fill="url(#tunic)"/>
+    <polygon points="348,350 396,346 400,390 356,396" fill="url(#skin)"/>
+  </g>
+  <!-- Pauldrons -->
+  <g stroke="#1A120C" stroke-width="10" stroke-linejoin="round">
+    <polygon points="140,240 196,230 206,280 150,300 126,272" fill="url(#steel)"/>
+    <polygon points="340,240 284,230 274,280 330,300 354,272" fill="url(#steel)"/>
+  </g>
+
+  <!-- Left arm and shield -->
+  <polygon points="150,280 120,360 140,400 170,350" fill="url(#tunic)" stroke="#1A120C" stroke-width="10" stroke-linejoin="round"/>
+  <polygon points="100,320 168,330 196,400 176,480 110,500 58,450 50,380" fill="url(#leather)" stroke="#1A120C" stroke-width="12" stroke-linejoin="round"/>
+  <polygon points="100,320 168,330 196,400 176,480 110,500 58,450 50,380" fill="none" stroke="#A9B3BA" stroke-width="6" stroke-linejoin="round" transform="translate(124 410) scale(0.86) translate(-124 -410)"/>
+  <polygon points="122,370 150,410 122,450 94,410" fill="url(#steel)" stroke="#1A120C" stroke-width="7" stroke-linejoin="round"/>
+
+  <!-- Neck -->
+  <polygon points="222,200 258,200 262,240 218,240" fill="url(#skin)" stroke="#1A120C" stroke-width="8" stroke-linejoin="round"/>
+
+  <!-- Head -->
+  <g stroke="#1A120C" stroke-width="10" stroke-linejoin="round">
+    <polygon points="240,80 290,100 304,150 288,196 240,216 192,196 176,150 190,100" fill="url(#skin)"/>
+  </g>
+  <!-- Hair -->
+  <g stroke="#1A120C" stroke-width="10" stroke-linejoin="round">
+    <polygon points="186,104 240,62 296,100 304,150 282,120 240,110 200,124 176,150" fill="url(#hair)"/>
+  </g>
+  <polygon points="240,62 296,100 262,104" fill="#A8743E" stroke="#1A120C" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Face -->
+  <g stroke="#1A120C" stroke-width="8" stroke-linecap="round">
+    <line x1="202" y1="138" x2="228" y2="142"/>
+    <line x1="278" y1="138" x2="252" y2="142"/>
+  </g>
+  <g fill="#1F2A3A">
+    <polygon points="208,150 226,150 222,164 210,164"/>
+    <polygon points="272,150 254,150 258,164 270,164"/>
+  </g>
+  <g fill="#FFFFFF">
+    <rect x="212" y="152" width="5" height="5"/>
+    <rect x="258" y="152" width="5" height="5"/>
+  </g>
+  <polygon points="240,156 250,178 232,178" fill="#C99468" stroke="#1A120C" stroke-width="4" stroke-linejoin="round"/>
+  <polyline points="222,192 240,198 258,192" fill="none" stroke="#1A120C" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

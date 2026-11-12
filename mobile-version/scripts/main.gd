@@ -2,6 +2,8 @@ extends Control
 
 const SaveGame := preload("res://scripts/save_game.gd")
 const SettingsStore := preload("res://scripts/settings_store.gd")
+const UiTheme := preload("res://scripts/ui_theme.gd")
+const AdSlotConfig := preload("res://scripts/ad_slot_config.gd")
 
 const LOCALE_ENGLISH := "en"
 const LOCALE_SPANISH := "es"
@@ -52,6 +54,26 @@ const RESULT_RETREATED_MESSAGE_KEY := "RESULT_RETREATED_MESSAGE"
 const RESULT_ENDED_TITLE_KEY := "RESULT_ENDED_TITLE"
 const RESULT_DEFEAT_TITLE_KEY := "RESULT_DEFEAT_TITLE"
 const RESULT_GAME_OVER_TITLE_KEY := "RESULT_GAME_OVER_TITLE"
+const HUB_LEVEL_KEY := "HUB_LEVEL"
+const AD_PLACEHOLDER_KEY := "AD_PLACEHOLDER"
+const MONSTER_INFO_CLOSE_KEY := "ENCOUNTER_MONSTER_INFO_CLOSE"
+const DIRECTION_ICON_PATHS := {
+	"left": "res://assets/icons/arrow_left.svg",
+	"right": "res://assets/icons/arrow_right.svg",
+	"up": "res://assets/icons/arrow_up.svg",
+	"down": "res://assets/icons/arrow_down.svg",
+}
+const MAP_CELL_MIN := 24
+const MAP_CELL_MAX := 64
+const MAP_FRAME_PADDING := 8
+const LOCATION_COLOR_UNSEEN := Color(0.043, 0.031, 0.024, 1.0)
+const LOCATION_COLOR_ENTRANCE := Color(0.2, 0.7, 0.38, 1.0)
+const LOCATION_COLOR_VISITED := Color(0.38, 0.38, 0.38, 1.0)
+const LOCATION_COLOR_MONSTER := Color(0.65, 0.16, 0.16, 1.0)
+const LOCATION_COLOR_BLOCK := Color(0.17, 0.155, 0.14, 1.0)
+const LOCATION_COLOR_SANCTUARY := Color(0.16, 0.5, 0.62, 1.0)
+const LOCATION_COLOR_QUEST := Color(0.45, 0.32, 0.72, 1.0)
+const LOCATION_COLOR_FLOOR := Color(0.3, 0.24, 0.18, 1.0)
 
 const CHARACTER_ASSET := "res://assets/characters/player.svg"
 const FALLBACK_MONSTER_ASSET := "res://assets/monsters/fallback.svg"
@@ -68,7 +90,7 @@ const STAT_ICON_PATHS := {
 	"speed": "res://assets/icons/speed.svg",
 	"reputation": "res://assets/icons/reputation.svg",
 	"experience": "res://assets/icons/experience.svg",
-	"dungeon_experience": "res://assets/icons/experience.svg",
+	"dungeon_experience": "res://assets/icons/dungeon_experience.svg",
 }
 const STAT_COLORS := {
 	"life": "#eb8b8b",
@@ -179,8 +201,19 @@ var settings_language_label: Label
 var settings_english_button: Button
 var settings_spanish_button: Button
 var settings_back_button: Button
-var action_confirmation: ConfirmationDialog
+var action_confirmation: Control
+var confirmation_title: Label
+var confirmation_message: Label
+var confirmation_accept_button: Button
+var confirmation_cancel_button: Button
 var pending_confirmation_action: Callable
+var ad_slot: Panel
+var ad_slot_label: Label
+var current_screen: String = AdSlotConfig.SCREEN_MENU
+var safe_insets: Dictionary = {"left": 0.0, "top": 0.0, "right": 0.0, "bottom": 0.0}
+var explore_hud: MarginContainer
+var hub_level_label: Label
+var map_player_marker: Panel
 var game_result_modal: ColorRect
 var game_result_title: Label
 var game_result_message: Label
@@ -234,11 +267,14 @@ var pending_game_result_message: String = ""
 
 func _ready() -> void:
 	TranslationServer.set_locale(SettingsStore.load_locale(_get_supported_locale(), settings_path))
+	theme = UiTheme.build()
+	$Background.color = UiTheme.BACKGROUND
 	_build_runtime_ui()
 	_apply_menu_text()
 	_apply_player_stats()
 	_connect_navigation_signals()
 	_update_load_game_button()
+	get_viewport().size_changed.connect(Callable(self, "_on_viewport_size_changed"))
 	_show_main_menu_view()
 
 func _get_supported_locale() -> String:
@@ -277,17 +313,25 @@ func _apply_menu_text() -> void:
 		settings_spanish_button.text = tr(SETTINGS_SPANISH_KEY)
 	if is_instance_valid(settings_back_button):
 		settings_back_button.text = tr(SETTINGS_BACK_KEY)
-	if is_instance_valid(action_confirmation):
-		action_confirmation.get_ok_button().text = tr(CONFIRM_ACCEPT_KEY)
-		action_confirmation.get_cancel_button().text = tr(CONFIRM_CANCEL_KEY)
+	if is_instance_valid(confirmation_accept_button):
+		confirmation_accept_button.text = tr(CONFIRM_ACCEPT_KEY)
+		confirmation_cancel_button.text = tr(CONFIRM_CANCEL_KEY)
 	if is_instance_valid(game_result_continue_button):
 		game_result_continue_button.text = tr(RESULT_CONTINUE_KEY)
+	if is_instance_valid(ad_slot_label):
+		ad_slot_label.text = tr(AD_PLACEHOLDER_KEY)
+	_update_hub_header()
 
 func _apply_player_stats() -> void:
-	_populate_stat_bars(stats_column, PLAYER_STATS, player_state, false)
+	_populate_stat_bars(stats_column, PLAYER_STATS, player_state, true)
 	if is_instance_valid(exploration_stats_container):
 		_populate_stat_bars(exploration_stats_container, EXPLORATION_STATS, player_state, true)
 	_update_progression_indicator()
+	_update_hub_header()
+
+func _update_hub_header() -> void:
+	if is_instance_valid(hub_level_label):
+		hub_level_label.text = tr(HUB_LEVEL_KEY) % str(int(player_state.get("level", 1)))
 
 func _connect_navigation_signals() -> void:
 	var request_new_game := Callable(self, "_request_new_game")
@@ -359,17 +403,20 @@ func _request_exit_to_menu() -> void:
 
 func _show_confirmation(title: String, message: String, action: Callable) -> void:
 	pending_confirmation_action = action
-	action_confirmation.title = title
-	action_confirmation.dialog_text = message
-	action_confirmation.popup_centered(Vector2i(340, 220))
+	confirmation_title.text = title
+	confirmation_message.text = message
+	action_confirmation.visible = true
+	confirmation_cancel_button.grab_focus.call_deferred()
 
 func _confirm_pending_action() -> void:
+	action_confirmation.visible = false
 	var action := pending_confirmation_action
 	pending_confirmation_action = Callable()
 	if action.is_valid():
 		action.call()
 
 func _cancel_pending_action() -> void:
+	action_confirmation.visible = false
 	pending_confirmation_action = Callable()
 
 func _load_game() -> void:
@@ -395,41 +442,31 @@ func _update_load_game_button() -> void:
 		var result := SaveGame.load_player(CombatRules.create_default_player(), save_path)
 		load_game_button.disabled = not bool(result.get("success", false))
 
+## Shows exactly one screen: hides every other view and modal screen, then updates the
+## ad slot and safe-area insets for the new screen.
+func _activate_screen(view: Control, screen: String) -> void:
+	for other: Control in [main_menu_view, new_game_view, dungeon_explore_view, monster_encounter_view, settings_view, level_allocation_view, monster_info_modal]:
+		if is_instance_valid(other):
+			other.visible = false
+	if is_instance_valid(action_confirmation):
+		action_confirmation.visible = false
+	view.visible = true
+	current_screen = screen
+	_apply_layout_insets()
+
 func _show_new_game_view() -> void:
 	dungeon_exit_pending = false
-	main_menu_view.visible = false
-	new_game_view.visible = true
-	dungeon_explore_view.visible = false
-	monster_encounter_view.visible = false
-	if is_instance_valid(monster_info_modal):
-		monster_info_modal.visible = false
-	if is_instance_valid(level_allocation_view):
-		level_allocation_view.visible = false
-	if is_instance_valid(settings_view):
-		settings_view.visible = false
+	_activate_screen(new_game_view, AdSlotConfig.SCREEN_HUB)
 	_update_progression_indicator()
+	_update_hub_header()
 
 func _show_main_menu_view() -> void:
 	dungeon_exit_pending = false
-	main_menu_view.visible = true
-	new_game_view.visible = false
-	dungeon_explore_view.visible = false
-	monster_encounter_view.visible = false
-	if is_instance_valid(monster_info_modal):
-		monster_info_modal.visible = false
-	if is_instance_valid(level_allocation_view):
-		level_allocation_view.visible = false
-	if is_instance_valid(settings_view):
-		settings_view.visible = false
+	_activate_screen(main_menu_view, AdSlotConfig.SCREEN_MENU)
 	_update_load_game_button()
 
 func _show_settings_view() -> void:
-	main_menu_view.visible = false
-	new_game_view.visible = false
-	dungeon_explore_view.visible = false
-	monster_encounter_view.visible = false
-	level_allocation_view.visible = false
-	settings_view.visible = true
+	_activate_screen(settings_view, AdSlotConfig.SCREEN_SETTINGS)
 	_update_settings_view()
 
 func _select_locale(locale: String) -> void:
@@ -444,6 +481,7 @@ func _update_settings_view() -> void:
 		return
 	var locale := TranslationServer.get_locale()
 	settings_english_button.disabled = locale == LOCALE_ENGLISH
+	# Both use the SelectedButton variation: the active (disabled) language is highlighted, not dimmed.
 	settings_spanish_button.disabled = locale == LOCALE_SPANISH
 
 func start_dungeon_exploration(dungeon_type: int = 1) -> void:
@@ -515,15 +553,10 @@ func move_player(direction: String) -> void:
 		_show_monster_encounter(current_location)
 
 func _show_dungeon_explore_view() -> void:
-	main_menu_view.visible = false
-	new_game_view.visible = false
-	dungeon_explore_view.visible = true
-	monster_encounter_view.visible = false
-	if is_instance_valid(monster_info_modal):
-		monster_info_modal.visible = false
-	if is_instance_valid(level_allocation_view):
-		level_allocation_view.visible = false
+	_activate_screen(dungeon_explore_view, AdSlotConfig.SCREEN_EXPLORE)
 	_update_exploration_actions()
+	if not dungeon.is_empty():
+		_render_map()
 
 func _show_monster_encounter(location: Dictionary) -> void:
 	active_monster_location = location
@@ -533,12 +566,7 @@ func _show_monster_encounter(location: Dictionary) -> void:
 	encounter_feedback.text = ""
 	_clear_roll_displays()
 	_update_monster_info_button()
-	main_menu_view.visible = false
-	new_game_view.visible = false
-	dungeon_explore_view.visible = false
-	monster_encounter_view.visible = true
-	if is_instance_valid(level_allocation_view):
-		level_allocation_view.visible = false
+	_activate_screen(monster_encounter_view, AdSlotConfig.SCREEN_ENCOUNTER)
 
 func _can_move_to(location: Dictionary) -> bool:
 	if location.is_empty() or location.get("type") == DungeonGenerator.LOCATION_BLOCK:
@@ -571,57 +599,94 @@ func _render_map() -> void:
 	var window := _get_map_window()
 	map_grid.columns = int(window["columns"])
 	var cell_size := _get_map_cell_size()
+	map_player_marker = null
 
 	for row in range(int(window["start_row"]), int(window["end_row"]) + 1):
 		for column in range(int(window["start_column"]), int(window["end_column"]) + 1):
 			var location: Dictionary = DungeonGenerator.get_location(dungeon, column, row)
 			var cell := Control.new()
 			cell.custom_minimum_size = Vector2(cell_size, cell_size)
+			cell.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			var background := ColorRect.new()
 			background.color = _get_location_color(location)
 			background.set_anchors_preset(Control.PRESET_FULL_RECT)
+			background.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			cell.add_child(background)
 			var icon_path := _get_location_icon_path(location)
 			if icon_path != "":
 				var icon := TextureRect.new()
 				icon.name = "LocationIcon"
 				icon.texture = load(icon_path)
-				icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+				icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 				icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-				icon.custom_minimum_size = Vector2(maxi(10, cell_size - 8), maxi(10, cell_size - 8))
 				icon.set_anchors_preset(Control.PRESET_FULL_RECT)
+				var inset := maxi(4, int(cell_size * 0.16))
+				icon.offset_left = inset
+				icon.offset_top = inset
+				icon.offset_right = -inset
+				icon.offset_bottom = -inset
+				icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				cell.add_child(icon)
+			if _is_current_location(location):
+				map_player_marker = _create_player_marker()
+				cell.add_child(map_player_marker)
 			map_grid.add_child(cell)
 			map_cells.append(cell)
 
+func _is_current_location(location: Dictionary) -> bool:
+	if location.is_empty() or current_location.is_empty():
+		return false
+	return int(location["column"]) == int(current_location["column"]) and int(location["row"]) == int(current_location["row"])
+
+## A gold ring drawn over the player's cell; visible on every tile colour, including the entrance.
+func _create_player_marker() -> Panel:
+	var marker := Panel.new()
+	marker.name = "PlayerMarker"
+	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	marker.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var ring := StyleBoxFlat.new()
+	ring.bg_color = Color.TRANSPARENT
+	ring.border_color = UiTheme.ACCENT_BRIGHT
+	ring.set_border_width_all(4)
+	ring.set_corner_radius_all(6)
+	marker.add_theme_stylebox_override("panel", ring)
+	return marker
+
+## Cell size from the space left after the HUD and action area, so the map never clips and
+## does not resize when transient content (feedback text, Collect Treasure) appears.
 func _get_map_cell_size() -> int:
 	var columns: int = mini(int(dungeon["number_of_columns"]), MAP_VIEW_COLUMNS)
 	var rows: int = mini(int(dungeon["number_of_rows"]), MAP_VIEW_ROWS)
-	var viewport_size := get_viewport_rect().size
-	var available_width: float = maxf(viewport_size.x - 40.0, 280.0)
-	var available_height: float = maxf(viewport_size.y * 0.52, 280.0)
-	var width_cell_size: int = int(available_width / float(columns))
-	var height_cell_size: int = int(available_height / float(rows))
-	return clampi(mini(width_cell_size, height_cell_size), 10, 56)
+	var content := _get_content_size(false)
+	var map_area := $DungeonExploreView/MapArea as MarginContainer
+	var margin_h := map_area.get_theme_constant("margin_left") + map_area.get_theme_constant("margin_right")
+	var margin_v := map_area.get_theme_constant("margin_top") + map_area.get_theme_constant("margin_bottom")
+	var hud_height := explore_hud.get_combined_minimum_size().y if is_instance_valid(explore_hud) else 0.0
+	var actions_height := ($DungeonExploreView/ExploreActions as Control).get_combined_minimum_size().y
+	var separation := float(map_grid.get_theme_constant("h_separation"))
+	var frame := float(MAP_FRAME_PADDING * 2)
+	var available_width: float = content.x - margin_h - frame - separation * (columns - 1)
+	var available_height: float = content.y - hud_height - actions_height - margin_v - frame - separation * (rows - 1)
+	var width_cell_size: int = floori(available_width / float(columns))
+	var height_cell_size: int = floori(available_height / float(rows))
+	return clampi(mini(width_cell_size, height_cell_size), MAP_CELL_MIN, MAP_CELL_MAX)
 
 func _get_location_color(location: Dictionary) -> Color:
 	if location.is_empty() or not bool(location.get("visible", false)):
-		return Color(0.02, 0.02, 0.02, 1.0)
+		return LOCATION_COLOR_UNSEEN
 	if location["type"] == DungeonGenerator.LOCATION_ENTRANCE:
-		return Color(0.2, 0.7, 0.38, 1.0)
-	if int(location["column"]) == int(current_location["column"]) and int(location["row"]) == int(current_location["row"]):
-		return Color(0.95, 0.82, 0.28, 1.0)
-	if bool(location.get("visited", false)):
-		return Color(0.38, 0.38, 0.38, 1.0)
-	if location["type"] == DungeonGenerator.LOCATION_MONSTER:
-		return Color(0.65, 0.16, 0.16, 1.0)
+		return LOCATION_COLOR_ENTRANCE
 	if location["type"] == DungeonGenerator.LOCATION_BLOCK:
-		return Color(0.08, 0.08, 0.08, 1.0)
+		return LOCATION_COLOR_BLOCK
+	if bool(location.get("visited", false)):
+		return LOCATION_COLOR_VISITED
+	if location["type"] == DungeonGenerator.LOCATION_MONSTER:
+		return LOCATION_COLOR_MONSTER
 	if location["type"] == DungeonGenerator.LOCATION_SANCTUARY:
-		return Color(0.2, 0.7, 0.38, 1.0)
+		return LOCATION_COLOR_SANCTUARY
 	if location["type"] == DungeonGenerator.LOCATION_QUEST:
-		return Color(0.45, 0.32, 0.72, 1.0)
-	return Color(0.24, 0.2, 0.16, 1.0)
+		return LOCATION_COLOR_QUEST
+	return LOCATION_COLOR_FLOOR
 
 func _update_direction_buttons() -> void:
 	var valid := get_valid_directions()
@@ -633,6 +698,14 @@ func _update_direction_buttons() -> void:
 	move_right_button.disabled = not valid.has("right")
 	move_up_button.disabled = not valid.has("up")
 	move_down_button.disabled = not valid.has("down")
+
+func _apply_direction_icons() -> void:
+	var buttons := {"left": move_left_button, "right": move_right_button, "up": move_up_button, "down": move_down_button}
+	for direction: String in buttons:
+		var button := buttons[direction] as Button
+		button.text = ""
+		button.icon = load(String(DIRECTION_ICON_PATHS[direction]))
+		button.tooltip_text = direction.capitalize()
 
 func _update_monster_encounter() -> void:
 	var monster := active_monster_location.get("content", {}) as Dictionary
@@ -791,18 +864,19 @@ func _get_player_max_stat(stat_name: String) -> int:
 
 func _build_runtime_ui() -> void:
 	_add_character_portrait()
+	_add_hub_header()
 	_add_progression_indicator()
-	exploration_stats_container = VBoxContainer.new()
-	exploration_stats_container.name = "ExplorationStats"
-	exploration_stats_container.custom_minimum_size = Vector2(312, 110)
-	exploration_stats_container.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	exploration_stats_container.add_theme_constant_override("separation", 4)
-	$DungeonExploreView/ExploreActions/ExploreActionStack.add_child(exploration_stats_container)
+	_add_explore_hud()
+	_apply_direction_icons()
+	var map_frame_style := UiTheme.box(UiTheme.SURFACE_SUNKEN, UiTheme.BORDER, 1, 10, MAP_FRAME_PADDING, MAP_FRAME_PADDING)
+	($DungeonExploreView/MapArea/MapFrame as PanelContainer).add_theme_stylebox_override("panel", map_frame_style)
 
 	collect_treasure_button = Button.new()
 	collect_treasure_button.name = "CollectTreasureButton"
-	collect_treasure_button.custom_minimum_size = Vector2(312, 44)
-	collect_treasure_button.add_theme_font_size_override("font_size", 18)
+	collect_treasure_button.theme_type_variation = &"CompactPrimaryButton"
+	collect_treasure_button.custom_minimum_size = Vector2(0, UiTheme.BUTTON_HEIGHT)
+	collect_treasure_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	collect_treasure_button.autowrap_mode = TextServer.AUTOWRAP_WORD
 	$DungeonExploreView/ExploreActions/ExploreActionStack/ExploreSecondaryActions.add_child(collect_treasure_button)
 
 	monster_image_asset = _add_texture_child(monster_image.get_parent(), "MonsterImageAsset", FALLBACK_MONSTER_ASSET)
@@ -812,13 +886,13 @@ func _build_runtime_ui() -> void:
 	_add_monster_info_button()
 	monster_stat_bars = VBoxContainer.new()
 	monster_stat_bars.name = "MonsterStatBars"
-	monster_stat_bars.add_theme_constant_override("separation", 4)
+	monster_stat_bars.add_theme_constant_override("separation", 5)
 	monster_stats.get_parent().add_child(monster_stat_bars)
 	monster_roll_display = _create_roll_display("MonsterRollDisplay")
 	monster_stats.get_parent().add_child(monster_roll_display)
 	encounter_player_stat_bars = VBoxContainer.new()
 	encounter_player_stat_bars.name = "EncounterPlayerStatBars"
-	encounter_player_stat_bars.add_theme_constant_override("separation", 4)
+	encounter_player_stat_bars.add_theme_constant_override("separation", 5)
 	encounter_player_stats.get_parent().add_child(encounter_player_stat_bars)
 	player_roll_display = _create_roll_display("PlayerRollDisplay")
 	encounter_player_stats.get_parent().add_child(player_roll_display)
@@ -828,114 +902,281 @@ func _build_runtime_ui() -> void:
 	_add_settings_view()
 	_add_action_confirmation()
 	_add_game_result_modal()
+	_add_ad_slot()
+
+# --- App shell: safe area + reserved ad slot -------------------------------------------------
+
+func _on_viewport_size_changed() -> void:
+	_apply_layout_insets()
+	if dungeon_explore_view.visible and not dungeon.is_empty():
+		_render_map()
+
+## Safe-area insets in viewport (logical) pixels. Only meaningful on mobile; desktop
+## `get_display_safe_area()` returns the usable desktop rect, not notch insets.
+func _compute_safe_insets() -> Dictionary:
+	var insets := {"left": 0.0, "top": 0.0, "right": 0.0, "bottom": 0.0}
+	if not OS.has_feature("mobile"):
+		return insets
+	var window_size := Vector2(DisplayServer.window_get_size())
+	if window_size.x <= 0.0 or window_size.y <= 0.0:
+		return insets
+	var safe := DisplayServer.get_display_safe_area()
+	var scale := get_viewport().get_visible_rect().size / window_size
+	insets["left"] = maxf(0.0, safe.position.x * scale.x)
+	insets["top"] = maxf(0.0, safe.position.y * scale.y)
+	insets["right"] = maxf(0.0, (window_size.x - safe.end.x) * scale.x)
+	insets["bottom"] = maxf(0.0, (window_size.y - safe.end.y) * scale.y)
+	return insets
+
+func is_ad_slot_visible() -> bool:
+	return is_instance_valid(ad_slot) and ad_slot.visible
+
+## Height reserved at the bottom for the ad slot on the current screen (0 when hidden).
+func get_ad_reserved_height() -> float:
+	return float(AdSlotConfig.reserved_height()) if AdSlotConfig.allows(current_screen) else 0.0
+
+## Size of the area views may draw into (safe area minus the ad reservation).
+func _get_content_size(include_ad: bool = true) -> Vector2:
+	var size := get_viewport().get_visible_rect().size
+	var insets := _compute_safe_insets()
+	var ad_height := get_ad_reserved_height() if include_ad else 0.0
+	return Vector2(size.x - insets["left"] - insets["right"], size.y - insets["top"] - insets["bottom"] - ad_height)
+
+func _apply_layout_insets() -> void:
+	safe_insets = _compute_safe_insets()
+	var ad_height := get_ad_reserved_height()
+	var left: float = safe_insets["left"]
+	var top: float = safe_insets["top"]
+	var right: float = safe_insets["right"]
+	var bottom: float = safe_insets["bottom"]
+	# Screens: content stays inside the safe area and above the ad slot.
+	for view: Control in [main_menu_view, new_game_view, dungeon_explore_view, monster_encounter_view, settings_view, level_allocation_view]:
+		if is_instance_valid(view):
+			_set_inset_offsets(view, left, top, right, bottom + ad_height)
+	# Overlays: dim the whole screen except the banner, so the banner is never covered.
+	for overlay: Control in [monster_info_modal, damage_overlay, action_confirmation, game_result_modal]:
+		if is_instance_valid(overlay):
+			_set_inset_offsets(overlay, 0.0, 0.0, 0.0, bottom + ad_height)
+	if is_instance_valid(ad_slot):
+		ad_slot.visible = ad_height > 0.0
+		ad_slot.offset_left = left
+		ad_slot.offset_right = -right
+		ad_slot.offset_top = -(bottom + AdSlotConfig.height)
+		ad_slot.offset_bottom = -bottom
+
+func _set_inset_offsets(control: Control, left: float, top: float, right: float, bottom: float) -> void:
+	control.set_anchors_preset(Control.PRESET_FULL_RECT)
+	control.offset_left = left
+	control.offset_top = top
+	control.offset_right = -right
+	control.offset_bottom = -bottom
+
+## Bottom banner reservation. No SDK yet: debug builds show a labelled placeholder,
+## release builds an empty strip that a banner plugin will draw over.
+func _add_ad_slot() -> void:
+	ad_slot = Panel.new()
+	ad_slot.name = "AdSlot"
+	ad_slot.theme_type_variation = &"AdSlotPanel"
+	ad_slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ad_slot.anchor_left = 0.0
+	ad_slot.anchor_right = 1.0
+	ad_slot.anchor_top = 1.0
+	ad_slot.anchor_bottom = 1.0
+	add_child(ad_slot)
+	ad_slot_label = Label.new()
+	ad_slot_label.name = "Placeholder"
+	ad_slot_label.theme_type_variation = &"CaptionLabel"
+	ad_slot_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ad_slot_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	ad_slot_label.set_anchors_preset(Control.PRESET_FULL_RECT)
+	ad_slot_label.text = tr(AD_PLACEHOLDER_KEY)
+	ad_slot_label.visible = OS.is_debug_build()
+	ad_slot_label.add_theme_color_override("font_color", Color(UiTheme.TEXT_DISABLED, 0.8))
+	ad_slot.add_child(ad_slot_label)
+
+# --- Modals -------------------------------------------------------------------------------
+
+## Full-screen scrim with a centred dialog card. Returns the card's content VBox.
+func _create_modal(node_name: String, scrim_color: Color = UiTheme.SCRIM) -> Dictionary:
+	var scrim := ColorRect.new()
+	scrim.name = node_name
+	scrim.color = scrim_color
+	scrim.visible = false
+	scrim.mouse_filter = Control.MOUSE_FILTER_STOP
+	scrim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(scrim)
+	var margin := MarginContainer.new()
+	margin.name = "Margin"
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side: String in ["left", "right"]:
+		margin.add_theme_constant_override("margin_%s" % side, UiTheme.SCREEN_GUTTER)
+	for side: String in ["top", "bottom"]:
+		margin.add_theme_constant_override("margin_%s" % side, 24)
+	scrim.add_child(margin)
+	var card := PanelContainer.new()
+	card.name = "Card"
+	card.theme_type_variation = &"DialogPanel"
+	card.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	margin.add_child(card)
+	var content := VBoxContainer.new()
+	content.name = "Content"
+	content.add_theme_constant_override("separation", 14)
+	card.add_child(content)
+	return {"root": scrim, "card": card, "content": content}
+
+func _create_label(node_name: String, variation: StringName = &"", wrap: bool = true) -> Label:
+	var label := Label.new()
+	label.name = node_name
+	label.theme_type_variation = variation
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	if wrap:
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	return label
+
+func _create_button(node_name: String, variation: StringName = &"", height: int = UiTheme.BUTTON_HEIGHT) -> Button:
+	var button := Button.new()
+	button.name = node_name
+	button.theme_type_variation = variation
+	button.custom_minimum_size = Vector2(0, height)
+	button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	return button
 
 func _add_action_confirmation() -> void:
-	action_confirmation = ConfirmationDialog.new()
-	action_confirmation.name = "ActionConfirmation"
-	action_confirmation.initial_position = Window.WINDOW_INITIAL_POSITION_CENTER_PRIMARY_SCREEN
-	action_confirmation.confirmed.connect(Callable(self, "_confirm_pending_action"))
-	action_confirmation.canceled.connect(Callable(self, "_cancel_pending_action"))
-	add_child(action_confirmation)
+	var modal := _create_modal("ActionConfirmation")
+	action_confirmation = modal["root"]
+	var content: VBoxContainer = modal["content"]
+	confirmation_title = _create_label("Title", &"HeaderLabel")
+	content.add_child(confirmation_title)
+	confirmation_message = _create_label("Message")
+	content.add_child(confirmation_message)
+	var actions := HBoxContainer.new()
+	actions.name = "Actions"
+	actions.add_theme_constant_override("separation", 10)
+	content.add_child(actions)
+	# Cancel first and neutral; the accepting action is the emphasised one on the right.
+	confirmation_cancel_button = _create_button("CancelButton")
+	confirmation_cancel_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	confirmation_cancel_button.pressed.connect(Callable(self, "_cancel_pending_action"))
+	actions.add_child(confirmation_cancel_button)
+	confirmation_accept_button = _create_button("AcceptButton", &"PrimaryButton")
+	confirmation_accept_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	confirmation_accept_button.pressed.connect(Callable(self, "_confirm_pending_action"))
+	actions.add_child(confirmation_accept_button)
 
 func _add_game_result_modal() -> void:
-	game_result_modal = ColorRect.new()
-	game_result_modal.name = "GameResultModal"
-	game_result_modal.color = Color(0.025, 0.02, 0.018, 0.96)
-	game_result_modal.visible = false
-	game_result_modal.mouse_filter = Control.MOUSE_FILTER_STOP
-	game_result_modal.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(game_result_modal)
-
-	var panel := VBoxContainer.new()
-	panel.name = "ResultPanel"
-	panel.anchor_left = 0.10
-	panel.anchor_top = 0.25
-	panel.anchor_right = 0.90
-	panel.anchor_bottom = 0.75
-	panel.add_theme_constant_override("separation", 18)
-	game_result_modal.add_child(panel)
-
-	game_result_title = Label.new()
-	game_result_title.name = "Title"
-	game_result_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	game_result_title.add_theme_font_size_override("font_size", 28)
-	panel.add_child(game_result_title)
-
-	game_result_message = Label.new()
-	game_result_message.name = "Message"
-	game_result_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	game_result_message.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	game_result_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	var modal := _create_modal("GameResultModal", Color(UiTheme.BACKGROUND, 0.96))
+	game_result_modal = modal["root"]
+	var content: VBoxContainer = modal["content"]
+	content.name = "ResultPanel"
+	content.add_theme_constant_override("separation", 18)
+	game_result_title = _create_label("Title", &"TitleLabel")
+	content.add_child(game_result_title)
+	game_result_message = _create_label("Message")
 	game_result_message.add_theme_font_size_override("font_size", 18)
-	game_result_message.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	panel.add_child(game_result_message)
-
-	game_result_continue_button = Button.new()
-	game_result_continue_button.name = "ContinueButton"
-	game_result_continue_button.custom_minimum_size = Vector2(248, 46)
+	content.add_child(game_result_message)
+	game_result_continue_button = _create_button("ContinueButton", &"PrimaryButton", UiTheme.PRIMARY_HEIGHT)
 	game_result_continue_button.pressed.connect(Callable(self, "_hide_game_result"))
-	panel.add_child(game_result_continue_button)
+	content.add_child(game_result_continue_button)
 
 func _show_game_result(title: String, message: String) -> void:
 	game_result_title.text = title
 	game_result_message.text = message
 	game_result_modal.visible = true
+	_apply_layout_insets()
 
 func _hide_game_result() -> void:
 	game_result_modal.visible = false
 
-func _add_settings_view() -> void:
-	settings_view = Control.new()
-	settings_view.name = "SettingsView"
-	settings_view.visible = false
-	settings_view.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(settings_view)
-
+## Full-rect screen with the theme background and a centred, width-limited column.
+func _create_screen(node_name: String) -> Dictionary:
+	var screen := Control.new()
+	screen.name = node_name
+	screen.visible = false
+	screen.set_anchors_preset(Control.PRESET_FULL_RECT)
+	add_child(screen)
 	var background := ColorRect.new()
 	background.name = "Background"
-	background.color = Color(0.05, 0.04, 0.035, 1.0)
+	background.color = UiTheme.BACKGROUND
 	background.set_anchors_preset(Control.PRESET_FULL_RECT)
-	settings_view.add_child(background)
+	screen.add_child(background)
+	var margin := MarginContainer.new()
+	margin.name = "Margin"
+	margin.set_anchors_preset(Control.PRESET_FULL_RECT)
+	for side: String in ["left", "right"]:
+		margin.add_theme_constant_override("margin_%s" % side, UiTheme.SCREEN_GUTTER)
+	margin.add_theme_constant_override("margin_top", 24)
+	margin.add_theme_constant_override("margin_bottom", 16)
+	screen.add_child(margin)
+	return {"root": screen, "margin": margin}
 
+func _add_settings_view() -> void:
+	var screen := _create_screen("SettingsView")
+	settings_view = screen["root"]
 	var panel := VBoxContainer.new()
 	panel.name = "SettingsPanel"
-	panel.anchor_left = 0.12
-	panel.anchor_top = 0.18
-	panel.anchor_right = 0.88
-	panel.anchor_bottom = 0.82
+	panel.alignment = BoxContainer.ALIGNMENT_CENTER
 	panel.add_theme_constant_override("separation", 14)
-	settings_view.add_child(panel)
+	(screen["margin"] as MarginContainer).add_child(panel)
 
-	settings_title = Label.new()
-	settings_title.name = "Title"
-	settings_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	settings_title.add_theme_font_size_override("font_size", 26)
+	settings_title = _create_label("Title", &"TitleLabel", false)
 	panel.add_child(settings_title)
 
-	settings_language_label = Label.new()
-	settings_language_label.name = "LanguageLabel"
-	settings_language_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	settings_language_label.add_theme_font_size_override("font_size", 18)
-	panel.add_child(settings_language_label)
+	var card := PanelContainer.new()
+	card.name = "LanguageCard"
+	card.theme_type_variation = &"CardPanel"
+	panel.add_child(card)
+	var card_content := VBoxContainer.new()
+	card_content.add_theme_constant_override("separation", 10)
+	card.add_child(card_content)
 
-	settings_english_button = Button.new()
-	settings_english_button.name = "EnglishButton"
-	settings_english_button.custom_minimum_size = Vector2(248, 46)
+	settings_language_label = _create_label("LanguageLabel", &"CaptionLabel", false)
+	settings_language_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	card_content.add_child(settings_language_label)
+
+	settings_english_button = _create_button("EnglishButton", &"SelectedButton")
 	settings_english_button.pressed.connect(Callable(self, "_select_locale").bind(LOCALE_ENGLISH))
-	panel.add_child(settings_english_button)
+	card_content.add_child(settings_english_button)
 
-	settings_spanish_button = Button.new()
-	settings_spanish_button.name = "SpanishButton"
-	settings_spanish_button.custom_minimum_size = Vector2(248, 46)
+	settings_spanish_button = _create_button("SpanishButton", &"SelectedButton")
 	settings_spanish_button.pressed.connect(Callable(self, "_select_locale").bind(LOCALE_SPANISH))
-	panel.add_child(settings_spanish_button)
+	card_content.add_child(settings_spanish_button)
 
-	settings_back_button = Button.new()
-	settings_back_button.name = "BackButton"
-	settings_back_button.custom_minimum_size = Vector2(248, 46)
+	settings_back_button = _create_button("BackButton")
 	settings_back_button.pressed.connect(Callable(self, "_show_main_menu_view"))
 	panel.add_child(settings_back_button)
 	_update_settings_view()
+
+func _add_hub_header() -> void:
+	var header := MarginContainer.new()
+	header.name = "HubHeader"
+	header.add_theme_constant_override("margin_left", 16)
+	header.add_theme_constant_override("margin_right", 16)
+	header.add_theme_constant_override("margin_top", 12)
+	header.add_theme_constant_override("margin_bottom", 0)
+	new_game_view.add_child(header)
+	new_game_view.move_child(header, 0)
+	hub_level_label = _create_label("LevelLabel", &"TitleLabel", false)
+	hub_level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	header.add_child(hub_level_label)
+
+## Survival stats as a compact HUD above the map, so the bottom third holds only controls.
+func _add_explore_hud() -> void:
+	explore_hud = MarginContainer.new()
+	explore_hud.name = "ExploreHud"
+	explore_hud.add_theme_constant_override("margin_left", 16)
+	explore_hud.add_theme_constant_override("margin_right", 16)
+	explore_hud.add_theme_constant_override("margin_top", 12)
+	explore_hud.add_theme_constant_override("margin_bottom", 0)
+	dungeon_explore_view.add_child(explore_hud)
+	dungeon_explore_view.move_child(explore_hud, 0)
+	var card := PanelContainer.new()
+	card.name = "Card"
+	card.theme_type_variation = &"CardPanel"
+	explore_hud.add_child(card)
+	exploration_stats_container = VBoxContainer.new()
+	exploration_stats_container.name = "ExplorationStats"
+	exploration_stats_container.add_theme_constant_override("separation", 4)
+	card.add_child(exploration_stats_container)
 
 func _add_character_portrait() -> void:
 	character_placeholder.visible = false
@@ -974,7 +1215,9 @@ func _add_texture_child(parent: Node, node_name: String, texture_path: String) -
 	var texture_rect := TextureRect.new()
 	texture_rect.name = node_name
 	texture_rect.texture = load(texture_path)
-	texture_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	# IGNORE_SIZE: the layout decides the width and the art scales to fit. FIT_WIDTH_PROPORTIONAL
+	# derived the minimum width from the slot height, pushing the stats column off narrow screens.
+	texture_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	texture_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	texture_rect.custom_minimum_size = Vector2(132, 180)
 	texture_rect.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -986,78 +1229,47 @@ func _add_monster_info_button() -> void:
 	monster_info_button = Button.new()
 	monster_info_button.name = "MonsterInfoButton"
 	monster_info_button.text = tr(MONSTER_INFO_KEY)
-	monster_info_button.custom_minimum_size = Vector2(34, 34)
+	monster_info_button.theme_type_variation = &"IconButton"
+	var size := UiTheme.ICON_BUTTON_SIZE
+	monster_info_button.custom_minimum_size = Vector2(size, size)
 	monster_info_button.anchor_left = 1.0
 	monster_info_button.anchor_right = 1.0
 	monster_info_button.anchor_top = 0.0
 	monster_info_button.anchor_bottom = 0.0
-	monster_info_button.offset_left = -40
-	monster_info_button.offset_right = -6
-	monster_info_button.offset_top = 6
-	monster_info_button.offset_bottom = 40
-	monster_info_button.add_theme_stylebox_override("normal", _create_circular_button_style(Color(0.11, 0.13, 0.16, 1.0)))
-	monster_info_button.add_theme_stylebox_override("hover", _create_circular_button_style(Color(0.18, 0.21, 0.26, 1.0)))
-	monster_info_button.add_theme_stylebox_override("pressed", _create_circular_button_style(Color(0.07, 0.09, 0.12, 1.0)))
-	monster_info_button.add_theme_stylebox_override("disabled", _create_circular_button_style(Color(0.11, 0.13, 0.16, 0.55)))
+	monster_info_button.offset_left = -size
+	monster_info_button.offset_right = 0
+	monster_info_button.offset_top = 0
+	monster_info_button.offset_bottom = size
 	monster_info_button.visible = false
 	monster_info_button.pressed.connect(Callable(self, "_show_monster_info"))
 	monster_image_asset.add_child(monster_info_button)
 
 func _add_monster_info_modal() -> void:
-	monster_info_modal = ColorRect.new()
-	monster_info_modal.name = "MonsterInfoModal"
-	monster_info_modal.color = Color(0.04, 0.035, 0.03, 1.0)
-	monster_info_modal.visible = false
-	monster_info_modal.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(monster_info_modal)
-
-	var panel := VBoxContainer.new()
+	# Opaque scrim: the monster info screen fully replaces the encounter visually.
+	var modal := _create_modal("MonsterInfoModal", UiTheme.BACKGROUND)
+	monster_info_modal = modal["root"]
+	var panel: VBoxContainer = modal["content"]
 	panel.name = "Panel"
-	panel.anchor_left = 0.08
-	panel.anchor_top = 0.18
-	panel.anchor_right = 0.92
-	panel.anchor_bottom = 0.82
-	panel.add_theme_constant_override("separation", 10)
-	monster_info_modal.add_child(panel)
 
-	var title := Label.new()
-	title.name = "Title"
+	var title := _create_label("Title", &"HeaderLabel")
 	title.text = tr(MONSTER_ATTACKS_TITLE_KEY)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 20)
 	panel.add_child(title)
 
-	monster_info_text = Label.new()
-	monster_info_text.name = "AttackList"
-	monster_info_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	monster_info_text.add_theme_font_size_override("font_size", 14)
+	monster_info_text = _create_label("AttackList")
+	monster_info_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	panel.add_child(monster_info_text)
 
-	var close_button := Button.new()
-	close_button.name = "CloseButton"
-	close_button.text = "OK"
-	close_button.custom_minimum_size = Vector2(180, 38)
+	var close_button := _create_button("CloseButton", &"PrimaryButton")
+	close_button.text = tr(MONSTER_INFO_CLOSE_KEY)
 	close_button.pressed.connect(Callable(self, "_hide_monster_info"))
 	panel.add_child(close_button)
-
-func _create_circular_button_style(color: Color) -> StyleBoxFlat:
-	var style := StyleBoxFlat.new()
-	style.bg_color = color
-	style.corner_radius_top_left = 17
-	style.corner_radius_top_right = 17
-	style.corner_radius_bottom_left = 17
-	style.corner_radius_bottom_right = 17
-	style.content_margin_left = 0
-	style.content_margin_right = 0
-	style.content_margin_top = 0
-	style.content_margin_bottom = 0
-	return style
 
 func _add_damage_overlay() -> void:
 	damage_overlay = ColorRect.new()
 	damage_overlay.name = "DamageOverlay"
 	damage_overlay.color = Color(0, 0, 0, 0.72)
-	damage_overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Blocks taps so a feedback flash cannot trigger the action buttons underneath.
+	damage_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
 	damage_overlay.visible = false
 	damage_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(damage_overlay)
@@ -1082,73 +1294,72 @@ func _add_damage_overlay() -> void:
 	damage_overlay_text.name = "DamageOverlayText"
 	damage_overlay_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	damage_overlay_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	damage_overlay_text.add_theme_font_size_override("font_size", 22)
+	damage_overlay_text.add_theme_font_size_override("font_size", 24)
+	damage_overlay_text.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
+	damage_overlay_text.add_theme_constant_override("outline_size", 6)
+	damage_overlay_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	damage_overlay_text.anchor_left = 0.0
-	damage_overlay_text.anchor_top = 0.78
+	damage_overlay_text.anchor_top = 0.66
 	damage_overlay_text.anchor_right = 1.0
-	damage_overlay_text.anchor_bottom = 0.9
+	damage_overlay_text.anchor_bottom = 0.8
 	damage_overlay_text.offset_left = 24
 	damage_overlay_text.offset_right = -24
 	damage_overlay.add_child(damage_overlay_text)
 
 func _add_level_allocation_view() -> void:
-	level_allocation_view = Control.new()
-	level_allocation_view.name = "LevelAllocationView"
-	level_allocation_view.visible = false
-	level_allocation_view.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(level_allocation_view)
+	var screen := _create_screen("LevelAllocationView")
+	level_allocation_view = screen["root"]
+	var layout := VBoxContainer.new()
+	layout.name = "Layout"
+	layout.add_theme_constant_override("separation", 12)
+	(screen["margin"] as MarginContainer).add_child(layout)
 
-	var background := ColorRect.new()
-	background.name = "Background"
-	background.color = Color(0.05, 0.04, 0.035, 1.0)
-	background.set_anchors_preset(Control.PRESET_FULL_RECT)
-	level_allocation_view.add_child(background)
+	var title := _create_label("Title", &"TitleLabel", false)
+	title.text = tr(ALLOCATION_TITLE_KEY)
+	layout.add_child(title)
 
+	allocation_remaining_label = _create_label("RemainingPoints", &"HeaderLabel")
+	allocation_remaining_label.add_theme_color_override("font_color", UiTheme.ACCENT_BRIGHT)
+	layout.add_child(allocation_remaining_label)
+
+	# Rows and class choices scroll, so the actions stay reachable on short screens.
+	var scroll := ScrollContainer.new()
+	scroll.name = "Scroll"
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	layout.add_child(scroll)
 	var panel := VBoxContainer.new()
 	panel.name = "AllocationPanel"
-	panel.anchor_left = 0.08
-	panel.anchor_top = 0.10
-	panel.anchor_right = 0.92
-	panel.anchor_bottom = 0.92
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	panel.add_theme_constant_override("separation", 10)
-	level_allocation_view.add_child(panel)
-
-	var title := Label.new()
-	title.name = "Title"
-	title.text = tr(ALLOCATION_TITLE_KEY)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 24)
-	panel.add_child(title)
-
-	allocation_remaining_label = Label.new()
-	allocation_remaining_label.name = "RemainingPoints"
-	allocation_remaining_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	allocation_remaining_label.add_theme_font_size_override("font_size", 16)
-	panel.add_child(allocation_remaining_label)
+	scroll.add_child(panel)
 
 	allocation_buttons_container = VBoxContainer.new()
 	allocation_buttons_container.name = "StatButtons"
-	allocation_buttons_container.add_theme_constant_override("separation", 6)
+	allocation_buttons_container.add_theme_constant_override("separation", 8)
 	panel.add_child(allocation_buttons_container)
 
 	class_choice_container = VBoxContainer.new()
 	class_choice_container.name = "ClassChoices"
-	class_choice_container.add_theme_constant_override("separation", 6)
+	class_choice_container.add_theme_constant_override("separation", 8)
 	panel.add_child(class_choice_container)
 
-	allocation_confirm_button = Button.new()
-	allocation_confirm_button.name = "ConfirmAllocationButton"
-	allocation_confirm_button.text = tr(ALLOCATION_CONFIRM_KEY)
-	allocation_confirm_button.custom_minimum_size = Vector2(260, 42)
-	allocation_confirm_button.pressed.connect(Callable(self, "_confirm_level_allocation"))
-	panel.add_child(allocation_confirm_button)
+	var actions := HBoxContainer.new()
+	actions.name = "Actions"
+	actions.add_theme_constant_override("separation", 10)
+	layout.add_child(actions)
 
-	var back_button := Button.new()
-	back_button.name = "BackButton"
+	var back_button := _create_button("BackButton")
 	back_button.text = tr(ALLOCATION_BACK_KEY)
-	back_button.custom_minimum_size = Vector2(260, 42)
+	back_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	back_button.pressed.connect(Callable(self, "_show_new_game_view"))
-	panel.add_child(back_button)
+	actions.add_child(back_button)
+
+	allocation_confirm_button = _create_button("ConfirmAllocationButton", &"PrimaryButton", UiTheme.PRIMARY_HEIGHT)
+	allocation_confirm_button.text = tr(ALLOCATION_CONFIRM_KEY)
+	allocation_confirm_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	allocation_confirm_button.pressed.connect(Callable(self, "_confirm_level_allocation"))
+	actions.add_child(allocation_confirm_button)
 
 func _populate_stat_bars(container: Control, stats: Array, source: Dictionary, compact: bool) -> void:
 	for child: Node in container.get_children():
@@ -1165,38 +1376,44 @@ func _create_stat_bar(stat: Dictionary, source: Dictionary, compact: bool) -> HB
 	var stat_color := _get_stat_color(stat_key)
 	var row := HBoxContainer.new()
 	row.name = "%sStatBar" % String(stat["name"])
-	row.custom_minimum_size = Vector2(0, 22)
+	row.custom_minimum_size = Vector2(0, 24)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_theme_constant_override("separation", 6)
 	var icon := TextureRect.new()
 	icon.name = "Icon"
 	icon.texture = load(String(STAT_ICON_PATHS.get(stat_key, STAT_ICON_PATHS["life"])))
 	icon.modulate = stat_color
-	icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.custom_minimum_size = Vector2(18, 18)
+	icon.custom_minimum_size = Vector2(20, 20)
 	row.add_child(icon)
 	if stat.has("label_key"):
 		var stat_label := Label.new()
 		stat_label.name = "Label"
 		stat_label.text = tr(String(stat["label_key"]))
-		stat_label.custom_minimum_size = Vector2(72 if compact else 92, 0)
-		stat_label.add_theme_font_size_override("font_size", 10 if compact else 11)
+		stat_label.custom_minimum_size = Vector2(82 if compact else 96, 0)
+		stat_label.add_theme_font_size_override("font_size", UiTheme.FONT_STAT)
+		stat_label.add_theme_color_override("font_color", UiTheme.TEXT_MUTED)
 		stat_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		stat_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 		row.add_child(stat_label)
 	var bar := ProgressBar.new()
 	bar.name = "Bar"
 	bar.show_percentage = false
 	bar.max_value = maximum
 	bar.value = clamped_current
-	bar.custom_minimum_size = Vector2(82 if compact else 96, 22)
+	bar.custom_minimum_size = Vector2(72 if compact else 96, 24)
 	bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bar.add_theme_stylebox_override("fill", _create_stat_stylebox(stat_color))
-	bar.add_theme_stylebox_override("background", _create_stat_stylebox(Color(0.07, 0.07, 0.07, 1.0)))
+	bar.add_theme_stylebox_override("background", _create_stat_stylebox(UiTheme.SURFACE_SUNKEN))
 	var value := Label.new()
 	value.name = "Value"
 	value.text = "%s/%s" % [str(maxi(0, current)), str(maximum)]
-	value.add_theme_font_size_override("font_size", 11 if compact else 12)
+	value.add_theme_font_size_override("font_size", UiTheme.FONT_STAT_VALUE)
+	# White text with a dark outline stays readable on pastel fills and on the dark empty segment.
+	value.add_theme_color_override("font_color", Color.WHITE)
+	value.add_theme_color_override("font_outline_color", Color(0.05, 0.03, 0.02, 0.95))
+	value.add_theme_constant_override("outline_size", 5)
 	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	value.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	value.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -1233,11 +1450,7 @@ func _show_level_allocation_view() -> void:
 	staged_allocation = {}
 	for stat_variant: Variant in CombatRules.STAT_GROWTH.keys():
 		staged_allocation[String(stat_variant)] = 0
-	main_menu_view.visible = false
-	new_game_view.visible = false
-	dungeon_explore_view.visible = false
-	monster_encounter_view.visible = false
-	level_allocation_view.visible = true
+	_activate_screen(level_allocation_view, AdSlotConfig.SCREEN_LEVEL_UP)
 	_update_progression_indicator()
 	_update_level_allocation_view()
 
@@ -1293,7 +1506,7 @@ func _rebuild_allocation_rows(reserved_points: int, remaining: int) -> void:
 func _create_allocation_row(stat_key: String, reserved_points: int, remaining: int) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.name = "%sAllocationRow" % stat_key.capitalize()
-	row.custom_minimum_size = Vector2(0, 36)
+	row.custom_minimum_size = Vector2(0, UiTheme.TOUCH_MIN)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_theme_constant_override("separation", 6)
 
@@ -1306,15 +1519,18 @@ func _create_allocation_row(stat_key: String, reserved_points: int, remaining: i
 	var points_label := Label.new()
 	points_label.name = "PointsLabel"
 	points_label.text = "+%s" % str(int(staged_allocation.get(stat_key, 0)))
-	points_label.custom_minimum_size = Vector2(32, 24)
+	points_label.custom_minimum_size = Vector2(34, 24)
 	points_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	points_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	points_label.add_theme_color_override("font_color", UiTheme.ACCENT_BRIGHT if int(staged_allocation.get(stat_key, 0)) > 0 else UiTheme.TEXT_MUTED)
 	row.add_child(points_label)
 
 	var minus_button := Button.new()
 	minus_button.name = "MinusButton"
-	minus_button.text = "-"
-	minus_button.custom_minimum_size = Vector2(36, 30)
+	minus_button.text = "−"
+	minus_button.theme_type_variation = &"IconButton"
+	minus_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	minus_button.custom_minimum_size = Vector2(UiTheme.ICON_BUTTON_SIZE, UiTheme.ICON_BUTTON_SIZE)
 	minus_button.disabled = reserved_points <= 0 or int(staged_allocation.get(stat_key, 0)) <= 0
 	minus_button.pressed.connect(Callable(self, "_stage_level_point_delta").bind(stat_key, -1), CONNECT_DEFERRED)
 	row.add_child(minus_button)
@@ -1322,7 +1538,9 @@ func _create_allocation_row(stat_key: String, reserved_points: int, remaining: i
 	var plus_button := Button.new()
 	plus_button.name = "PlusButton"
 	plus_button.text = "+"
-	plus_button.custom_minimum_size = Vector2(36, 30)
+	plus_button.theme_type_variation = &"IconButton"
+	plus_button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	plus_button.custom_minimum_size = Vector2(UiTheme.ICON_BUTTON_SIZE, UiTheme.ICON_BUTTON_SIZE)
 	plus_button.disabled = reserved_points <= 0 or remaining <= 0
 	plus_button.pressed.connect(Callable(self, "_stage_level_point_delta").bind(stat_key, 1), CONNECT_DEFERRED)
 	row.add_child(plus_button)
@@ -1347,17 +1565,12 @@ func _rebuild_class_choices() -> void:
 		class_choice_container.visible = false
 		return
 	class_choice_container.visible = true
-	var title := Label.new()
-	title.name = "ClassChoiceTitle"
+	var title := _create_label("ClassChoiceTitle", &"HeaderLabel")
 	title.text = tr(CLASS_CHOICE_TITLE_KEY)
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 16)
 	class_choice_container.add_child(title)
 	for player_class: Dictionary in CombatRules.load_player_classes():
-		var button := Button.new()
-		button.name = "%sClassButton" % String(player_class.get("id", "class")).capitalize()
+		var button := _create_button("%sClassButton" % String(player_class.get("id", "class")).capitalize())
 		button.text = String(player_class.get("name", player_class.get("id", "Class")))
-		button.custom_minimum_size = Vector2(260, 36)
 		button.pressed.connect(Callable(self, "_select_player_class").bind(String(player_class.get("id", ""))), CONNECT_DEFERRED)
 		class_choice_container.add_child(button)
 
@@ -1572,15 +1785,15 @@ func _format_combat_feedback(result: Dictionary) -> String:
 		return tr(String(result.get("message_key", "COMBAT_INSUFFICIENT_RESOURCES")))
 	var parts: Array[String] = []
 	if bool(result.get("critical", false)):
-		parts.append("Your attack was a critical hit.")
+		parts.append(tr("COMBAT_FEEDBACK_PLAYER_CRITICAL"))
 	elif bool(result.get("hit", false)):
-		parts.append("Your attack hit.")
+		parts.append(tr("COMBAT_FEEDBACK_PLAYER_HIT"))
 	elif bool(result.get("dodged", false)):
-		parts.append("Your attack was dodged.")
+		parts.append(tr("COMBAT_FEEDBACK_PLAYER_DODGED"))
 	elif bool(result.get("miss", false)):
-		parts.append("Your attack was protected.")
+		parts.append(tr("COMBAT_FEEDBACK_PLAYER_PROTECTED"))
 	else:
-		parts.append("Your attack missed.")
+		parts.append(tr("COMBAT_FEEDBACK_PLAYER_MISSED"))
 
 	var monster_attack_name := String(result.get("monster_attack_name", ""))
 	if monster_attack_name != "":
@@ -1598,14 +1811,14 @@ func _format_flee_feedback(result: Dictionary) -> String:
 
 func _format_monster_attack_feedback(attack_name: String, result: Dictionary) -> String:
 	if bool(result.get("counterattack_critical", false)):
-		return "%s was a critical hit." % attack_name
+		return tr("COMBAT_FEEDBACK_MONSTER_CRITICAL") % attack_name
 	if bool(result.get("counterattack_hit", false)):
-		return "%s hit you." % attack_name
+		return tr("COMBAT_FEEDBACK_MONSTER_HIT") % attack_name
 	if bool(result.get("counterattack_dodged", false)):
-		return "%s was dodged." % attack_name
+		return tr("COMBAT_FEEDBACK_MONSTER_DODGED") % attack_name
 	if bool(result.get("counterattack_miss", false)):
-		return "%s was protected." % attack_name
-	return "%s missed." % attack_name
+		return tr("COMBAT_FEEDBACK_MONSTER_PROTECTED") % attack_name
+	return tr("COMBAT_FEEDBACK_MONSTER_MISSED") % attack_name
 
 func _update_monster_info_button() -> void:
 	if not is_instance_valid(monster_info_button):
@@ -1626,7 +1839,7 @@ func _show_monster_info() -> void:
 		var effect_ids := PackedStringArray()
 		for effect_variant: Variant in effects:
 			effect_ids.append(String(effect_variant))
-		var effect_text := "none" if effect_ids.is_empty() else ", ".join(effect_ids)
+		var effect_text := tr("ENCOUNTER_MONSTER_NO_EFFECTS") if effect_ids.is_empty() else ", ".join(effect_ids)
 		lines.append(tr(MONSTER_ATTACK_LINE_KEY) % [
 			String(attack.get("name", "Attack")),
 			str(int(attack.get("damage", 0))),
@@ -1635,7 +1848,7 @@ func _show_monster_info() -> void:
 			effect_text,
 		])
 	if lines.is_empty():
-		lines.append("No attacks")
+		lines.append(tr("ENCOUNTER_MONSTER_NO_ATTACKS"))
 	monster_info_text.text = "\n".join(lines)
 	monster_info_modal.visible = true
 

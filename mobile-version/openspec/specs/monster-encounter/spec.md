@@ -1,8 +1,10 @@
 # monster-encounter Specification
 
 ## Purpose
-TBD - created by archiving change explore-dungeon. Update Purpose after archive.
+Describe the encounter view entered from a monster location and the feedback shown while fighting.
+
 ## Requirements
+
 ### Requirement: Encounter view shows monster and player details
 The monster encounter view SHALL show the living monster and the player characteristics in the upper portion of the screen using image assets and icon stat bars.
 
@@ -40,7 +42,7 @@ The monster encounter view SHALL show available player attacks and a flee action
 - **THEN** the player can attempt to flee again
 
 ### Requirement: Attacking can defeat monster
-The monster encounter view SHALL use combat rules to reduce monster life, damage the player when applicable, grant experience, show damage feedback when the player is damaged, and mark the monster defeated when life reaches zero.
+The monster encounter view SHALL use combat rules to reduce monster life, damage the player when applicable, grant experience, show damage feedback when the player is damaged, explain combat outcomes, and mark the monster defeated when life reaches zero.
 
 #### Scenario: Monster defeated by attack
 - **WHEN** the user selects an attack and combat reduces monster life to zero or less
@@ -63,7 +65,8 @@ The monster encounter view SHALL use combat rules to reduce monster life, damage
 
 #### Scenario: Attack depletes player during encounter
 - **WHEN** combat reduces player current life or current energy to zero or less
-- **THEN** the app exits the dungeon run
+- **THEN** the app shows a depletion notification before leaving the encounter
+- **THEN** the app exits the dungeon run after the notification
 - **THEN** the active monster encounter closes
 - **THEN** the player loses current experience gained during the dungeon run
 
@@ -84,3 +87,50 @@ The monster encounter view SHALL allow the player to flee from a monster encount
 - **THEN** the monster location remains unvisited
 - **THEN** returning to that location starts the monster encounter again
 
+### Requirement: Combat feedback explains outcomes
+The monster encounter view SHALL show readable combat feedback instead of raw D20 roll readouts below actor statistics.
+
+#### Scenario: Player attack result is explained
+- **WHEN** the player performs an attack
+- **THEN** the encounter feedback identifies the player attack outcome as hit, critical hit, protected or blocked, missed, or dodged
+
+#### Scenario: Monster attack result is explained
+- **WHEN** the monster performs a counterattack
+- **THEN** the encounter feedback identifies the monster attack name
+- **THEN** the encounter feedback identifies whether the monster attack hit, was protected or blocked, missed, or was dodged
+
+#### Scenario: Raw dice values are not shown under stats
+- **WHEN** combat resolves player or monster rolls
+- **THEN** the encounter view does not show raw D20 roll values below the player statistics
+- **THEN** the encounter view does not show raw D20 roll values below the monster statistics
+
+### Requirement: Monster attack information is available
+The monster encounter view SHALL provide an information control for inspecting the active monster's attacks.
+
+#### Scenario: Monster info control is visible
+- **WHEN** the player is in an active monster encounter
+- **THEN** an information button is visible over or near the monster image
+
+#### Scenario: Monster attacks are shown
+- **WHEN** the player uses the monster information button
+- **THEN** the app shows the monster's available attacks in a tooltip or modal
+- **THEN** each listed attack includes the attack name
+- **THEN** each listed attack includes available cost and effect information when present
+
+#### Scenario: Monster attack information can be dismissed
+- **WHEN** the monster attack tooltip or modal is visible
+- **THEN** the player can dismiss it and remain in the active encounter
+
+### Requirement: Combat feedback is localized
+The monster encounter view SHALL show combat outcome text in the selected application language.
+
+#### Scenario: Spanish is selected
+- **WHEN** the application language is Spanish and an attack resolves
+- **THEN** the combat feedback text is shown in Spanish
+
+### Requirement: Feedback overlay blocks input
+The monster encounter view SHALL ignore taps on underlying actions while the damage or experience feedback overlay is visible.
+
+#### Scenario: Player taps during feedback
+- **WHEN** the feedback overlay is visible and the player taps where an action button is
+- **THEN** the underlying action is not triggered

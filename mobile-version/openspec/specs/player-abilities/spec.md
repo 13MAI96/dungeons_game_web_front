@@ -1,14 +1,16 @@
 # player-abilities Specification
 
 ## Purpose
-TBD - created by archiving change leveling-player. Update Purpose after archive.
+Define the data-driven catalogue of player abilities, their unlock levels, costs, and class requirements.
+
 ## Requirements
+
 ### Requirement: Player abilities are data driven
 The mobile game SHALL load player ability definitions from a local JSON file.
 
 #### Scenario: Ability JSON defines required fields
 - **WHEN** player abilities are loaded
-- **THEN** each ability defines id, name, unlock level, type, active flag, energy cost, mana cost, class requirements, simple-skill group, and effect ids
+- **THEN** each ability defines id, name, unlock level, type, active flag, damage, critical threshold, critical damage percent, energy cost, mana cost, class requirements, simple-skill group, and effect ids
 
 #### Scenario: Active ability defines costs
 - **WHEN** an ability is active
@@ -19,6 +21,10 @@ The mobile game SHALL load player ability definitions from a local JSON file.
 #### Scenario: Passive ability remains active
 - **WHEN** an unlocked ability is passive
 - **THEN** the ability is considered active at all times while its conditions remain satisfied
+
+#### Scenario: Non-damage active ability defines critical fields
+- **WHEN** an active self-effect ability such as rest is loaded
+- **THEN** it still defines critical threshold and critical damage percent
 
 ### Requirement: Ability unlock conditions are enforced
 The mobile game SHALL expose player abilities only when their unlock conditions are satisfied.
@@ -41,4 +47,3 @@ The mobile game SHALL expose player abilities only when their unlock conditions 
 - **AND** the player has selected that class
 - **AND** the player meets the ability unlock level
 - **THEN** the ability is available
-

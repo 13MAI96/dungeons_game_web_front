@@ -1,34 +1,16 @@
 # dungeon-exploration Specification
 
 ## Purpose
-TBD - created by archiving change explore-dungeon. Update Purpose after archive.
+Describe generation of the dungeon map and how the player explores it, moves, rests, retreats, and exits.
+
 ## Requirements
+
 ### Requirement: Explore dungeon opens exploration view
 The app SHALL display the dungeon exploration view after the user selects the explore-dungeon action from the new game view.
 
 #### Scenario: Explore dungeon starts exploration
 - **WHEN** the user selects "Explore Dungeon" or "Explorar Mazmorra"
 - **THEN** the app displays the dungeon exploration view
-
-### Requirement: Dungeon map follows backend generation rules
-The dungeon exploration view SHALL generate a dungeon map using backend-derived rules constrained by the player's current level and shall pass that level into monster generation.
-
-#### Scenario: Dungeon map is generated
-- **WHEN** dungeon exploration starts and the player level is less than 10
-- **THEN** the system generates no more than 5 columns and 7 rows
-- **THEN** the system creates one location for each row and column coordinate
-- **THEN** the system selects one entrance location from edge locations
-- **THEN** the entrance location is always shown in green
-- **THEN** the system assigns non-entrance location content from monster, quest, block, and sanctuary options according to the backend progression rules
-- **THEN** generated monster levels follow the current player level rules
-- **THEN** `q_locations` equals the number of generated locations
-
-#### Scenario: Dungeon map can expand at level ten
-- **WHEN** dungeon exploration starts and the player level is 10 or greater
-- **THEN** the system can generate up to 25 columns and 25 rows
-- **THEN** the system creates one location for each row and column coordinate
-- **THEN** the system selects one entrance location from edge locations
-- **THEN** generated monster levels follow the current player level rules
 
 ### Requirement: Exploration view shows map in upper area
 The dungeon exploration view SHALL display the generated map as a square or rectangular grid in the upper portion of the screen.
@@ -42,6 +24,7 @@ The dungeon exploration view SHALL display the generated map as a square or rect
 #### Scenario: Visited map locations are grey
 - **WHEN** a location was visited during exploration or a monster location was cleared by defeating its monster
 - **THEN** the map displays that location in grey when it is visible and not the current location
+- **THEN** the dungeon entrance remains green even when it was visited
 
 #### Scenario: Special locations show map icons
 - **WHEN** a visible dungeon location has type `MONSTER`, `QUEST`, or `SANCTUARY`
@@ -53,6 +36,12 @@ The dungeon exploration view SHALL display the generated map as a square or rect
 - **THEN** the displayed window follows the player movement
 - **THEN** the displayed window keeps the player centered when surrounding map space exists
 - **THEN** the displayed window keeps the player at the nearest edge when the player is near a map boundary
+
+#### Scenario: Entrance location is always green
+- **WHEN** the dungeon entrance location is visible on the map
+- **THEN** the entrance cell is displayed in green
+- **THEN** the entrance cell remains green when it is visited
+- **THEN** the entrance cell remains green when it is the player's current location
 
 ### Requirement: Directional movement actions are shown
 The dungeon exploration view SHALL always show four directional arrow movement buttons.
@@ -93,7 +82,7 @@ The dungeon exploration view SHALL show Rest and Retreat actions below the movem
 #### Scenario: Retreat costs energy at entrance
 - **WHEN** the player is at the dungeon entrance and selects retreat
 - **THEN** the system subtracts 1 from current energy
-- **THEN** the app exits the dungeon alive if the player still has current life and energy
+- **THEN** the app exits the dungeon alive even if that spent point was the player's last current energy point
 
 ### Requirement: Monster location enters encounter
 The dungeon exploration view SHALL transition to a monster encounter when the player moves into a location containing a living monster.
@@ -165,8 +154,110 @@ The dungeon exploration view SHALL complete the dungeon when every monster in th
 - **THEN** the app exits the dungeon automatically
 - **THEN** the player keeps current dungeon experience
 - **THEN** the player gains reputation equal to the number of monsters defeated in that dungeon
-- **THEN** the app reports the experience and reputation gained
+- **THEN** the player gains completion experience equal to the reputation gained for that dungeon
+- **THEN** the app reports the total experience and reputation gained
 
 #### Scenario: Incomplete dungeon grants no completion reputation
 - **WHEN** the player exits a dungeon before all monsters are defeated
 - **THEN** the player gains no dungeon completion reputation
+- **THEN** the player gains no completion experience from reputation
+
+### Requirement: Dungeon depletion exits are explained before menu return
+The dungeon exploration view SHALL notify the player before returning to the new game view when the dungeon run ends because life or energy was depleted.
+
+#### Scenario: Energy depletion notification appears
+- **WHEN** the player's current energy reaches zero or less during a dungeon run for any reason other than a successful retreat from the entrance
+- **THEN** the app shows an energy depleted notification before returning to the new game view
+- **THEN** the player loses current experience gained during the dungeon run
+
+#### Scenario: Life depletion notification appears
+- **WHEN** the player's current life reaches zero or less during a dungeon run
+- **THEN** the app shows a life depleted notification before returning to the new game view
+- **THEN** the player loses current experience gained during the dungeon run
+- **THEN** the player receives the dungeon death sequel
+
+#### Scenario: Successful last-energy retreat does not show defeat notification
+- **WHEN** the player retreats from the dungeon entrance
+- **AND** retreat spends the player's last current energy point
+- **THEN** the app exits the dungeon alive
+- **THEN** the app does not show an energy depleted defeat notification
+
+### Requirement: Dungeon map follows level-scaled sparse generation rules
+The dungeon exploration view SHALL generate a traversable map with bounded objectives and empty traversal locations based on player level.
+
+#### Scenario: Early dungeon is generated
+- **WHEN** a level 1 player starts exploration
+- **THEN** the dungeon contains between 5 and 7 monsters
+- **AND** includes empty traversable cells
+- **AND** includes one quest and one sanctuary
+- **AND** every required objective is reachable from the entrance
+
+#### Scenario: Early player makes partial progress
+- **WHEN** the player cannot afford to complete every encounter
+- **THEN** the player can return to the entrance and retreat with experience already earned from defeated monsters
+- **AND** receives no completion reputation
+
+#### Scenario: Dungeon scale increases
+- **WHEN** the player reaches level 10
+- **THEN** each map dimension is selected randomly from 5 through 25
+- **AND** between 25 and 35 percent of all cells contain monsters
+- **AND** monster density is never lower than 25 percent
+- **AND** map dimensions do not exceed 25 columns by 25 rows
+
+### Requirement: Dungeon experience has an active-run lifecycle
+The dungeon exploration view SHALL distinguish provisional experience earned during the active run from permanent accumulated experience.
+
+#### Scenario: Dungeon starts
+- **WHEN** the player begins dungeon exploration
+- **THEN** provisional dungeon experience starts at zero
+- **AND** permanent accumulated experience remains unchanged
+
+#### Scenario: Experience is displayed during exploration
+- **WHEN** the player is exploring a dungeon
+- **THEN** permanent accumulated experience and provisional dungeon experience are shown in separate labeled bars
+- **AND** gaining dungeon experience changes only the provisional bar
+
+#### Scenario: Dungeon completes or player retreats
+- **WHEN** the player completes the dungeon or retreats through the entrance
+- **THEN** provisional dungeon experience is added to permanent accumulated experience
+- **AND** provisional dungeon experience is reset to zero
+
+#### Scenario: Dungeon ends through depletion
+- **WHEN** life or energy reaches zero
+- **THEN** provisional dungeon experience is reset to zero
+- **AND** permanent accumulated experience remains unchanged
+
+### Requirement: Player position is marked on the map
+The dungeon exploration view SHALL mark the player's current cell with a marker that is visible on every tile type, including the entrance.
+
+#### Scenario: Player stands on the entrance
+- **WHEN** the player is on the entrance cell
+- **THEN** the entrance stays green
+- **AND** the player marker is drawn on that cell
+
+#### Scenario: Player moves
+- **WHEN** the player moves to another cell
+- **THEN** exactly one cell shows the player marker
+
+### Requirement: Map fits its area without clipping
+The dungeon exploration view SHALL size map cells from the space available after the stats and action controls, so every visible map row is fully shown.
+
+#### Scenario: Feedback or treasure action appears
+- **WHEN** exploration feedback text or the Collect Treasure action becomes visible
+- **THEN** no map row is clipped
+- **AND** the map cell size does not change
+
+### Requirement: Map tiles are readable
+The dungeon exploration view SHALL draw unseen, blocked, sanctuary and entrance cells in distinguishable colours and draw location icons with sufficient contrast against their tiles.
+
+#### Scenario: Different tile types are visible
+- **WHEN** unseen, blocked, sanctuary and entrance cells are on screen
+- **THEN** each type uses a different colour
+- **AND** monster, quest and sanctuary icons are light-coloured on darker tiles
+
+### Requirement: Direction buttons use arrow icons
+The dungeon exploration view SHALL show arrow icons on the direction buttons, each at least 64 logical pixels in its smaller dimension.
+
+#### Scenario: Direction pad is shown
+- **WHEN** the exploration view is visible
+- **THEN** each direction button shows an arrow icon instead of a text character

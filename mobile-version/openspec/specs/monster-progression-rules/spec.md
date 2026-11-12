@@ -1,8 +1,10 @@
 # monster-progression-rules Specification
 
 ## Purpose
-TBD - created by archiving change rules. Update Purpose after archive.
+Define how monsters are selected and scaled by level, including their combat stats and attacks.
+
 ## Requirements
+
 ### Requirement: Monsters include level and combat stats
 The mobile game SHALL represent monsters with level, life, mana, armor, speed, strength, and attacks.
 
@@ -25,7 +27,7 @@ The mobile game SHALL represent monsters with level, life, mana, armor, speed, s
 - **THEN** the monster has speed
 - **THEN** the monster has strength
 - **THEN** the monster has between 2 and 5 attack definitions
-- **THEN** each monster attack defines damage, mana cost, and an array of effect ids
+- **THEN** each monster attack defines damage, critical threshold, critical damage percent, mana cost, and an array of effect ids
 
 ### Requirement: Monster names show level
 The monster encounter view SHALL display each monster's level beside its name.
@@ -89,4 +91,3 @@ The mobile game SHALL include only monster attacks whose unlock level is availab
 #### Scenario: Missing attack unlock level defaults to level one
 - **WHEN** a monster attack definition omits unlock level
 - **THEN** the generator treats that attack as unlock level 1
-

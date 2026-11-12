@@ -1,7 +1,7 @@
 # level-up-allocation Specification
 
 ## Purpose
-TBD - created by archiving change leveling. Update Purpose after archive.
+Describe how players spend progression points when a level-up is available.
 ## Requirements
 ### Requirement: Player can allocate level-up points
 The mobile game SHALL allow the player to allocate reserved progression points to permanent statistics using reversible plus/minus controls before confirmation.

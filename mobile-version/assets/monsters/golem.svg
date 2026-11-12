@@ -1,1 +1,83 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" rx="18" fill="#151515"/><path fill="#77736a" d="M78 66h100l28 51-18 83H68l-18-83 28-51z"/><path fill="#55514b" d="M93 86h70v32H93zM82 139h92v39H82z"/><circle cx="109" cy="106" r="7" fill="#f4c430"/><circle cx="147" cy="106" r="7" fill="#f4c430"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <title>Stone golem</title>
+  <desc>Low-poly stone golem with massive boulder fists, moss patches and glowing rune core and eyes.</desc>
+  <defs>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#B7BEC4"/>
+      <stop offset="0.5" stop-color="#78828A"/>
+      <stop offset="1" stop-color="#3E464D"/>
+    </linearGradient>
+    <linearGradient id="stoneDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6A737A"/>
+      <stop offset="1" stop-color="#2C3237"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFF6B0"/>
+      <stop offset="0.5" stop-color="#FFB627"/>
+      <stop offset="1" stop-color="#C2410C"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Legs -->
+  <g stroke="#1B1F23" stroke-width="12" stroke-linejoin="round">
+    <polygon points="276,520 360,520 368,648 340,700 254,700 240,640" fill="url(#stoneDark)"/>
+    <polygon points="408,520 492,520 528,640 514,700 428,700 400,648" fill="url(#stoneDark)"/>
+  </g>
+  <g fill="#8C959C" stroke="#1B1F23" stroke-width="5" stroke-linejoin="round" opacity="0.9">
+    <polygon points="254,700 240,640 300,630 340,700"/>
+    <polygon points="514,700 528,640 468,630 428,700"/>
+  </g>
+
+  <!-- Arms -->
+  <g stroke="#1B1F23" stroke-width="12" stroke-linejoin="round">
+    <polygon points="210,250 140,300 110,420 150,460 214,400 250,300" fill="url(#stone)"/>
+    <polygon points="558,250 628,300 658,420 618,460 554,400 518,300" fill="url(#stone)"/>
+  </g>
+  <!-- Fists -->
+  <g stroke="#1B1F23" stroke-width="12" stroke-linejoin="round">
+    <polygon points="96,430 170,420 214,470 200,560 130,590 70,550 62,480" fill="url(#stone)"/>
+    <polygon points="672,430 598,420 554,470 568,560 638,590 698,550 706,480" fill="url(#stone)"/>
+  </g>
+  <g stroke="#1B1F23" stroke-width="5" stroke-linejoin="round">
+    <polygon points="96,430 170,420 150,480 80,490" fill="#C7CDD2"/>
+    <polygon points="672,430 598,420 618,480 688,490" fill="#C7CDD2"/>
+    <polygon points="130,590 70,550 120,530 160,560" fill="#4A5258"/>
+    <polygon points="638,590 698,550 648,530 608,560" fill="#4A5258"/>
+  </g>
+
+  <!-- Torso -->
+  <g stroke="#1B1F23" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,190 540,226 566,330 520,470 470,540 298,540 248,470 202,330 228,226" fill="url(#stone)"/>
+  </g>
+  <g stroke="#1B1F23" stroke-width="6" stroke-linejoin="round">
+    <polygon points="228,226 384,190 540,226 470,280 298,280" fill="#C3CAD0"/>
+    <polygon points="248,470 298,540 384,512 330,440" fill="#5A636A"/>
+    <polygon points="520,470 470,540 384,512 438,440" fill="#4C545B"/>
+  </g>
+  <!-- Cracks -->
+  <g stroke="#1B1F23" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="250,330 290,360 280,400"/>
+    <polyline points="518,320 486,352 500,394"/>
+  </g>
+  <!-- Moss -->
+  <g fill="#5E8B2C" stroke="#25380F" stroke-width="5" stroke-linejoin="round">
+    <polygon points="228,226 270,220 290,250 252,262"/>
+    <polygon points="520,226 560,238 548,268 512,252"/>
+    <polygon points="110,420 140,410 150,440 120,450"/>
+  </g>
+  <!-- Rune core -->
+  <polygon points="384,320 434,370 384,440 334,370" fill="url(#glow)" stroke="#1B1F23" stroke-width="10" stroke-linejoin="round"/>
+  <polyline points="384,340 384,420 M362,370 406,370" fill="none" stroke="#7C2D12" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Head -->
+  <g stroke="#1B1F23" stroke-width="12" stroke-linejoin="round">
+    <polygon points="320,110 448,110 476,160 460,226 384,246 308,226 292,160" fill="url(#stone)"/>
+  </g>
+  <polygon points="320,110 448,110 420,140 348,140" fill="#CDD3D8" stroke="#1B1F23" stroke-width="5" stroke-linejoin="round"/>
+  <rect x="318" y="160" width="132" height="22" fill="#2C3237" stroke="#1B1F23" stroke-width="5"/>
+  <g stroke="#1B1F23" stroke-width="5" stroke-linejoin="round">
+    <polygon points="330,164 368,164 362,180 334,180" fill="url(#glow)"/>
+    <polygon points="438,164 400,164 406,180 434,180" fill="url(#glow)"/>
+  </g>
+  <polygon points="350,206 418,206 406,224 362,224" fill="#2C3237" stroke="#1B1F23" stroke-width="5"/>
+</svg>
