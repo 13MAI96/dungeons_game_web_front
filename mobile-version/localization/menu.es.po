@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Mobile Version\n"
+"Language: es\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "MENU_START_GAME"
+msgstr "Iniciar Partida"
+
+msgid "MENU_LOAD_GAME"
+msgstr "Cargar Partida"
+
+msgid "MENU_SETTINGS"
+msgstr "Ajustes"
+
+msgid "SETTINGS_TITLE"
+msgstr "Ajustes"
+
+msgid "SETTINGS_LANGUAGE"
+msgstr "Idioma"
+
+msgid "SETTINGS_ENGLISH"
+msgstr "Ingles"
+
+msgid "SETTINGS_SPANISH"
+msgstr "Espanol"
+
+msgid "SETTINGS_BACK"
+msgstr "Volver"
+
+msgid "COMING_SOON"
+msgstr "Proximamente"
+
+msgid "CONFIRM_NEW_GAME_TITLE"
+msgstr "Iniciar una partida nueva?"
+
+msgid "CONFIRM_NEW_GAME_MESSAGE"
+msgstr "La partida guardada actual sera reemplazada. Esta accion no se puede deshacer."
+
+msgid "CONFIRM_EXIT_TITLE"
+msgstr "Volver al menu principal?"
+
+msgid "CONFIRM_EXIT_MESSAGE"
+msgstr "Tu progreso esta guardado. Los cambios de atributos sin confirmar se descartaran."
+
+msgid "CONFIRM_ACCEPT"
+msgstr "Confirmar"
+
+msgid "CONFIRM_CANCEL"
+msgstr "Cancelar"
+
+msgid "RESULT_CONTINUE"
+msgstr "Continuar"
+
+msgid "RESULT_COMPLETED_TITLE"
+msgstr "Mazmorra completada"
+
+msgid "RESULT_RETREATED_TITLE"
+msgstr "Expedicion finalizada"
+
+msgid "RESULT_RETREATED_MESSAGE"
+msgstr "Regresaste a salvo de la mazmorra."
+
+msgid "RESULT_ENDED_TITLE"
+msgstr "Expedicion finalizada"
+
+msgid "RESULT_DEFEAT_TITLE"
+msgstr "Derrota"
+
+msgid "RESULT_GAME_OVER_TITLE"
+msgstr "Fin de la partida"
+
+msgid "NEW_GAME_CHARACTER_PLACEHOLDER"
+msgstr "Personaje"
+
+msgid "NEW_GAME_EXPLORE_DUNGEON"
+msgstr "Explorar Mazmorra"
+
+msgid "NEW_GAME_CHALLENGE_DUNGEON"
+msgstr "Desafiar Mazmorra"
+
+msgid "NEW_GAME_MANAGE_EQUIPMENT"
+msgstr "Progresion"
+
+msgid "NEW_GAME_SHOP"
+msgstr "Tienda"
+
+msgid "NEW_GAME_EXIT"
+msgstr "Salir"
+
+msgid "EXPLORE_REST"
+msgstr "Descansar"
+
+msgid "EXPLORE_RETREAT"
+msgstr "Retirada"
+
+msgid "EXPLORE_COLLECT_TREASURE"
+msgstr "Recolectar Tesoro"
+
+msgid "ENCOUNTER_PLAYER"
+msgstr "Jugador"
+
+msgid "ENCOUNTER_FIGHT"
+msgstr "Combatir"
+
+msgid "ENCOUNTER_FLEE"
+msgstr "Huir"
+
+msgid "ENCOUNTER_FLEE_SUCCESS"
+msgstr "Huiste"
+
+msgid "ENCOUNTER_FLEE_FAILED"
+msgstr "No pudiste huir"
+
+msgid "COMBAT_HIT"
+msgstr "Golpeaste"
+
+msgid "COMBAT_CRITICAL_HIT"
+msgstr "Golpe critico"
+
+msgid "COMBAT_COUNTERATTACK_HIT"
+msgstr "El monstruo te golpeo"
+
+msgid "COMBAT_MISS"
+msgstr "Fallaste"
+
+msgid "COMBAT_DODGED"
+msgstr "Esquivado"
+
+msgid "COMBAT_EXPERIENCE_GAINED"
+msgstr "Ganaste experiencia"
+
+msgid "COMBAT_EXPERIENCE_GAINED_AMOUNT"
+msgstr "Ganaste %s experiencia"
+
+msgid "STAT_EXPERIENCE"
+msgstr "XP total"
+
+msgid "STAT_DUNGEON_EXPERIENCE"
+msgstr "XP mazmorra"
+
+msgid "COMBAT_QUEST_SUCCESS"
+msgstr "Obtuviste experiencia"
+
+msgid "COMBAT_QUEST_TRAP"
+msgstr "Caiste en una trampa"
+
+msgid "COMBAT_REST"
+msgstr "Descansaste"
+
+msgid "COMBAT_INSUFFICIENT_MANA"
+msgstr "Mana insuficiente"
+
+msgid "COMBAT_INSUFFICIENT_RESOURCES"
+msgstr "No tenes suficiente energia o mana para este ataque"
+
+msgid "COMBAT_SANCTUARY"
+msgstr "El santuario te restauro"
+
+msgid "EXPLORE_RETREAT_ENTRANCE_ONLY"
+msgstr "Solo podes retirarte desde la entrada"
+
+msgid "EXPLORE_RETREAT_SUCCESS"
+msgstr "Te retiraste"
+
+msgid "EXPLORE_RETREAT_DEPLETED"
+msgstr "Te quedaste sin energia"
+
+msgid "DUNGEON_COMPLETED_REWARDS"
+msgstr "Mazmorra completa: +%s experiencia, +%s reputacion"
+
+msgid "COMBAT_DEATH_SEQUEL"
+msgstr "Sobreviviste con una secuela permanente de vida"
+
+msgid "COMBAT_SAVE_DELETED"
+msgstr "La partida fue eliminada"
+
+msgid "LEVEL_ALLOCATION_TITLE"
+msgstr "Subir Nivel"
+
+msgid "LEVEL_ALLOCATION_REMAINING"
+msgstr "Puntos restantes: %s"
+
+msgid "LEVEL_ALLOCATION_CONFIRM"
+msgstr "Confirmar"
+
+msgid "LEVEL_ALLOCATION_BACK"
+msgstr "Volver"
+
+msgid "LEVEL_ALLOCATION_NO_POINTS"
+msgstr "No hay puntos pendientes"
+
+msgid "LEVEL_CLASS_CHOICE_TITLE"
+msgstr "Elegir Clase"
+
+msgid "LEVEL_PROGRESSION_PENDING"
+msgstr "Puntos de progresion pendientes"
+
+msgid "DUNGEON_ENERGY_DEPLETED"
+msgstr "Te quedaste sin energia"
+
+msgid "DUNGEON_LIFE_DEPLETED"
+msgstr "Perdiste toda la vida"
+
+msgid "ENCOUNTER_MONSTER_INFO"
+msgstr "i"
+
+msgid "ENCOUNTER_MONSTER_ATTACKS_TITLE"
+msgstr "Ataques del monstruo"
+
+msgid "ENCOUNTER_MONSTER_ATTACK_LINE"
+msgstr "%s - Dano %s, Mana %s, Lv. %s, Efectos: %s"

@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 768">
+  <title>Goblin low-poly intimidante con maza lateral</title>
+  <desc>Goblin original de estilo low-poly con una maza sostenida al costado del cuerpo, sin cubrir la cara.</desc>
+
+  <defs>
+    <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9BCB4A"/>
+      <stop offset="0.48" stop-color="#6E9D2F"/>
+      <stop offset="1" stop-color="#3B5E18"/>
+    </linearGradient>
+    <linearGradient id="skinDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#648D2A"/>
+      <stop offset="1" stop-color="#29420F"/>
+    </linearGradient>
+    <linearGradient id="stone" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C3CBD0"/>
+      <stop offset="0.5" stop-color="#7C878E"/>
+      <stop offset="1" stop-color="#424B51"/>
+    </linearGradient>
+    <linearGradient id="leather" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7B4726"/>
+      <stop offset="1" stop-color="#4A2816"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Orejas -->
+  <g stroke="#22320F" stroke-width="12" stroke-linejoin="round">
+    <polygon points="260,179 94,142 225,279 287,256" fill="#587D25"/>
+    <polygon points="508,179 674,142 543,279 481,256" fill="#587D25"/>
+    <polygon points="225,203 137,168 226,247" fill="#8DB33F" stroke-width="6"/>
+    <polygon points="543,203 631,168 542,247" fill="#8DB33F" stroke-width="6"/>
+  </g>
+
+  <!-- Cabeza -->
+  <g stroke="#22320F" stroke-width="12" stroke-linejoin="round">
+    <polygon points="384,76 480,104 548,177 538,300 474,367 384,391 294,367 230,300 220,177 288,104"
+             fill="url(#skin)"/>
+    <polygon points="288,104 384,76 480,104 446,151 322,151"
+             fill="#B5D965" opacity="0.42" stroke="none"/>
+    <polygon points="252,191 354,218 327,250 253,231" fill="#19230D"/>
+    <polygon points="516,191 414,218 441,250 515,231" fill="#19230D"/>
+    <polygon points="270,226 337,230 319,272 276,266" fill="#D5A414"/>
+    <polygon points="498,226 431,230 449,272 492,266" fill="#D5A414"/>
+    <polygon points="294,232 324,236 316,262 294,258" fill="#151006" stroke="none"/>
+    <polygon points="474,232 444,236 452,262 474,258" fill="#151006" stroke="none"/>
+    <polygon points="384,220 421,294 384,320 347,294" fill="#466B1B"/>
+    <polygon points="284,306 344,331 424,331 484,306 456,360 384,383 312,360" fill="#29160F"/>
+    <polygon points="313,324 351,335 336,389 302,358" fill="#E7E0CB"/>
+    <polygon points="455,324 417,335 432,389 466,358" fill="#E7E0CB"/>
+    <path d="M266 274 L310 307 M278 263 L321 294" fill="none" stroke="#314715" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <!-- Cuerpo -->
+  <g stroke="#22320F" stroke-width="12" stroke-linejoin="round">
+    <polygon points="327,361 441,361 454,420 314,420" fill="#496F1C"/>
+    <polygon points="284,388 484,388 524,526 472,612 296,612 244,526" fill="url(#skinDark)"/>
+    <polygon points="291,401 384,438 477,401 452,478 316,478"
+             fill="#759F35" opacity="0.42" stroke="none"/>
+
+    <!-- Brazo izquierdo -->
+    <polygon points="272,429 202,448 153,571 203,606 286,510" fill="url(#skin)"/>
+    <polygon points="170,535 225,558 204,617 149,590" fill="url(#leather)"/>
+
+    <!-- Brazo derecho abierto hacia la maza -->
+    <polygon points="496,429 556,447 604,534 570,570 505,503" fill="url(#skin)"/>
+    <polygon points="567,501 611,524 586,576 543,550" fill="url(#leather)"/>
+
+    <!-- Cinturón -->
+    <polygon points="264,529 504,529 493,584 275,584" fill="url(#leather)"/>
+    <polygon points="344,523 424,523 429,588 339,588" fill="#8D9496"/>
+    <rect x="366" y="545" width="36" height="24" fill="#292929" stroke-width="6"/>
+
+    <!-- Faldón -->
+    <polygon points="278,579 490,579 468,674 425,640 384,701 343,640 300,674" fill="#704022"/>
+
+    <!-- Piernas -->
+    <polygon points="304,602 367,612 354,695 259,695" fill="url(#skin)"/>
+    <polygon points="464,602 401,612 414,695 509,695" fill="url(#skin)"/>
+    <polygon points="259,657 358,657 344,716 231,716" fill="#30451B"/>
+    <polygon points="509,657 410,657 424,716 537,716" fill="#30451B"/>
+  </g>
+
+  <!-- Maza al costado derecho -->
+  <g stroke="#1B201F" stroke-width="12" stroke-linejoin="round">
+    <!-- Mango vertical lateral -->
+    <polygon points="579,548 612,560 651,234 617,224" fill="#63371D"/>
+
+    <!-- Envoltorios -->
+    <polygon points="598,460 628,470 624,505 593,495" fill="#9D6334" stroke-width="6"/>
+    <polygon points="606,407 636,417 632,452 601,442" fill="#9D6334" stroke-width="6"/>
+    <polygon points="614,354 644,364 640,399 609,389" fill="#9D6334" stroke-width="6"/>
+
+    <!-- Cabeza fuera de la cara -->
+    <polygon points="575,142 641,105 704,140 719,204 681,259 612,264 559,224 548,170"
+             fill="url(#stone)"/>
+
+    <!-- Facetas -->
+    <polygon points="575,142 641,105 630,178 548,170" fill="#D6DCE0" opacity="0.52" stroke="none"/>
+    <polygon points="630,178 704,140 719,204 660,211" fill="#566169" opacity="0.8" stroke="none"/>
+    <polygon points="559,224 630,178 660,211 612,264" fill="#6D777E" opacity="0.8" stroke="none"/>
+    <polygon points="660,211 719,204 681,259 612,264" fill="#3C454B" opacity="0.8" stroke="none"/>
+
+    <!-- Picos -->
+    <polygon points="585,126 606,82 623,122" fill="#788289"/>
+    <polygon points="653,112 688,75 683,130" fill="#707A81"/>
+    <polygon points="710,154 750,151 718,184" fill="#666F76"/>
+  </g>
+
+  <!-- Mano al frente sujetando la maza -->
+  <g stroke="#22320F" stroke-width="12" stroke-linejoin="round">
+    <polygon points="561,520 605,533 621,570 593,602 551,590 536,555" fill="url(#skin)"/>
+    <polygon points="568,534 594,541 607,565 588,582 562,573 551,553"
+             fill="#789F38" stroke-width="6"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="800px" height="800px" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+<title>d20</title>
+<path fill="#1f2937" stroke="#e5e7eb" stroke-width="4" d="M64 8 116 40 104 104 64 120 24 104 12 40 64 8z"/>
+<path fill="#374151" stroke="#e5e7eb" stroke-width="3" d="M64 8 64 120 12 40 116 40 64 8z"/>
+<path fill="#111827" stroke="#e5e7eb" stroke-width="3" d="M12 40 64 64 116 40 104 104 64 64 24 104 12 40z"/>
+<text x="64" y="76" fill="#f9fafb" font-family="Arial, sans-serif" font-size="34" font-weight="700" text-anchor="middle">20</text>
+</svg>

@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>Araña intimidante low-poly</title>
+  <desc>Araña original de estilo low-poly, con ojos rojos, colmillos y silueta agresiva.</desc>
+  <defs>
+    <linearGradient id="abdomen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#353946"/>
+      <stop offset="0.55" stop-color="#1e222c"/>
+      <stop offset="1" stop-color="#0d0f14"/>
+    </linearGradient>
+    <linearGradient id="head" x1="0" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#424754"/>
+      <stop offset="1" stop-color="#171a22"/>
+    </linearGradient>
+    <radialGradient id="eye" cx="50%" cy="40%" r="65%">
+      <stop offset="0" stop-color="#ff746f"/>
+      <stop offset="0.45" stop-color="#dc2424"/>
+      <stop offset="1" stop-color="#5c0000"/>
+    </radialGradient>
+  </defs>
+
+  <g stroke="#090b0f" stroke-width="10" stroke-linejoin="round">
+    <!-- Patas traseras -->
+    <path d="M170 238 102 194 38 209 91 247 151 270Z" fill="#222731"/>
+    <path d="M342 238 410 194 474 209 421 247 361 270Z" fill="#222731"/>
+    <path d="M158 275 84 270 31 311 102 318 163 301Z" fill="#2b303b"/>
+    <path d="M354 275 428 270 481 311 410 318 349 301Z" fill="#2b303b"/>
+    <path d="M169 310 99 336 65 397 126 370 183 337Z" fill="#20252e"/>
+    <path d="M343 310 413 336 447 397 386 370 329 337Z" fill="#20252e"/>
+    <path d="M192 334 143 385 137 455 181 403 218 354Z" fill="#181c24"/>
+    <path d="M320 334 369 385 375 455 331 403 294 354Z" fill="#181c24"/>
+
+    <!-- Abdomen -->
+    <polygon points="256,74 337,100 391,166 382,248 324,295 188,295 130,248 121,166 175,100"
+             fill="url(#abdomen)"/>
+    <polygon points="256,91 317,109 348,146 256,132 164,146 195,109"
+             fill="#4a4f5d" opacity="0.55"/>
+    <polygon points="145,173 256,132 367,173 341,225 256,251 171,225"
+             fill="#13161c" opacity="0.75"/>
+
+    <!-- Cefalotórax -->
+    <polygon points="256,224 329,243 357,299 333,359 278,389 234,389 179,359 155,299 183,243"
+             fill="url(#head)"/>
+    <polygon points="183,246 256,224 329,246 302,271 210,271"
+             fill="#555b68" opacity="0.45"/>
+
+    <!-- Ojos principales -->
+    <polygon points="190,278 239,270 229,315 196,324 173,303" fill="url(#eye)"/>
+    <polygon points="322,278 273,270 283,315 316,324 339,303" fill="url(#eye)"/>
+    <!-- Ojos secundarios -->
+    <polygon points="215,330 240,323 236,347 214,351 203,340" fill="#b71818"/>
+    <polygon points="297,330 272,323 276,347 298,351 309,340" fill="#b71818"/>
+
+    <!-- Mandíbulas -->
+    <polygon points="205,355 244,369 225,432 190,397" fill="#c9c5b7"/>
+    <polygon points="307,355 268,369 287,432 322,397" fill="#c9c5b7"/>
+    <polygon points="205,355 226,363 214,390 194,382" fill="#eee9d8"/>
+    <polygon points="307,355 286,363 298,390 318,382" fill="#eee9d8"/>
+
+    <!-- Marca del abdomen -->
+    <polygon points="256,148 285,191 270,215 242,215 227,191"
+             fill="#8c1717" stroke-width="6"/>
+    <polygon points="256,166 270,190 262,202 250,202 242,190"
+             fill="#e43b34" stroke="none"/>
+  </g>
+</svg>

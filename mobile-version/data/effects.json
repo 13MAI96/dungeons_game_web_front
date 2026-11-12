@@ -1,0 +1,35 @@
+[
+  {
+    "id": "fatigue",
+    "name": "Fatigue",
+    "precision": 65,
+    "duration_turns": 3,
+    "target": "player",
+    "cause": "Reduces the player's current energy while the effect is active.",
+    "stat": "energy",
+    "operation": "subtract",
+    "amount": 1
+  },
+  {
+    "id": "poison",
+    "name": "Poison",
+    "precision": 55,
+    "duration_turns": 4,
+    "target": "player",
+    "cause": "Reduces the player's current life while the effect is active.",
+    "stat": "life",
+    "operation": "subtract",
+    "amount": 1
+  },
+  {
+    "id": "dizziness",
+    "name": "Dizziness",
+    "precision": 45,
+    "duration_turns": 2,
+    "target": "player",
+    "cause": "Reduces the player's current speed while the effect is active.",
+    "stat": "speed",
+    "operation": "subtract",
+    "amount": 1
+  }
+]

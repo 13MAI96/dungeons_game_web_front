@@ -1,0 +1,302 @@
+[
+  {
+    "name": "Rat",
+    "life": 3,
+    "armor": 1,
+    "mana": 5,
+    "strength": 1,
+    "speed": 6,
+    "experience": 1,
+    "image": "Rat",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 1,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Bite",
+        "damage": 2,
+        "mana_cost": 1,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 19,
+        "critical_damage_percent": 50
+      }
+    ]
+  },
+  {
+    "name": "Snake",
+    "life": 7,
+    "armor": 2,
+    "mana": 10,
+    "strength": 3,
+    "speed": 2,
+    "experience": 1,
+    "image": "Snake",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 1,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Venom Bite",
+        "damage": 2,
+        "mana_cost": 2,
+        "effects": [],
+        "unlock_level": 2,
+        "critical_threshold": 19,
+        "critical_damage_percent": 25
+      }
+    ]
+  },
+  {
+    "name": "Giant Spider",
+    "life": 6,
+    "armor": 4,
+    "mana": 10,
+    "strength": 4,
+    "speed": 5,
+    "experience": 1,
+    "image": "Giant Spider",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 1,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Web Bite",
+        "damage": 2,
+        "mana_cost": 2,
+        "effects": [],
+        "unlock_level": 2,
+        "critical_threshold": 19,
+        "critical_damage_percent": 25
+      }
+    ]
+  },
+  {
+    "name": "Bat",
+    "life": 2,
+    "armor": 2,
+    "mana": 10,
+    "strength": 1,
+    "speed": 10,
+    "experience": 1,
+    "image": "Bat",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 1,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Screech",
+        "damage": 2,
+        "mana_cost": 1,
+        "effects": [],
+        "unlock_level": 2,
+        "critical_threshold": 19,
+        "critical_damage_percent": 10
+      }
+    ]
+  },
+  {
+    "name": "Golem",
+    "life": 10,
+    "armor": 8,
+    "mana": 10,
+    "strength": 4,
+    "speed": 1,
+    "experience": 2,
+    "image": "Golem",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 2,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Crushing Blow",
+        "damage": 3,
+        "mana_cost": 2,
+        "effects": [],
+        "unlock_level": 3,
+        "critical_threshold": 20,
+        "critical_damage_percent": 150
+      }
+    ]
+  },
+  {
+    "name": "Wasp",
+    "life": 6,
+    "armor": 5,
+    "mana": 10,
+    "strength": 5,
+    "speed": 12,
+    "experience": 1,
+    "image": "Wasp",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 1,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Sting",
+        "damage": 2,
+        "mana_cost": 2,
+        "effects": [],
+        "unlock_level": 2,
+        "critical_threshold": 19,
+        "critical_damage_percent": 25
+      }
+    ]
+  },
+  {
+    "name": "Wolf",
+    "life": 8,
+    "armor": 8,
+    "mana": 10,
+    "strength": 4,
+    "speed": 9,
+    "experience": 2,
+    "image": "Wolf",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 2,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Bite",
+        "damage": 3,
+        "mana_cost": 1,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 19,
+        "critical_damage_percent": 50
+      }
+    ]
+  },
+  {
+    "name": "Giant Scorpion",
+    "life": 8,
+    "armor": 9,
+    "mana": 10,
+    "strength": 2,
+    "speed": 2,
+    "experience": 1,
+    "image": "Giant Scorpion",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 2,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Venom Sting",
+        "damage": 3,
+        "mana_cost": 2,
+        "effects": [],
+        "unlock_level": 3,
+        "critical_threshold": 19,
+        "critical_damage_percent": 25
+      }
+    ]
+  },
+  {
+    "name": "Kobold",
+    "life": 7,
+    "armor": 8,
+    "mana": 10,
+    "strength": 1,
+    "speed": 8,
+    "experience": 2,
+    "image": "Kobold",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 1,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Dirty Trick",
+        "damage": 2,
+        "mana_cost": 1,
+        "effects": [],
+        "unlock_level": 2,
+        "critical_threshold": 19,
+        "critical_damage_percent": 10
+      }
+    ]
+  },
+  {
+    "name": "Goblin",
+    "life": 5,
+    "armor": 5,
+    "mana": 10,
+    "strength": 1,
+    "speed": 6,
+    "experience": 1,
+    "image": "Goblin",
+    "attacks": [
+      {
+        "name": "Strike",
+        "damage": 1,
+        "mana_cost": 0,
+        "effects": [],
+        "unlock_level": 1,
+        "critical_threshold": 20,
+        "critical_damage_percent": 100
+      },
+      {
+        "name": "Knife Cut",
+        "damage": 2,
+        "mana_cost": 1,
+        "effects": [],
+        "unlock_level": 2,
+        "critical_threshold": 19,
+        "critical_damage_percent": 25
+      }
+    ]
+  }
+]

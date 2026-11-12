@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640">
+  <title>Lobo low-poly intimidante</title>
+  <desc>Lobo original de estilo low-poly con anatomía canina, postura agresiva y fondo transparente.</desc>
+
+  <defs>
+    <linearGradient id="furMain" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#707985"/>
+      <stop offset="0.48" stop-color="#3D4651"/>
+      <stop offset="1" stop-color="#171C22"/>
+    </linearGradient>
+    <linearGradient id="furLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#A7AFB6"/>
+      <stop offset="1" stop-color="#59626C"/>
+    </linearGradient>
+    <linearGradient id="furDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#303740"/>
+      <stop offset="1" stop-color="#0E1216"/>
+    </linearGradient>
+    <linearGradient id="muzzle" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6A737D"/>
+      <stop offset="1" stop-color="#30363E"/>
+    </linearGradient>
+    <radialGradient id="eye" cx="45%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#FFE38A"/>
+      <stop offset="0.42" stop-color="#D89018"/>
+      <stop offset="1" stop-color="#5E2600"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Cola tupida, detrás del cuerpo -->
+  <g stroke="#101419" stroke-width="10" stroke-linejoin="round">
+    <polygon points="570,326 657,292 735,328 707,382 633,408 571,386"
+             fill="url(#furDark)"/>
+    <polygon points="657,292 735,328 707,382 665,355"
+             fill="#7C858E" opacity="0.30" stroke="none"/>
+    <polygon points="633,408 707,382 678,421 605,430"
+             fill="#20262D" stroke="none"/>
+  </g>
+
+  <!-- Cuerpo largo y pecho profundo -->
+  <g stroke="#101419" stroke-width="10" stroke-linejoin="round">
+    <polygon points="265,244 376,202 514,224 612,295 622,391 553,459 418,483 286,448 217,374"
+             fill="url(#furMain)"/>
+
+    <!-- Lomo y facetas -->
+    <polygon points="265,244 376,202 514,224 562,265 433,259 315,286"
+             fill="#8A939C" opacity="0.27" stroke="none"/>
+    <polygon points="217,374 286,448 418,483 370,420 275,372"
+             fill="#11161B" opacity="0.58" stroke="none"/>
+    <polygon points="433,259 562,265 612,295 553,332 447,318"
+             fill="#4E5761" opacity="0.55" stroke="none"/>
+
+    <!-- Pecho -->
+    <polygon points="217,286 290,267 350,323 330,421 267,448 205,386"
+             fill="url(#furLight)"/>
+    <polygon points="228,304 290,282 325,324 277,351 219,347"
+             fill="#BDC3C8" opacity="0.26" stroke="none"/>
+
+    <!-- Pata delantera cercana -->
+    <polygon points="245,388 307,397 300,548 238,548 217,466"
+             fill="#3B444E"/>
+    <polygon points="238,522 302,522 294,576 218,576"
+             fill="#1C2228"/>
+
+    <!-- Pata delantera lejana -->
+    <polygon points="330,391 382,398 392,538 341,540 318,458"
+             fill="#303842"/>
+    <polygon points="341,516 393,516 389,563 329,563"
+             fill="#171C22"/>
+
+    <!-- Pata trasera cercana -->
+    <polygon points="505,407 565,391 602,478 584,550 519,550 486,476"
+             fill="#303842"/>
+    <polygon points="519,526 586,526 604,572 510,572"
+             fill="#181D23"/>
+
+    <!-- Pata trasera lejana -->
+    <polygon points="439,429 491,420 510,497 487,552 432,550 416,483"
+             fill="#252C34"/>
+    <polygon points="432,527 488,527 494,568 421,568"
+             fill="#151A1F"/>
+
+    <!-- Garras -->
+    <polygon points="225,566 212,589 236,580" fill="#DDD8C9"/>
+    <polygon points="253,568 245,592 268,580" fill="#DDD8C9"/>
+    <polygon points="522,562 510,586 536,577" fill="#DDD8C9"/>
+    <polygon points="553,562 546,588 568,576" fill="#DDD8C9"/>
+  </g>
+
+  <!-- Cuello canino -->
+  <g stroke="#101419" stroke-width="10" stroke-linejoin="round">
+    <polygon points="210,213 288,194 352,241 350,329 290,391 214,371 174,303"
+             fill="url(#furMain)"/>
+    <polygon points="207,225 282,207 327,240 285,276 211,279"
+             fill="#929AA3" opacity="0.30" stroke="none"/>
+    <polygon points="214,371 290,391 350,329 312,323 249,339"
+             fill="#20262C" opacity="0.56" stroke="none"/>
+  </g>
+
+  <!-- Cabeza de lobo -->
+  <g stroke="#101419" stroke-width="10" stroke-linejoin="round">
+    <!-- Orejas altas -->
+    <polygon points="172,177 152,54 239,153 234,218"
+             fill="#353D46"/>
+    <polygon points="279,157 354,58 338,207 302,226"
+             fill="#353D46"/>
+    <polygon points="177,155 163,87 218,157"
+             fill="#775355" stroke-width="5"/>
+    <polygon points="292,153 339,88 329,188"
+             fill="#775355" stroke-width="5"/>
+
+    <!-- Cráneo -->
+    <polygon points="201,143 267,121 330,159 354,221 327,292 268,329 192,309 149,254 155,188"
+             fill="url(#furLight)"/>
+    <polygon points="201,143 267,121 330,159 294,187 205,184"
+             fill="#C2C8CD" opacity="0.30" stroke="none"/>
+
+    <!-- Mejillas -->
+    <polygon points="154,221 199,199 228,255 196,300 154,270"
+             fill="#5B646E" opacity="0.72" stroke="none"/>
+    <polygon points="342,214 300,199 277,250 307,292 337,269"
+             fill="#505962" opacity="0.72" stroke="none"/>
+
+    <!-- Cejas -->
+    <polygon points="169,190 232,194 218,220 177,219"
+             fill="#171B20"/>
+    <polygon points="326,188 267,194 280,219 319,216"
+             fill="#171B20"/>
+
+    <!-- Ojos -->
+    <polygon points="179,207 225,208 214,239 184,237"
+             fill="url(#eye)"/>
+    <polygon points="314,204 271,207 282,236 309,234"
+             fill="url(#eye)"/>
+    <polygon points="195,211 215,213 210,233 195,231"
+             fill="#170B00" stroke="none"/>
+    <polygon points="299,208 280,211 285,231 299,229"
+             fill="#170B00" stroke="none"/>
+
+    <!-- Hocico largo -->
+    <polygon points="149,254 188,232 245,249 304,289 283,337 211,344 164,309"
+             fill="url(#muzzle)"/>
+    <polygon points="188,232 245,249 304,289 251,283 187,268"
+             fill="#808993" opacity="0.28" stroke="none"/>
+
+    <!-- Nariz -->
+    <polygon points="137,253 158,232 190,239 197,262 173,280 144,272"
+             fill="#101419"/>
+
+    <!-- Boca abierta -->
+    <polygon points="165,283 222,289 280,314 263,351 211,344 176,326"
+             fill="#210D0E"/>
+    <polygon points="176,288 201,294 188,333 168,316"
+             fill="#E7E1CF"/>
+    <polygon points="232,298 259,312 244,346 221,329"
+             fill="#E7E1CF"/>
+
+    <!-- Cicatriz -->
+    <path d="M272 259 L307 286 M282 248 L316 274"
+          fill="none" stroke="#313840" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>

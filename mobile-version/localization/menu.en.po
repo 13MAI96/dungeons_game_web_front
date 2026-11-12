@@ -1,0 +1,212 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Mobile Version\n"
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "MENU_START_GAME"
+msgstr "Start Game"
+
+msgid "MENU_LOAD_GAME"
+msgstr "Load Game"
+
+msgid "MENU_SETTINGS"
+msgstr "Settings"
+
+msgid "SETTINGS_TITLE"
+msgstr "Settings"
+
+msgid "SETTINGS_LANGUAGE"
+msgstr "Language"
+
+msgid "SETTINGS_ENGLISH"
+msgstr "English"
+
+msgid "SETTINGS_SPANISH"
+msgstr "Spanish"
+
+msgid "SETTINGS_BACK"
+msgstr "Back"
+
+msgid "COMING_SOON"
+msgstr "Coming soon"
+
+msgid "CONFIRM_NEW_GAME_TITLE"
+msgstr "Start a new game?"
+
+msgid "CONFIRM_NEW_GAME_MESSAGE"
+msgstr "Your current saved game will be replaced. This cannot be undone."
+
+msgid "CONFIRM_EXIT_TITLE"
+msgstr "Return to the main menu?"
+
+msgid "CONFIRM_EXIT_MESSAGE"
+msgstr "Your progress is saved. Any unconfirmed allocation changes will be discarded."
+
+msgid "CONFIRM_ACCEPT"
+msgstr "Confirm"
+
+msgid "CONFIRM_CANCEL"
+msgstr "Cancel"
+
+msgid "RESULT_CONTINUE"
+msgstr "Continue"
+
+msgid "RESULT_COMPLETED_TITLE"
+msgstr "Dungeon completed"
+
+msgid "RESULT_RETREATED_TITLE"
+msgstr "Expedition ended"
+
+msgid "RESULT_RETREATED_MESSAGE"
+msgstr "You returned safely from the dungeon."
+
+msgid "RESULT_ENDED_TITLE"
+msgstr "Expedition ended"
+
+msgid "RESULT_DEFEAT_TITLE"
+msgstr "Defeat"
+
+msgid "RESULT_GAME_OVER_TITLE"
+msgstr "Game over"
+
+msgid "NEW_GAME_CHARACTER_PLACEHOLDER"
+msgstr "Character"
+
+msgid "NEW_GAME_EXPLORE_DUNGEON"
+msgstr "Explore Dungeon"
+
+msgid "NEW_GAME_CHALLENGE_DUNGEON"
+msgstr "Challenge Dungeon"
+
+msgid "NEW_GAME_MANAGE_EQUIPMENT"
+msgstr "Progression"
+
+msgid "NEW_GAME_SHOP"
+msgstr "Shop"
+
+msgid "NEW_GAME_EXIT"
+msgstr "Exit"
+
+msgid "EXPLORE_REST"
+msgstr "Rest"
+
+msgid "EXPLORE_RETREAT"
+msgstr "Retreat"
+
+msgid "EXPLORE_COLLECT_TREASURE"
+msgstr "Collect Treasure"
+
+msgid "ENCOUNTER_PLAYER"
+msgstr "Player"
+
+msgid "ENCOUNTER_FIGHT"
+msgstr "Fight"
+
+msgid "ENCOUNTER_FLEE"
+msgstr "Flee"
+
+msgid "ENCOUNTER_FLEE_SUCCESS"
+msgstr "You escaped"
+
+msgid "ENCOUNTER_FLEE_FAILED"
+msgstr "You could not escape"
+
+msgid "COMBAT_HIT"
+msgstr "Hit"
+
+msgid "COMBAT_CRITICAL_HIT"
+msgstr "Critical hit"
+
+msgid "COMBAT_COUNTERATTACK_HIT"
+msgstr "The monster hit you"
+
+msgid "COMBAT_MISS"
+msgstr "Miss"
+
+msgid "COMBAT_DODGED"
+msgstr "Dodged"
+
+msgid "COMBAT_EXPERIENCE_GAINED"
+msgstr "You gained experience"
+
+msgid "COMBAT_EXPERIENCE_GAINED_AMOUNT"
+msgstr "You gained %s experience"
+
+msgid "STAT_EXPERIENCE"
+msgstr "Total XP"
+
+msgid "STAT_DUNGEON_EXPERIENCE"
+msgstr "Dungeon XP"
+
+msgid "COMBAT_QUEST_SUCCESS"
+msgstr "You obtained experience"
+
+msgid "COMBAT_QUEST_TRAP"
+msgstr "You fell into a trap"
+
+msgid "COMBAT_REST"
+msgstr "You rested"
+
+msgid "COMBAT_INSUFFICIENT_MANA"
+msgstr "Not enough mana"
+
+msgid "COMBAT_INSUFFICIENT_RESOURCES"
+msgstr "Not enough energy or mana for this attack"
+
+msgid "COMBAT_SANCTUARY"
+msgstr "Sanctuary restored you"
+
+msgid "EXPLORE_RETREAT_ENTRANCE_ONLY"
+msgstr "You can only retreat from the entrance"
+
+msgid "EXPLORE_RETREAT_SUCCESS"
+msgstr "You retreated"
+
+msgid "EXPLORE_RETREAT_DEPLETED"
+msgstr "You ran out of energy"
+
+msgid "DUNGEON_COMPLETED_REWARDS"
+msgstr "Dungeon complete: +%s experience, +%s reputation"
+
+msgid "COMBAT_DEATH_SEQUEL"
+msgstr "You survived with a permanent life sequel"
+
+msgid "COMBAT_SAVE_DELETED"
+msgstr "The save was deleted"
+
+msgid "LEVEL_ALLOCATION_TITLE"
+msgstr "Level Up"
+
+msgid "LEVEL_ALLOCATION_REMAINING"
+msgstr "Remaining points: %s"
+
+msgid "LEVEL_ALLOCATION_CONFIRM"
+msgstr "Confirm"
+
+msgid "LEVEL_ALLOCATION_BACK"
+msgstr "Back"
+
+msgid "LEVEL_ALLOCATION_NO_POINTS"
+msgstr "No points pending"
+
+msgid "LEVEL_CLASS_CHOICE_TITLE"
+msgstr "Choose Class"
+
+msgid "LEVEL_PROGRESSION_PENDING"
+msgstr "Progression points pending"
+
+msgid "DUNGEON_ENERGY_DEPLETED"
+msgstr "You ran out of energy"
+
+msgid "DUNGEON_LIFE_DEPLETED"
+msgstr "You lost all life"
+
+msgid "ENCOUNTER_MONSTER_INFO"
+msgstr "i"
+
+msgid "ENCOUNTER_MONSTER_ATTACKS_TITLE"
+msgstr "Monster attacks"
+
+msgid "ENCOUNTER_MONSTER_ATTACK_LINE"
+msgstr "%s - Damage %s, Mana %s, Lv. %s, Effects: %s"

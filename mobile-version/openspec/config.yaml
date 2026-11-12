@@ -1,0 +1,30 @@
+schema: spec-driven
+
+context: |
+  Project: mobile-version
+  Runtime: Godot 4 mobile project using GDScript.
+  Target: mobile-first game/application experience.
+  Conventions:
+    - Keep implementation scoped to this mobile-version directory.
+    - Use Godot scenes under res://scenes and GDScript under res://scripts.
+    - Prefer small, focused OpenSpec changes before implementation.
+    - Specs describe observable behavior; design docs capture Godot architecture decisions only when needed.
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours

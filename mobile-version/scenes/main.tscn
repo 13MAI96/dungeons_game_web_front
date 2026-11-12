@@ -1,0 +1,513 @@
+[gd_scene load_steps=2 format=3 uid="uid://mobile_version_main"]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_main")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.105882, 0.0745098, 0.0509804, 1)
+
+[node name="MainMenuView" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="LogoSpace" type="Control" parent="MainMenuView"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.8
+
+[node name="MenuArea" type="MarginContainer" parent="MainMenuView"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.0
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 64
+
+[node name="MenuButtons" type="VBoxContainer" parent="MainMenuView/MenuArea"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 14
+alignment = 1
+
+[node name="StartGameButton" type="Button" parent="MainMenuView/MenuArea/MenuButtons"]
+custom_minimum_size = Vector2(248, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Start Game"
+
+[node name="LoadGameButton" type="Button" parent="MainMenuView/MenuArea/MenuButtons"]
+custom_minimum_size = Vector2(248, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Load Game"
+
+[node name="SettingsButton" type="Button" parent="MainMenuView/MenuArea/MenuButtons"]
+custom_minimum_size = Vector2(248, 52)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "Settings"
+
+[node name="NewGameView" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="CharacterArea" type="MarginContainer" parent="NewGameView"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.35
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
+
+[node name="CharacterColumns" type="HBoxContainer" parent="NewGameView/CharacterArea"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="CharacterImageSlot" type="PanelContainer" parent="NewGameView/CharacterArea/CharacterColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.85
+
+[node name="CharacterImagePlaceholder" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/CharacterImageSlot"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Character"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatsColumn" type="VBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 5
+
+[node name="EnergyStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
+layout_mode = 2
+
+[node name="EnergyLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/EnergyStat"]
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+text = "Energy"
+
+[node name="EnergyBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/EnergyStat"]
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="EnergyValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/EnergyStat"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="LifeStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
+layout_mode = 2
+
+[node name="LifeLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/LifeStat"]
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+text = "Life"
+
+[node name="LifeBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/LifeStat"]
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="LifeValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/LifeStat"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="ManaStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
+layout_mode = 2
+
+[node name="ManaLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ManaStat"]
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+text = "Mana"
+
+[node name="ManaBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ManaStat"]
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="ManaValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ManaStat"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="ArmorStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
+layout_mode = 2
+
+[node name="ArmorLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ArmorStat"]
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+text = "Armor"
+
+[node name="ArmorBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ArmorStat"]
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="ArmorValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ArmorStat"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="DamageStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
+layout_mode = 2
+
+[node name="DamageLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/DamageStat"]
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+text = "Damage"
+
+[node name="DamageBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/DamageStat"]
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="DamageValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/DamageStat"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="ReputationStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
+layout_mode = 2
+
+[node name="ReputationLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ReputationStat"]
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+text = "Reputation"
+
+[node name="ReputationBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ReputationStat"]
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="ReputationValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ReputationStat"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="ExperienceStat" type="HBoxContainer" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn"]
+layout_mode = 2
+
+[node name="ExperienceLabel" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ExperienceStat"]
+custom_minimum_size = Vector2(82, 0)
+layout_mode = 2
+text = "Experience"
+
+[node name="ExperienceBar" type="ProgressBar" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ExperienceStat"]
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="ExperienceValue" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/StatsColumn/ExperienceStat"]
+custom_minimum_size = Vector2(36, 0)
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="ActionArea" type="MarginContainer" parent="NewGameView"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.0
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 36
+
+[node name="ActionButtons" type="VBoxContainer" parent="NewGameView/ActionArea"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="ExploreDungeonButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
+custom_minimum_size = Vector2(248, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Explore Dungeon"
+
+[node name="ChallengeDungeonButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
+custom_minimum_size = Vector2(248, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Challenge Dungeon"
+
+[node name="ManageEquipmentButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
+custom_minimum_size = Vector2(248, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Manage Equipment"
+
+[node name="ShopButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
+custom_minimum_size = Vector2(248, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Shop"
+
+[node name="ExitButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
+custom_minimum_size = Vector2(248, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Exit"
+
+[node name="DungeonExploreView" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="MapArea" type="MarginContainer" parent="DungeonExploreView"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.7
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 12
+
+[node name="MapFrame" type="PanelContainer" parent="DungeonExploreView/MapArea"]
+layout_mode = 2
+
+[node name="MapGrid" type="GridContainer" parent="DungeonExploreView/MapArea/MapFrame"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="ExploreActions" type="MarginContainer" parent="DungeonExploreView"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.0
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 36
+
+[node name="ExploreActionStack" type="VBoxContainer" parent="DungeonExploreView/ExploreActions"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ExploreFeedback" type="Label" parent="DungeonExploreView/ExploreActions/ExploreActionStack"]
+custom_minimum_size = Vector2(312, 24)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="DirectionPad" type="VBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="DirectionRow" type="HBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="MoveLeftButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow"]
+custom_minimum_size = Vector2(72, 104)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "<"
+
+[node name="VerticalDirections" type="VBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="MoveUpButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow/VerticalDirections"]
+custom_minimum_size = Vector2(152, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "^"
+
+[node name="MoveDownButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow/VerticalDirections"]
+custom_minimum_size = Vector2(152, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "v"
+
+[node name="MoveRightButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/DirectionPad/DirectionRow"]
+custom_minimum_size = Vector2(72, 104)
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = ">"
+
+[node name="ExploreSecondaryActions" type="VBoxContainer" parent="DungeonExploreView/ExploreActions/ExploreActionStack"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="RestButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/ExploreSecondaryActions"]
+custom_minimum_size = Vector2(312, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Rest"
+
+[node name="RetreatButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/ExploreSecondaryActions"]
+custom_minimum_size = Vector2(312, 44)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Retreat"
+
+[node name="MonsterEncounterView" type="VBoxContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="EncounterInfoArea" type="MarginContainer" parent="MonsterEncounterView"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.5
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
+
+[node name="EncounterStack" type="VBoxContainer" parent="MonsterEncounterView/EncounterInfoArea"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="MonsterRow" type="HBoxContainer" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="MonsterImage" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/MonsterRow"]
+custom_minimum_size = Vector2(132, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "Monster"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MonsterPanel" type="VBoxContainer" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/MonsterRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="MonsterName" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/MonsterRow/MonsterPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="MonsterStats" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/MonsterRow/MonsterPanel"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="PlayerRow" type="HBoxContainer" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="EncounterPlayerPanel" type="VBoxContainer" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/PlayerRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="EncounterPlayerTitle" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/PlayerRow/EncounterPlayerPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Player"
+horizontal_alignment = 1
+
+[node name="EncounterPlayerStats" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/PlayerRow/EncounterPlayerPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_alignment = 1
+
+[node name="EncounterPlayerImage" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/PlayerRow"]
+custom_minimum_size = Vector2(132, 112)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "Player"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="EncounterActions" type="MarginContainer" parent="MonsterEncounterView"]
+layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.0
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 44
+
+[node name="EncounterActionButtons" type="VBoxContainer" parent="MonsterEncounterView/EncounterActions"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="EncounterFeedback" type="Label" parent="MonsterEncounterView/EncounterActions/EncounterActionButtons"]
+custom_minimum_size = Vector2(248, 28)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="FightButton" type="Button" parent="MonsterEncounterView/EncounterActions/EncounterActionButtons"]
+custom_minimum_size = Vector2(248, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Fight"
+
+[node name="FleeButton" type="Button" parent="MonsterEncounterView/EncounterActions/EncounterActionButtons"]
+custom_minimum_size = Vector2(248, 46)
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Flee"
+
+[connection signal="pressed" from="MainMenuView/MenuArea/MenuButtons/StartGameButton" to="." method="_request_new_game"]
+[connection signal="pressed" from="NewGameView/ActionArea/ActionButtons/ExitButton" to="." method="_request_exit_to_menu"]

@@ -1,0 +1,61 @@
+[
+  {
+    "id": "mage",
+    "name": "Mage",
+    "progression": {
+      "points_per_level": 3,
+      "stat_growth": {
+        "life": 3,
+        "energy": 4,
+        "mana": 6,
+        "armor": 0.5,
+        "speed": 1,
+        "strength": 1
+      },
+      "automatic_increment_every": 2,
+      "automatic_increments": {
+        "mana": 1
+      }
+    }
+  },
+  {
+    "id": "knight",
+    "name": "Knight",
+    "progression": {
+      "points_per_level": 3,
+      "stat_growth": {
+        "life": 7,
+        "energy": 4,
+        "mana": 3,
+        "armor": 2,
+        "speed": 1,
+        "strength": 1
+      },
+      "automatic_increment_every": 2,
+      "automatic_increments": {
+        "life": 1,
+        "armor": 1
+      }
+    }
+  },
+  {
+    "id": "thief",
+    "name": "Thief",
+    "progression": {
+      "points_per_level": 3,
+      "stat_growth": {
+        "life": 4,
+        "energy": 7,
+        "mana": 3,
+        "armor": 1,
+        "speed": 2,
+        "strength": 1
+      },
+      "automatic_increment_every": 2,
+      "automatic_increments": {
+        "energy": 1,
+        "speed": 1
+      }
+    }
+  }
+]

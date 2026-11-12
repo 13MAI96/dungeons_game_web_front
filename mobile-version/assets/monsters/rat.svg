@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+  <title>Rata low-poly intimidante</title>
+  <desc>Rata monstruosa original de estilo low-poly, con ojos rojos, colmillos y garras.</desc>
+
+  <defs>
+    <linearGradient id="fur" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5D626A"/>
+      <stop offset="0.5" stop-color="#343942"/>
+      <stop offset="1" stop-color="#181C22"/>
+    </linearGradient>
+    <linearGradient id="furLight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#777D86"/>
+      <stop offset="1" stop-color="#424851"/>
+    </linearGradient>
+    <radialGradient id="eye" cx="45%" cy="35%" r="65%">
+      <stop offset="0" stop-color="#FF8179"/>
+      <stop offset="0.45" stop-color="#D72C2C"/>
+      <stop offset="1" stop-color="#5A0000"/>
+    </radialGradient>
+    <linearGradient id="tail" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A36A67"/>
+      <stop offset="1" stop-color="#603E43"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Cola -->
+  <path d="M130 396 C36 384 30 474 112 488 C172 498 190 460 165 438"
+        fill="none" stroke="#3A2528" stroke-width="34" stroke-linecap="round"/>
+  <path d="M130 396 C36 384 30 474 112 488 C172 498 190 460 165 438"
+        fill="none" stroke="url(#tail)" stroke-width="24" stroke-linecap="round"/>
+
+  <g stroke="#101318" stroke-width="10" stroke-linejoin="round">
+    <!-- Patas traseras -->
+    <polygon points="225,392 163,438 145,511 208,501 258,438" fill="#292E36"/>
+    <polygon points="421,389 477,438 493,510 437,501 385,438" fill="#292E36"/>
+
+    <!-- Cuerpo -->
+    <polygon points="154,294 214,218 337,192 445,222 506,303 488,397 412,464 274,470 174,418"
+             fill="url(#fur)"/>
+    <polygon points="205,255 337,211 443,239 391,283 260,307"
+             fill="#727984" opacity="0.32" stroke="none"/>
+    <polygon points="174,418 274,470 412,464 360,420 247,395"
+             fill="#11151A" opacity="0.55" stroke="none"/>
+
+    <!-- Cuello / hombros -->
+    <polygon points="172,284 235,237 291,276 267,345 187,349" fill="#444A53"/>
+
+    <!-- Cabeza -->
+    <polygon points="151,189 225,151 311,177 354,236 326,326 243,367 157,333 116,267"
+             fill="url(#furLight)"/>
+    <polygon points="151,189 225,151 311,177 276,211 179,218"
+             fill="#949AA2" opacity="0.35" stroke="none"/>
+
+    <!-- Orejas -->
+    <polygon points="154,186 104,110 82,195 118,229" fill="#6B4649"/>
+    <polygon points="275,174 333,105 349,199 316,225" fill="#6B4649"/>
+    <polygon points="137,176 111,139 105,191" fill="#B97D78" stroke-width="5"/>
+    <polygon points="289,170 323,134 328,190" fill="#B97D78" stroke-width="5"/>
+
+    <!-- Hocico -->
+    <polygon points="116,267 157,333 243,367 228,306 169,270" fill="#2A2F37"/>
+    <polygon points="116,267 168,249 199,271 169,291 128,290" fill="#161A20"/>
+
+    <!-- Ojos -->
+    <polygon points="155,222 217,211 207,251 165,259 142,242" fill="url(#eye)"/>
+    <polygon points="292,211 243,211 253,249 286,254 307,235" fill="url(#eye)"/>
+    <polygon points="176,225 199,221 194,244 178,247" fill="#160000" stroke="none"/>
+    <polygon points="275,218 252,217 258,242 274,243" fill="#160000" stroke="none"/>
+
+    <!-- Nariz -->
+    <polygon points="108,266 128,245 154,253 156,278 132,293 109,283" fill="#3A1E22"/>
+
+    <!-- Boca -->
+    <polygon points="146,291 211,305 240,338 207,360 157,333" fill="#1D0C0D"/>
+    <polygon points="158,298 181,304 169,346 148,329" fill="#E7E1CF"/>
+    <polygon points="207,309 228,329 208,357 191,339" fill="#E7E1CF"/>
+
+    <!-- Patas delanteras -->
+    <polygon points="233,349 188,391 180,466 225,467 270,389" fill="#3E444D"/>
+    <polygon points="370,350 417,391 427,466 382,468 336,391" fill="#3E444D"/>
+
+    <!-- Garras -->
+    <polygon points="181,459 163,491 190,480" fill="#D8D3C3"/>
+    <polygon points="203,462 190,498 215,482" fill="#D8D3C3"/>
+    <polygon points="425,459 444,492 417,480" fill="#D8D3C3"/>
+    <polygon points="403,462 416,498 391,482" fill="#D8D3C3"/>
+
+    <!-- Cicatrices -->
+    <path d="M271 286 L300 310 M279 276 L309 300"
+          fill="none" stroke="#22262D" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>
