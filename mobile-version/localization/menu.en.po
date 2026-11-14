@@ -255,3 +255,24 @@ msgstr "%s was protected."
 
 msgid "COMBAT_FEEDBACK_MONSTER_MISSED"
 msgstr "%s missed."
+
+msgid "CONFIRM_QUIT_TITLE"
+msgstr "Quit the game?"
+
+msgid "CONFIRM_QUIT_MESSAGE"
+msgstr "Your progress is saved."
+
+msgid "CONFIRM_ABANDON_TITLE"
+msgstr "Abandon the expedition?"
+
+msgid "CONFIRM_ABANDON_MESSAGE"
+msgstr "You will lose the experience earned in this dungeon. Your life, energy and mana will be restored."
+
+msgid "RESULT_ABANDONED_MESSAGE"
+msgstr "You abandoned the expedition. The experience from this run was lost."
+
+msgid "ENCOUNTER_CANNOT_AFFORD_ATTACK"
+msgstr "Not enough energy or mana to attack. You can still flee."
+
+msgid "COMBAT_SANCTUARY_USED"
+msgstr "This sanctuary has already been used."

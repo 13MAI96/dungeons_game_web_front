@@ -63,7 +63,7 @@ The mobile combat system SHALL mark defeated monsters cleared and grant their ex
 - **THEN** the player gains the monster experience value as current dungeon experience
 
 ### Requirement: Recovery follows web player rules
-The mobile combat system SHALL apply the new recovery rules for rest, sanctuary, and alive dungeon exits.
+The mobile combat system SHALL apply the new recovery rules for rest, sanctuary, and alive dungeon exits, with each sanctuary usable once per dungeon run.
 
 #### Scenario: Rest restores status with mana
 - **WHEN** the player rests during dungeon exploration
@@ -81,11 +81,15 @@ The mobile combat system SHALL apply the new recovery rules for rest, sanctuary,
 - **THEN** current mana remains unchanged
 
 #### Scenario: Sanctuary restores status
-- **WHEN** the player enters a sanctuary location
+- **WHEN** the player enters a sanctuary location that has not been used in this run
 - **THEN** the system restores between 50 and 100 percent of maximum life
 - **THEN** the system restores between 50 and 100 percent of maximum energy
 - **THEN** the system restores between 50 and 100 percent of maximum mana
-- **THEN** the sanctuary location remains unvisited
+- **THEN** the sanctuary location becomes visited
+
+#### Scenario: Used sanctuary is entered again
+- **WHEN** the player enters a sanctuary location that was already used in this run
+- **THEN** no life, energy or mana is restored
 
 #### Scenario: Dungeon exit restores status
 - **WHEN** the player exits the dungeon without dying

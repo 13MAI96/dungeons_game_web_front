@@ -369,8 +369,14 @@ func _verify_recovery_quest_and_death() -> void:
 	player["current_energy"] = 4
 	player["current_mana"] = 2
 	CombatRules.apply_sanctuary(player, sanctuary, 50, 50, 50)
-	if bool(sanctuary["visited"]) or int(player["current_life"]) != 8 or int(player["current_energy"]) != 17 or int(player["current_mana"]) != 8:
-		push_error("Sanctuary should restore 50-100 percent life, energy, and mana without marking visited.")
+	if not bool(sanctuary["visited"]) or int(player["current_life"]) != 8 or int(player["current_energy"]) != 17 or int(player["current_mana"]) != 8:
+		push_error("Sanctuary should restore 50-100 percent life, energy, and mana and then count as visited.")
+		quit(1)
+		return
+	player["current_life"] = 3
+	var reuse: Dictionary = CombatRules.apply_sanctuary(player, sanctuary, 50, 50, 50)
+	if bool(reuse.get("sanctuary", true)) or int(player["current_life"]) != 3:
+		push_error("A used sanctuary should not heal again in the same run.")
 		quit(1)
 		return
 

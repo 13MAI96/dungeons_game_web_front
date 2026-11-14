@@ -209,7 +209,7 @@ msgid "ENCOUNTER_MONSTER_ATTACKS_TITLE"
 msgstr "Ataques del monstruo"
 
 msgid "ENCOUNTER_MONSTER_ATTACK_LINE"
-msgstr "%s - Dano %s, Mana %s, Lv. %s, Efectos: %s"
+msgstr "%s - Daño %s, Maná %s, Nv. %s, Efectos: %s"
 
 msgid "HUB_LEVEL"
 msgstr "Nivel %s"
@@ -255,3 +255,24 @@ msgstr "Tu armadura detuvo %s."
 
 msgid "COMBAT_FEEDBACK_MONSTER_MISSED"
 msgstr "%s falló."
+
+msgid "CONFIRM_QUIT_TITLE"
+msgstr "¿Salir del juego?"
+
+msgid "CONFIRM_QUIT_MESSAGE"
+msgstr "Tu progreso está guardado."
+
+msgid "CONFIRM_ABANDON_TITLE"
+msgstr "¿Abandonar la expedición?"
+
+msgid "CONFIRM_ABANDON_MESSAGE"
+msgstr "Perderás la experiencia ganada en esta mazmorra. Tu vida, energía y maná se restaurarán."
+
+msgid "RESULT_ABANDONED_MESSAGE"
+msgstr "Abandonaste la expedición. Se perdió la experiencia de esta incursión."
+
+msgid "ENCOUNTER_CANNOT_AFFORD_ATTACK"
+msgstr "No tenés suficiente energía o maná para atacar. Todavía podés huir."
+
+msgid "COMBAT_SANCTUARY_USED"
+msgstr "Este santuario ya fue usado."

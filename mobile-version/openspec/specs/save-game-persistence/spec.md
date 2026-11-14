@@ -27,16 +27,16 @@ The mobile game SHALL enable Load Game only when a supported, valid player save 
 - **THEN** Load Game is disabled
 
 ### Requirement: Stable progression is saved automatically
-The mobile game SHALL save permanent player state after stable progression and dungeon-exit checkpoints.
+The mobile game SHALL save player state after stable progression, after every dungeon action and at dungeon-exit checkpoints.
 
 #### Scenario: Permanent progression changes
 - **WHEN** the player confirms stat allocation or selects a class
 - **THEN** the updated player is persisted
 
 #### Scenario: Dungeon reaches a stable exit
-- **WHEN** the player retreats, completes a dungeon, runs out of energy, or survives defeat
+- **WHEN** the player retreats, completes a dungeon, runs out of energy, abandons the expedition, or survives defeat
 - **THEN** the resolved post-dungeon player state is persisted
-- **AND** active dungeon and encounter state are not persisted
+- **AND** no active run remains in the save
 
 ### Requirement: Invalidated saves are removed
 The mobile game SHALL remove the local save when death rules invalidate the character.
@@ -47,11 +47,30 @@ The mobile game SHALL remove the local save when death rules invalidate the char
 - **AND** Load Game becomes disabled
 - **AND** the app returns to the main menu after displaying death feedback
 
-### Requirement: Saves preserve permanent experience only
-The mobile game SHALL persist permanent accumulated experience without restoring an interrupted dungeon's provisional experience.
+### Requirement: Interrupted dungeon runs resume
+The mobile game SHALL persist the active dungeon run and restore it when the save is loaded.
 
-#### Scenario: Player save is loaded
-- **WHEN** a valid save is loaded
-- **THEN** permanent accumulated experience is restored
-- **AND** provisional dungeon experience is zero
-- **AND** no dungeon run is marked active
+#### Scenario: Run state is saved during play
+- **WHEN** the player moves, fights, flees, rests or collects treasure in a dungeon, or the app is paused or closed during a run
+- **THEN** the dungeon map, player position, active encounter, current status and provisional experience are persisted
+
+#### Scenario: Save with an active run is loaded
+- **WHEN** a valid save containing an active run is loaded
+- **THEN** the player returns to the same dungeon, position and encounter
+- **AND** provisional dungeon experience and current life, energy and mana are restored
+
+#### Scenario: Save without an active run is loaded
+- **WHEN** a valid save without an active run is loaded
+- **THEN** provisional dungeon experience is zero
+- **AND** the game hub is displayed
+
+### Requirement: Saves survive interrupted writes
+The mobile game SHALL never leave the player without a loadable save because a write was interrupted.
+
+#### Scenario: App is killed while saving
+- **WHEN** the app stops after the new save was written to its temporary file but before it replaced the main file
+- **THEN** the next load recovers the progress from the temporary file
+
+#### Scenario: Save cannot be written
+- **WHEN** writing the new save fails
+- **THEN** the previous save file is left unchanged

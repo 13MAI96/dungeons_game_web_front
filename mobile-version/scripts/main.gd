@@ -57,6 +57,12 @@ const RESULT_GAME_OVER_TITLE_KEY := "RESULT_GAME_OVER_TITLE"
 const HUB_LEVEL_KEY := "HUB_LEVEL"
 const AD_PLACEHOLDER_KEY := "AD_PLACEHOLDER"
 const MONSTER_INFO_CLOSE_KEY := "ENCOUNTER_MONSTER_INFO_CLOSE"
+const CONFIRM_QUIT_TITLE_KEY := "CONFIRM_QUIT_TITLE"
+const CONFIRM_QUIT_MESSAGE_KEY := "CONFIRM_QUIT_MESSAGE"
+const CONFIRM_ABANDON_TITLE_KEY := "CONFIRM_ABANDON_TITLE"
+const CONFIRM_ABANDON_MESSAGE_KEY := "CONFIRM_ABANDON_MESSAGE"
+const RESULT_ABANDONED_MESSAGE_KEY := "RESULT_ABANDONED_MESSAGE"
+const CANNOT_AFFORD_ATTACK_KEY := "ENCOUNTER_CANNOT_AFFORD_ATTACK"
 const DIRECTION_ICON_PATHS := {
 	"left": "res://assets/icons/arrow_left.svg",
 	"right": "res://assets/icons/arrow_right.svg",
@@ -214,6 +220,9 @@ var safe_insets: Dictionary = {"left": 0.0, "top": 0.0, "right": 0.0, "bottom": 
 var explore_hud: MarginContainer
 var hub_level_label: Label
 var map_player_marker: Panel
+## True while a game (new or loaded) is in progress; controls saving when the app is backgrounded.
+var session_active: bool = false
+var save_failure_reported: bool = false
 var game_result_modal: ColorRect
 var game_result_title: Label
 var game_result_message: Label
@@ -387,13 +396,15 @@ func _connect_navigation_signals() -> void:
 
 func _start_new_game() -> void:
 	player_state = CombatRules.create_default_player()
+	dungeon = {}
+	session_active = true
 	_persist_player_state()
 	_apply_player_stats()
 	_show_new_game_view()
 
 func _request_new_game() -> void:
-	var saved := SaveGame.load_player(CombatRules.create_default_player(), save_path)
-	if bool(saved.get("success", false)):
+	# Any existing file, even one that cannot be loaded, needs confirmation before it is replaced.
+	if SaveGame.has_save(save_path):
 		_show_confirmation(tr(CONFIRM_NEW_GAME_TITLE_KEY), tr(CONFIRM_NEW_GAME_MESSAGE_KEY), Callable(self, "_start_new_game"))
 		return
 	_start_new_game()
@@ -425,7 +436,17 @@ func _load_game() -> void:
 		_update_load_game_button()
 		return
 	player_state = (result["player"] as Dictionary).duplicate(true)
+	session_active = true
 	_apply_player_stats()
+	var run := result.get("run", {}) as Dictionary
+	if not run.is_empty() and _resume_run(run):
+		return
+	if bool(player_state.get("in_dungeon", false)):
+		# The run could not be restored: settle it like an alive exit without its experience.
+		CombatRules.discard_dungeon_experience(player_state)
+		CombatRules.restore_status_after_alive_exit(player_state)
+		_persist_player_state()
+		_apply_player_stats()
 	_show_new_game_view()
 
 func _persist_player_state() -> bool:
@@ -433,9 +454,133 @@ func _persist_player_state() -> bool:
 		var deleted := SaveGame.delete_save(save_path)
 		_update_load_game_button()
 		return deleted
-	var saved := SaveGame.save_player(player_state, save_path)
-	_update_load_game_button()
+	var run := _build_run_snapshot()
+	var saved := SaveGame.save_player(player_state, save_path, run)
+	if not saved and not save_failure_reported:
+		save_failure_reported = true
+		push_warning("Saving the game failed (storage full or not writable): %s" % save_path)
+	# Refreshing the Load button re-reads and parses the whole save, so skip it for in-dungeon
+	# checkpoints (every action); the main menu refreshes it when shown.
+	if run.is_empty():
+		_update_load_game_button()
 	return saved
+
+## Active dungeon run for the save, or {} outside a run. Locations are stored as coordinates
+## because current/previous/active locations are references into dungeon["locations"].
+func _build_run_snapshot() -> Dictionary:
+	if dungeon.is_empty() or dungeon_exit_pending or not bool(player_state.get("in_dungeon", false)):
+		return {}
+	return {
+		"dungeon": dungeon,
+		"current": _location_coordinates(current_location),
+		"previous": _location_coordinates(previous_location),
+		"monster": _location_coordinates(active_monster_location),
+	}
+
+func _location_coordinates(location: Dictionary) -> Array:
+	if location.is_empty():
+		return []
+	return [int(location["column"]), int(location["row"])]
+
+func _location_from_coordinates(coordinates: Variant) -> Dictionary:
+	if not coordinates is Array or (coordinates as Array).size() != 2:
+		return {}
+	return DungeonGenerator.get_location(dungeon, int(coordinates[0]), int(coordinates[1]))
+
+## Restores a saved run. Returns false (leaving no run active) if the snapshot is unusable.
+func _resume_run(run: Dictionary) -> bool:
+	if not run.get("dungeon") is Dictionary or not (run["dungeon"] as Dictionary).get("locations") is Array:
+		return false
+	dungeon = run["dungeon"] as Dictionary
+	current_location = _location_from_coordinates(run.get("current"))
+	if current_location.is_empty():
+		dungeon = {}
+		return false
+	previous_location = _location_from_coordinates(run.get("previous"))
+	var monster_location := _location_from_coordinates(run.get("monster"))
+	active_monster_location = monster_location if not monster_location.is_empty() and DungeonGenerator.is_monster_alive(monster_location) else {}
+	player_state["in_dungeon"] = true
+	dungeon_exit_pending = false
+	_clear_feedback()
+	_mark_visible_locations()
+	_render_map()
+	_update_direction_buttons()
+	_update_exploration_actions()
+	_apply_player_stats()
+	_show_dungeon_explore_view()
+	if not active_monster_location.is_empty():
+		_show_monster_encounter(active_monster_location)
+	return true
+
+## Saves the player and the active run after a dungeon action.
+func _persist_run_checkpoint() -> void:
+	if not dungeon.is_empty() and not dungeon_exit_pending:
+		_persist_player_state()
+
+# --- Android lifecycle and back navigation ------------------------------------------------
+
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_APPLICATION_PAUSED, NOTIFICATION_WM_CLOSE_REQUEST:
+			if session_active:
+				_persist_player_state()
+		NOTIFICATION_WM_GO_BACK_REQUEST:
+			_handle_back()
+
+## System back as in-game navigation: close the top modal, otherwise step back one screen.
+func handle_back() -> void:
+	_handle_back()
+
+func _handle_back() -> void:
+	if not is_node_ready():
+		return
+	if is_instance_valid(action_confirmation) and action_confirmation.visible:
+		_cancel_pending_action()
+		return
+	if is_instance_valid(damage_overlay) and damage_overlay.visible:
+		return
+	if dungeon_exit_pending:
+		return
+	if is_instance_valid(game_result_modal) and game_result_modal.visible:
+		_hide_game_result()
+		return
+	if is_instance_valid(monster_info_modal) and monster_info_modal.visible:
+		_hide_monster_info()
+		return
+	match current_screen:
+		AdSlotConfig.SCREEN_SETTINGS:
+			_show_main_menu_view()
+		AdSlotConfig.SCREEN_LEVEL_UP:
+			_show_new_game_view()
+		AdSlotConfig.SCREEN_HUB:
+			_request_exit_to_menu()
+		AdSlotConfig.SCREEN_MENU:
+			_show_confirmation(tr(CONFIRM_QUIT_TITLE_KEY), tr(CONFIRM_QUIT_MESSAGE_KEY), Callable(get_tree(), "quit"))
+		AdSlotConfig.SCREEN_EXPLORE:
+			_request_abandon_expedition()
+		AdSlotConfig.SCREEN_ENCOUNTER:
+			pass  # Fight or flee; leaving an encounter must not dodge its outcome.
+
+func _request_abandon_expedition() -> void:
+	if dungeon.is_empty() or dungeon_exit_pending or not active_monster_location.is_empty():
+		return
+	_show_confirmation(tr(CONFIRM_ABANDON_TITLE_KEY), tr(CONFIRM_ABANDON_MESSAGE_KEY), Callable(self, "_abandon_expedition"))
+
+## Leaves the dungeon from any cell: the run's experience is lost, status restored as an alive exit.
+func _abandon_expedition() -> void:
+	if dungeon.is_empty() or dungeon_exit_pending:
+		return
+	CombatRules.discard_dungeon_experience(player_state)
+	CombatRules.restore_status_after_alive_exit(player_state)
+	dungeon = {}
+	current_location = {}
+	previous_location = {}
+	active_monster_location = {}
+	_clear_feedback()
+	_persist_player_state()
+	_apply_player_stats()
+	_show_new_game_view()
+	_show_game_result(tr(RESULT_ENDED_TITLE_KEY), tr(RESULT_ABANDONED_MESSAGE_KEY))
 
 func _update_load_game_button() -> void:
 	if is_instance_valid(load_game_button):
@@ -462,6 +607,7 @@ func _show_new_game_view() -> void:
 
 func _show_main_menu_view() -> void:
 	dungeon_exit_pending = false
+	session_active = false
 	_activate_screen(main_menu_view, AdSlotConfig.SCREEN_MENU)
 	_update_load_game_button()
 
@@ -497,6 +643,7 @@ func start_dungeon_exploration(dungeon_type: int = 1) -> void:
 	_update_direction_buttons()
 	_update_exploration_actions()
 	_show_dungeon_explore_view()
+	_persist_run_checkpoint()
 
 func get_valid_directions() -> Dictionary:
 	if current_location.is_empty():
@@ -551,6 +698,7 @@ func move_player(direction: String) -> void:
 
 	if DungeonGenerator.is_monster_alive(current_location):
 		_show_monster_encounter(current_location)
+	_persist_run_checkpoint()
 
 func _show_dungeon_explore_view() -> void:
 	_activate_screen(dungeon_explore_view, AdSlotConfig.SCREEN_EXPLORE)
@@ -567,6 +715,7 @@ func _show_monster_encounter(location: Dictionary) -> void:
 	_clear_roll_displays()
 	_update_monster_info_button()
 	_activate_screen(monster_encounter_view, AdSlotConfig.SCREEN_ENCOUNTER)
+	_update_fight_availability()
 
 func _can_move_to(location: Dictionary) -> bool:
 	if location.is_empty() or location.get("type") == DungeonGenerator.LOCATION_BLOCK:
@@ -721,6 +870,17 @@ func _update_monster_encounter() -> void:
 	encounter_stats.append({"name": "DungeonExperience", "key": "dungeon_experience", "label_key": "STAT_DUNGEON_EXPERIENCE"})
 	_populate_stat_bars(encounter_player_stat_bars, encounter_stats, player_state, true)
 	_update_monster_info_button()
+	_update_fight_availability()
+
+## Fight is disabled (with an explanation) when the attack cannot be paid; Flee stays available.
+func _update_fight_availability() -> void:
+	var can_attack := CombatRules.can_afford_attack(player_state)
+	fight_button.disabled = dungeon_exit_pending or not can_attack
+	if can_attack or dungeon_exit_pending:
+		return
+	var hint := tr(CANNOT_AFFORD_ATTACK_KEY)
+	if not encounter_feedback.text.contains(hint):
+		encounter_feedback.text = ("%s %s" % [encounter_feedback.text, hint]).strip_edges()
 
 func _fight() -> void:
 	if active_monster_location.is_empty() or dungeon_exit_pending:
@@ -735,12 +895,8 @@ func _fight() -> void:
 	_update_roll_displays(result)
 	_apply_player_stats()
 
-	if _exit_dungeon_if_player_depleted():
-		return
-
-	if int(player_state.get("current_life", 0)) < previous_life:
-		_show_damage_overlay(tr(String(result.get("message_key", "COMBAT_COUNTERATTACK_HIT"))))
-
+	# Victory is resolved first: a winning blow that spends the last energy still completes the
+	# dungeon (and keeps the defeated monster defeated) before depletion is checked.
 	if bool(result.get("monster_defeated", false)):
 		var experience_gained := int(result.get("experience_gained", 0))
 		active_monster_location = {}
@@ -748,11 +904,21 @@ func _fight() -> void:
 		_update_direction_buttons()
 		if _complete_dungeon_if_ready(experience_gained):
 			return
+		if _exit_dungeon_if_player_depleted():
+			return
 		_show_dungeon_explore_view()
 		explore_feedback.text = ""
 		_show_experience_overlay(experience_gained)
+		_persist_run_checkpoint()
 		return
+
+	if _exit_dungeon_if_player_depleted():
+		return
+
+	if int(player_state.get("current_life", 0)) < previous_life:
+		_show_damage_overlay(tr(String(result.get("message_key", "COMBAT_COUNTERATTACK_HIT"))))
 	_update_monster_encounter()
+	_persist_run_checkpoint()
 
 func _apply_current_location_effect() -> void:
 	if current_location.get("type") == DungeonGenerator.LOCATION_SANCTUARY:
@@ -769,6 +935,7 @@ func _rest() -> void:
 		return
 	if not active_monster_location.is_empty():
 		_update_monster_encounter()
+	_persist_run_checkpoint()
 
 func _collect_treasure() -> void:
 	if dungeon_exit_pending or current_location.is_empty() or current_location.get("type") != DungeonGenerator.LOCATION_QUEST or bool(current_location.get("visited", false)):
@@ -786,6 +953,7 @@ func _collect_treasure() -> void:
 		return
 	if int(player_state.get("current_life", 0)) < previous_life:
 		_show_damage_overlay(tr(String(result.get("message_key", "COMBAT_QUEST_TRAP"))))
+	_persist_run_checkpoint()
 
 func _exit_dungeon_if_player_depleted() -> bool:
 	if int(player_state.get("current_life", 0)) > 0 and int(player_state.get("current_energy", 0)) > 0:
@@ -1209,7 +1377,8 @@ func _add_progression_indicator() -> void:
 func _update_progression_indicator() -> void:
 	if not is_instance_valid(progression_indicator):
 		return
-	progression_indicator.visible = int(player_state.get("reserved_progression_points", player_state.get("pending_level_points", 0))) > 0
+	var reserved := int(player_state.get("reserved_progression_points", player_state.get("pending_level_points", 0)))
+	progression_indicator.visible = reserved > 0 or CombatRules.get_convertible_level_count(player_state) > 0
 
 func _add_texture_child(parent: Node, node_name: String, texture_path: String) -> TextureRect:
 	var texture_rect := TextureRect.new()
@@ -1776,9 +1945,11 @@ func _flee_encounter() -> void:
 		active_monster_location = {}
 		encounter_feedback.text = ""
 		_show_dungeon_explore_view()
+		_persist_run_checkpoint()
 		return
 
 	_update_monster_encounter()
+	_persist_run_checkpoint()
 
 func _format_combat_feedback(result: Dictionary) -> String:
 	if bool(result.get("insufficient_resources", false)):

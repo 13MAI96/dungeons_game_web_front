@@ -23,8 +23,8 @@ func _init() -> void:
 		quit(1)
 		return
 
-	if bool(root.dungeon["locations"][1]["visited"]):
-		push_error("Sanctuary should remain unvisited so it can trigger again.")
+	if not bool(root.dungeon["locations"][1]["visited"]):
+		push_error("A used sanctuary should become visited so it cannot heal again this run.")
 		quit(1)
 		return
 

@@ -2,7 +2,9 @@
 
 ## Purpose
 Define the selectable player classes and the abilities and bonuses each one unlocks.
+
 ## Requirements
+
 ### Requirement: Player classes are data driven
 The mobile game SHALL load player class definitions from a local JSON file.
 
@@ -45,3 +47,9 @@ The mobile game SHALL always convert each gained level into 3 assignable points 
 - **AND** a gained level matches the class automatic increment cadence
 - **THEN** the class automatic stat increments are applied without spending assignable points
 
+### Requirement: Class growth values are whole numbers
+The mobile game SHALL define every class stat growth and automatic increment as a positive whole number so each assigned point has a visible effect.
+
+#### Scenario: Class data is loaded
+- **WHEN** the player classes are read
+- **THEN** every stat growth value is an integer of at least 1

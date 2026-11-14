@@ -480,13 +480,17 @@ static func rest(player: Dictionary, energy_percent: int = -1, life_percent: int
 static func rest_with_mana(player: Dictionary) -> Dictionary:
 	return rest(player)
 
-static func apply_sanctuary(player: Dictionary, _location: Dictionary, life_percent: int = -1, energy_percent: int = -1, mana_percent: int = -1) -> Dictionary:
+static func apply_sanctuary(player: Dictionary, location: Dictionary, life_percent: int = -1, energy_percent: int = -1, mana_percent: int = -1) -> Dictionary:
 	var life_restore := life_percent if life_percent >= 0 else randi_range(50, 100)
 	var energy_restore := energy_percent if energy_percent >= 0 else randi_range(50, 100)
 	var mana_restore := mana_percent if mana_percent >= 0 else randi_range(50, 100)
+	if bool(location.get("visited", false)):
+		# Each sanctuary heals once per run; re-entering a used one does nothing.
+		return {"sanctuary": false, "message_key": "COMBAT_SANCTUARY_USED"}
 	_restore_life(player, clampi(life_restore, 50, 100))
 	_restore_energy(player, clampi(energy_restore, 50, 100))
 	_restore_mana(player, clampi(mana_restore, 50, 100))
+	location["visited"] = true
 	return {
 		"sanctuary": true,
 		"life_percent": clampi(life_restore, 50, 100),
@@ -622,6 +626,12 @@ static func commit_dungeon_experience(player: Dictionary, completion_bonus: int 
 static func discard_dungeon_experience(player: Dictionary) -> void:
 	player["dungeon_experience"] = 0
 	player["in_dungeon"] = false
+
+## True when the player can pay the energy and mana cost of their current attack.
+static func can_afford_attack(player: Dictionary) -> bool:
+	var attack := _get_first_attack(player, DEFAULT_PLAYER_ATTACK)
+	return int(player.get("current_energy", 0)) >= int(attack.get("energy_cost", ENERGY_ATTACK_COST)) \
+		and int(player.get("current_mana", 0)) >= int(attack.get("mana_cost", 0))
 
 static func _get_first_attack(actor: Dictionary, fallback: Dictionary) -> Dictionary:
 	var attacks: Array = actor.get("attacks", [])

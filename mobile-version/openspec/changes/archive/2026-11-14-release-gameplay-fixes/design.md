@@ -1,0 +1,8 @@
+## Decisions
+
+1. **Resume instead of discarding interrupted runs.** Closing the app must neither dodge death nor lose a run. The save payload gains an optional `run` object: the dungeon dictionary, current/previous coordinates and the active monster coordinates. Coordinates (not references) are stored because `current_location` points into `dungeon.locations`. JSON turns integers into floats, so the loader converts whole-number floats back to ints recursively before use.
+2. **When to persist the run:** after every move, fight, flee, rest, treasure collection, and on `NOTIFICATION_APPLICATION_PAUSED` / `NOTIFICATION_WM_CLOSE_REQUEST`. A full 25×25 map is ~100 KB of JSON; writing it per action is acceptable on mobile storage.
+3. **Atomic save:** write `<path>.tmp`, then `DirAccess.rename_absolute(tmp, path)` (replaces in place on POSIX/Android). Only if that fails, remove and rename. `load_player` falls back to a valid `.tmp` when the main file is missing or invalid. Version bumps to 2; version 1 is still accepted.
+4. **Back navigation** (`application/config/quit_on_go_back=false`, `NOTIFICATION_WM_GO_BACK_REQUEST`): confirmation → cancel; monster info / result → close; pending exit or feedback overlay → ignored; settings → menu; level-up → hub; hub → existing exit confirmation; menu → quit confirmation; exploration → abandon confirmation; encounter → ignored (fight or flee).
+5. **Abandon** discards provisional experience and restores status like an energy-out, so it is never better than finishing; it is not offered inside an encounter, so it cannot dodge a lethal fight.
+6. **Level-up conversion stays in the progression view** (existing spec); only the indicator changes.

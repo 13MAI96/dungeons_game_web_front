@@ -8,7 +8,7 @@
         "life": 3,
         "energy": 4,
         "mana": 6,
-        "armor": 0.5,
+        "armor": 1,
         "speed": 1,
         "strength": 1
       },
