@@ -348,17 +348,23 @@ func _verify_recovery_quest_and_death() -> void:
 	player["current_life"] = 5
 	player["current_energy"] = 5
 	player["current_mana"] = 12
-	CombatRules.rest(player, 20, 40)
-
-	if int(player["current_mana"]) != 7 or int(player["current_life"]) != 9 or int(player["current_energy"]) != 10:
+	var rest_result: Dictionary = CombatRules.rest(player)
+	# Fixed percentages of maximum life (10) and energy (25), rounded (DNG-16).
+	var expected_life_gain := roundi(10.0 * CombatRules.REST_LIFE_PERCENT / 100.0)
+	var expected_energy_gain := roundi(25.0 * CombatRules.REST_ENERGY_PERCENT / 100.0)
+	if int(player["current_mana"]) != 7 or int(player["current_life"]) != 5 + expected_life_gain or int(player["current_energy"]) != 5 + expected_energy_gain:
 		push_error("Rest should restore life and energy while consuming 5 mana.")
+		quit(1)
+		return
+	if int(rest_result["life_restored"]) != expected_life_gain or int(rest_result["energy_restored"]) != expected_energy_gain or int(rest_result["mana_spent"]) != CombatRules.REST_MANA_COST:
+		push_error("Rest should report the exact life and energy gained and the mana spent.")
 		quit(1)
 		return
 
 	player["current_mana"] = 4
 	player["current_life"] = 5
 	player["current_energy"] = 5
-	var failed_rest: Dictionary = CombatRules.rest(player, 20, 40)
+	var failed_rest: Dictionary = CombatRules.rest(player)
 	if bool(failed_rest["rested"]) or int(player["current_mana"]) != 4 or int(player["current_life"]) != 5 or int(player["current_energy"]) != 5:
 		push_error("Rest should do nothing without 5 available mana.")
 		quit(1)

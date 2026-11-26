@@ -10,6 +10,16 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
+## 2026-11-26 — Mobile: progression hints and Rest rework (DNG-14 to DNG-16)
+### Changes
+- DNG-14 (decision): 1.0 gets attack selection only; follow-up DNG-25. No code change.
+- DNG-15: hints for the 5 starting points and the level-10 class unlock on the hub and Level Up (`CLASS_CHOICE_LEVEL` constant). Playtest bot gains `allocation=` strategies. Analysis report `mobile-version/docs/progression-check-2026-11-26.md`: pacing on target (level 2 in 4.7 runs); level 1 is the slowest level; Strength is necessary but does not dominate. Tuning recommendations are listed there, not applied.
+- DNG-16: Rest restores a fixed 30% life / 20% energy for 5 mana (was random 10–40% / 5–25%); the button shows the cost; a result line shows the real gains; disabled with a reason (not enough mana, or life and energy full); exploration messages clear on the next move. Playtest comparison of 3 candidates in `openspec/changes/rest-rework/design.md`.
+- New tests `verify_progression_hints`, `verify_rest`; full suite 27/27. OpenSpec changes `progression-hints`, `rest-rework`.
+### Issues
+- OpenSpec changes not validated/archived (CLI missing, DNG-24).
+- Progression tuning recommendations (level-1 threshold, Armor value, harder levels 5–9) need a decision.
+
 ## 2026-11-26 — Mobile: dialog fixes and combat feedback (`047a9e5`, DNG-11 to DNG-13)
 ### Changes
 - DNG-11: Back on Level Up (on-screen and Android back) asks "Discard changes?" when points are staged; leaves at once otherwise.

@@ -83,8 +83,11 @@ func _init() -> void:
 	root.player_state["current_energy"] = 5
 	root._rest()
 
-	if int(root.player_state["current_mana"]) != 7 or int(root.player_state["current_life"]) < 6 or int(root.player_state["current_life"]) > 9 or int(root.player_state["current_energy"]) < 6 or int(root.player_state["current_energy"]) > 11:
-		push_error("Rest should restore life and energy in rule ranges while consuming 5 mana.")
+	# Rest restores fixed percentages of maximum life (10) and energy (25), rounded (DNG-16).
+	var expected_life := 5 + roundi(10.0 * CombatRules.REST_LIFE_PERCENT / 100.0)
+	var expected_energy := 5 + roundi(25.0 * CombatRules.REST_ENERGY_PERCENT / 100.0)
+	if int(root.player_state["current_mana"]) != 7 or int(root.player_state["current_life"]) != expected_life or int(root.player_state["current_energy"]) != expected_energy:
+		push_error("Rest should restore the fixed life and energy percentages while consuming 5 mana.")
 		quit(1)
 		return
 

@@ -228,8 +228,9 @@ func _check_rule_numbers_in_text() -> bool:
 	if energy != expected_energy:
 		return _fail("The energy page should show the step and fight-round costs from CombatRules.")
 	if not String(bodies["rest"]).contains("%d mana" % CombatRules.REST_MANA_COST) \
-		or not String(bodies["rest"]).contains("%d%%" % CombatRules.REST_ENERGY_PERCENT_MAX):
-		return _fail("The rest page should show the real mana cost and restore range: %s" % bodies["rest"])
+		or not String(bodies["rest"]).contains("%d%% of your maximum life" % CombatRules.REST_LIFE_PERCENT) \
+		or not String(bodies["rest"]).contains("%d%% of your maximum energy" % CombatRules.REST_ENERGY_PERCENT):
+		return _fail("The rest page should show the real mana cost and fixed restore percentages: %s" % bodies["rest"])
 	if not String(bodies["retreat"]).contains("green entrance"):
 		return _fail("The retreat page should say Retreat only works at the green entrance.")
 	var experience := String(bodies["experience"])

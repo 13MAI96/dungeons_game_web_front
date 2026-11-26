@@ -209,6 +209,11 @@ func _capture_ui_texts(locale: String, switch_to: String = "") -> Dictionary:
 	_collect(main, main, "confirm_exit", texts)
 	main._cancel_pending_action()
 
+	# Level 1 Level Up: the starting-points and class-unlock hints (DNG-15).
+	main._show_level_allocation_view()
+	_collect(main, main, "level_up_start", texts)
+	main._show_new_game_view()
+
 	# Level 10 without a class: the level-up screen also lists the class choices.
 	main.player_state["level"] = 10
 	main.player_state["selected_class"] = ""
@@ -229,6 +234,23 @@ func _capture_ui_texts(locale: String, switch_to: String = "") -> Dictionary:
 	main._collect_treasure()
 	_collect(main, main, "quest_trap", texts)
 	main._hide_damage_overlay()
+	# Rest result line, then the disabled-Rest reasons (DNG-16).
+	main._rest()
+	_collect(main, main, "rest_result", texts)
+	var mana_before_rest_checks := int(main.player_state["current_mana"])
+	main.player_state["current_mana"] = 0
+	main._update_exploration_actions()
+	_collect(main, main, "rest_no_mana", texts)
+	main.player_state["current_mana"] = mana_before_rest_checks
+	var life_before_rest_checks := int(main.player_state["current_life"])
+	var energy_before_rest_checks := int(main.player_state["current_energy"])
+	main.player_state["current_life"] = int(main.player_state["life"])
+	main.player_state["current_energy"] = int(main.player_state["energy"])
+	main._update_exploration_actions()
+	_collect(main, main, "rest_full", texts)
+	main.player_state["current_life"] = life_before_rest_checks
+	main.player_state["current_energy"] = energy_before_rest_checks
+	main._update_exploration_actions()
 
 	_capture_encounters(main, texts)
 

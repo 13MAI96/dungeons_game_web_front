@@ -9,13 +9,26 @@ extends RefCounted
 const CombatRules := preload("res://scripts/combat_rules.gd")
 const DungeonGenerator := preload("res://scripts/dungeon_generator.gd")
 const MAX_ACTIONS_PER_RUN := 3000
+## Stat order the bot spends level-up points in, per allocation strategy (cycled from the start
+## on every Level Up visit). "default" is the original sensible player and is what
+## tests/verify_balance.gd measures; the others exist to compare builds over the same seeds.
+const ALLOCATION_ORDERS := {
+	"default": ["strength", "life", "energy", "strength", "armor", "life", "speed", "energy"],
+	"strength": ["strength"],
+	"balanced": ["life", "strength", "energy", "armor", "speed", "mana"],
+	"tank": ["life", "armor", "life", "armor", "energy"],
+}
 
 var tree: SceneTree
 var main: Control
 var rng := RandomNumberGenerator.new()
+## Key of ALLOCATION_ORDERS the bot uses when spending points.
+var allocation_strategy := "default"
 
-func _init(scene_tree: SceneTree) -> void:
+## `strategy` picks the point allocation (see ALLOCATION_ORDERS); unknown names fall back to default.
+func _init(scene_tree: SceneTree, strategy: String = "default") -> void:
 	tree = scene_tree
+	allocation_strategy = strategy if ALLOCATION_ORDERS.has(strategy) else "default"
 
 ## Plays `runs` dungeon runs per game, for `games` independent games. Returns aggregate metrics.
 func run_playtest(runs: int, games: int, random_seed: int, dir: String) -> Dictionary:
@@ -38,6 +51,7 @@ func run_playtest(runs: int, games: int, random_seed: int, dir: String) -> Dicti
 			var level := int(main.player_state.get("level", 1))
 			if not runs_to_level.has(level):
 				runs_to_level[level] = run
+			var experience_before := int(main.player_state.get("current_experience", 0))
 			main.start_dungeon_exploration()
 			var outcome: String = await _play_dungeon(totals)
 			totals["runs"] += 1
@@ -47,6 +61,8 @@ func run_playtest(runs: int, games: int, random_seed: int, dir: String) -> Dicti
 			var stats: Dictionary = by_band.get(band, {"runs": 0})
 			stats["runs"] = int(stats["runs"]) + 1
 			stats[outcome] = int(stats.get(outcome, 0)) + 1
+			# Experience the run committed to the permanent total (0 when it was lost).
+			stats["xp"] = int(stats.get("xp", 0)) + int(main.player_state.get("current_experience", 0)) - experience_before
 			by_band[band] = stats
 			totals["by_level"] = by_band
 		_spend_points()
@@ -61,6 +77,11 @@ func run_playtest(runs: int, games: int, random_seed: int, dir: String) -> Dicti
 	var run_count := maxf(1.0, float(totals["runs"]))
 	for key: String in ["completed", "retreated", "energy_out", "died", "stuck"]:
 		totals["%s_rate" % key] = snappedf(float(totals[key]) / run_count, 0.001)
+	# Average committed experience per run in each level band.
+	for band: String in totals.get("by_level", {}):
+		var band_stats: Dictionary = totals["by_level"][band]
+		band_stats["xp_per_run"] = snappedf(float(band_stats.get("xp", 0)) / maxf(1.0, float(band_stats["runs"])), 0.1)
+	totals["allocation"] = allocation_strategy
 	var levels: Array = totals["levels_reached"]
 	totals["avg_level"] = snappedf(float(levels.reduce(func(a, b): return a + b, 0)) / maxf(1.0, levels.size()), 0.01)
 	for key: String in totals["runs_to_level"]:
@@ -91,7 +112,7 @@ func _spend_points() -> void:
 	if int(main.player_state.get("level", 1)) >= 10 and String(main.player_state.get("selected_class", "")) == "":
 		var classes: Array = CombatRules.load_player_classes()
 		main._select_player_class(String(classes[rng.randi_range(0, classes.size() - 1)].get("id", "")))
-	var order := ["strength", "life", "energy", "strength", "armor", "life", "speed", "energy"]
+	var order: Array = ALLOCATION_ORDERS[allocation_strategy]
 	for i in points:
 		main._stage_level_point(order[i % order.size()])
 	main._confirm_level_allocation()

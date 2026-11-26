@@ -109,9 +109,9 @@ static func _get_body_arguments(page_id: String) -> Array:
 		"retreat":
 			return [str(CombatRules.ENERGY_RETREAT_COST)]
 		"rest":
+			# Rest restores fixed percentages (DNG-16): cost, life percent, energy percent.
 			return [str(CombatRules.REST_MANA_COST),
-				str(CombatRules.REST_ENERGY_PERCENT_MIN), str(CombatRules.REST_ENERGY_PERCENT_MAX),
-				str(CombatRules.REST_LIFE_PERCENT_MIN), str(CombatRules.REST_LIFE_PERCENT_MAX)]
+				str(CombatRules.REST_LIFE_PERCENT), str(CombatRules.REST_ENERGY_PERCENT)]
 		"sanctuary":
 			return [str(CombatRules.SANCTUARY_PERCENT_MIN), str(CombatRules.SANCTUARY_PERCENT_MAX),
 				str(CombatRules.ENERGY_QUEST_COST), str(CombatRules.QUEST_SUCCESS_ROLL),

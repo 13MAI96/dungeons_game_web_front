@@ -24,7 +24,15 @@ const CHALLENGE_DUNGEON_KEY := "NEW_GAME_CHALLENGE_DUNGEON"
 const MANAGE_EQUIPMENT_KEY := "NEW_GAME_MANAGE_EQUIPMENT"
 const SHOP_KEY := "NEW_GAME_SHOP"
 const EXIT_KEY := "NEW_GAME_EXIT"
-const REST_KEY := "EXPLORE_REST"
+## Rest button label with its mana cost ("Rest · 5 mana").
+const REST_KEY := "EXPLORE_REST_WITH_COST"
+## Result line after resting, with the real points gained and spent (DNG-16).
+const REST_RESULT_KEY := "EXPLORE_REST_RESULT"
+## Reasons shown under the map while Rest is disabled, by CombatRules.REST_BLOCKED_* reason.
+const REST_BLOCKED_KEYS := {
+	CombatRules.REST_BLOCKED_NO_MANA: "EXPLORE_REST_NEEDS_MANA",
+	CombatRules.REST_BLOCKED_FULL: "EXPLORE_REST_NOT_NEEDED",
+}
 const RETREAT_KEY := "EXPLORE_RETREAT"
 const COLLECT_TREASURE_KEY := "EXPLORE_COLLECT_TREASURE"
 const FIGHT_KEY := "ENCOUNTER_FIGHT"
@@ -114,6 +122,13 @@ const SETTINGS_HOW_TO_PLAY_KEY := "SETTINGS_HOW_TO_PLAY"
 ## Level Up stat guide: card title and the "+N per point" growth line of each stat.
 const ALLOCATION_GUIDE_TITLE_KEY := "LEVEL_ALLOCATION_GUIDE_TITLE"
 const ALLOCATION_GUIDE_GROWTH_KEY := "LEVEL_ALLOCATION_GUIDE_GROWTH"
+## Progression hints (DNG-15): where the starting points come from, how many points each level
+## gives and when the class choice unlocks. Shown on Level Up and under the hub level.
+const LEVEL_HINT_START_POINTS_KEY := "LEVEL_HINT_START_POINTS"
+const LEVEL_HINT_LEVEL_POINTS_KEY := "LEVEL_HINT_LEVEL_POINTS"
+const LEVEL_HINT_CLASS_UNLOCK_KEY := "LEVEL_HINT_CLASS_UNLOCK"
+const HUB_HINT_START_POINTS_KEY := "HUB_HINT_START_POINTS"
+const HUB_HINT_CLASS_READY_KEY := "HUB_HINT_CLASS_READY"
 ## Stats that take level-up points, in the order of the allocation rows and the stat guide.
 const ALLOCATABLE_STATS := ["life", "energy", "mana", "armor", "speed", "strength"]
 const DIRECTION_ICON_PATHS := {
@@ -241,6 +256,9 @@ var next_dodge_roll: float = -1.0
 var next_player_dodge_roll: float = -1.0
 var next_quest_roll: float = -1.0
 var next_flee_roll: float = -1.0
+## Message of the last exploration action (rest result, sanctuary, treasure...). It is cleared
+## on the next move; the exploration feedback label shows it with the Rest-blocked reason.
+var explore_message: String = ""
 var character_portrait: TextureRect
 var exploration_stats_container: VBoxContainer
 var monster_stat_bars: VBoxContainer
@@ -276,6 +294,8 @@ var current_screen: String = AdSlotConfig.SCREEN_MENU
 var safe_insets: Dictionary = {"left": 0.0, "top": 0.0, "right": 0.0, "bottom": 0.0}
 var explore_hud: MarginContainer
 var hub_level_label: Label
+## Hub caption under the level: starting points, class unlock level or class ready (DNG-15).
+var hub_progression_hint_label: Label
 var map_player_marker: Panel
 ## True while a game (new or loaded) is in progress; controls saving when the app is backgrounded.
 var session_active: bool = false
@@ -288,6 +308,9 @@ var game_result_message: Label
 var game_result_continue_button: Button
 var progression_indicator: Panel
 var allocation_remaining_label: Label
+## Level Up captions under the remaining points: points per level and class unlock (DNG-15).
+var allocation_points_hint_label: Label
+var allocation_class_hint_label: Label
 var allocation_buttons_container: VBoxContainer
 var allocation_confirm_button: Button
 var class_choice_container: VBoxContainer
@@ -440,7 +463,7 @@ func _apply_menu_text() -> void:
 	challenge_dungeon_button.disabled = true
 	shop_button.disabled = true
 	exit_button.text = tr(EXIT_KEY)
-	rest_button.text = tr(REST_KEY)
+	rest_button.text = tr(REST_KEY) % str(CombatRules.REST_MANA_COST)
 	retreat_button.text = tr(RETREAT_KEY)
 	collect_treasure_button.text = tr(COLLECT_TREASURE_KEY)
 	fight_button.text = tr(FIGHT_KEY)
@@ -480,6 +503,7 @@ func _apply_menu_text() -> void:
 	manage_equipment_button.tooltip_text = tr(PROGRESSION_PENDING_KEY)
 	_apply_direction_tooltips()
 	_update_hub_header()
+	_update_allocation_hints()
 
 func _apply_player_stats() -> void:
 	_populate_stat_bars(stats_column, PLAYER_STATS, player_state, true)
@@ -491,6 +515,33 @@ func _apply_player_stats() -> void:
 func _update_hub_header() -> void:
 	if is_instance_valid(hub_level_label):
 		hub_level_label.text = tr(HUB_LEVEL_KEY) % str(int(player_state.get("level", 1)))
+	_update_hub_progression_hint()
+
+## True once the player has picked a class (from level CombatRules.CLASS_CHOICE_LEVEL on).
+func _has_selected_class() -> bool:
+	return String(player_state.get("selected_class", "")) != ""
+
+## Hub caption under the level (DNG-15). A level-1 player with unspent points is told where the
+## starting points are spent; before the class level the player sees when the class unlocks; at
+## that level without a class, that the choice is waiting in Progression. Hidden otherwise.
+func _get_hub_progression_hint_text() -> String:
+	var level := int(player_state.get("level", 1))
+	var reserved := int(player_state.get("reserved_progression_points", player_state.get("pending_level_points", 0)))
+	if _has_selected_class():
+		return ""
+	if level <= 1 and reserved > 0:
+		return tr(HUB_HINT_START_POINTS_KEY) % str(CombatRules.INITIAL_PROGRESSION_POINTS)
+	if level < CombatRules.CLASS_CHOICE_LEVEL:
+		return tr(LEVEL_HINT_CLASS_UNLOCK_KEY) % str(CombatRules.CLASS_CHOICE_LEVEL)
+	return tr(HUB_HINT_CLASS_READY_KEY)
+
+## Shows the hub hint text, or hides the caption when there is nothing to say.
+func _update_hub_progression_hint() -> void:
+	if not is_instance_valid(hub_progression_hint_label):
+		return
+	var hint := _get_hub_progression_hint_text()
+	hub_progression_hint_label.text = hint
+	hub_progression_hint_label.visible = hint != ""
 
 func _connect_navigation_signals() -> void:
 	var request_new_game := Callable(self, "_request_new_game")
@@ -869,6 +920,8 @@ func move_player(direction: String) -> void:
 		return
 
 	previous_location = current_location
+	# A message belongs to the action that produced it: moving on clears it (DNG-16).
+	explore_message = ""
 	CombatRules.consume_movement_energy(player_state)
 	current_location = valid_directions[direction]
 	var was_visited := bool(current_location.get("visited", false))
@@ -902,7 +955,7 @@ func _show_monster_encounter(location: Dictionary) -> void:
 	active_monster_location = location
 	_ensure_active_monster_max_stats()
 	_update_monster_encounter()
-	explore_feedback.text = ""
+	_show_explore_message("")
 	_set_encounter_hint("")
 	# Each encounter starts with an empty fight log and no numbers left from the previous one.
 	fight_log.clear_entries()
@@ -1123,7 +1176,7 @@ func _fight() -> void:
 		if _exit_dungeon_if_player_depleted():
 			return
 		_show_dungeon_explore_view()
-		explore_feedback.text = ""
+		_show_explore_message("")
 		_show_fight_victory(defeated_monster, experience_gained)
 		_warn_if_energy_low()  # Waits for the victory screen to be dismissed.
 		_persist_run_checkpoint()
@@ -1141,19 +1194,56 @@ func _fight() -> void:
 func _apply_current_location_effect() -> void:
 	if current_location.get("type") == DungeonGenerator.LOCATION_SANCTUARY:
 		var result: Dictionary = CombatRules.apply_sanctuary(player_state, current_location)
-		explore_feedback.text = tr(String(result.get("message_key", "COMBAT_SANCTUARY")))
+		_show_explore_message(tr(String(result.get("message_key", "COMBAT_SANCTUARY"))))
 
+## Rest action of the exploration view. Does nothing while the run is ending, during a monster
+## encounter, or when CombatRules blocks it (no mana, or life and energy already full: the
+## button is then disabled and the reason is shown). Otherwise shows the exact result,
+## e.g. "+3 life, +5 energy, −5 mana", until the next move.
 func _rest() -> void:
-	if dungeon_exit_pending:
+	if dungeon_exit_pending or not active_monster_location.is_empty():
 		return
 	var result: Dictionary = CombatRules.rest(player_state)
-	explore_feedback.text = tr(String(result.get("message_key", "COMBAT_REST")))
-	_apply_player_stats()
-	if _exit_dungeon_if_player_depleted():
+	if not bool(result.get("rested", false)):
+		_update_exploration_actions()  # Keeps the button disabled and its reason visible.
 		return
-	if not active_monster_location.is_empty():
-		_update_monster_encounter()
+	_show_explore_message(_format_rest_result(result))
+	_apply_player_stats()
+	_update_exploration_actions()
+	# Rest only adds life and energy, so it can never deplete the player: just save the run.
 	_persist_run_checkpoint()
+
+## Localized rest result line from a successful CombatRules.rest() result.
+func _format_rest_result(result: Dictionary) -> String:
+	return tr(REST_RESULT_KEY).format({
+		"life": int(result.get("life_restored", 0)),
+		"energy": int(result.get("energy_restored", 0)),
+		"mana": int(result.get("mana_spent", 0)),
+	})
+
+## Localized reason why Rest is disabled right now, or "" when it can be used (or the run is
+## ending, when every action is disabled anyway).
+func _get_rest_block_hint() -> String:
+	if dungeon_exit_pending:
+		return ""
+	var reason := CombatRules.get_rest_block_reason(player_state)
+	if reason == "":
+		return ""
+	var hint := tr(String(REST_BLOCKED_KEYS[reason]))
+	if reason == CombatRules.REST_BLOCKED_NO_MANA:
+		return hint % str(CombatRules.REST_MANA_COST)  # "Rest needs 5 mana."
+	return hint
+
+## Sets the message of the last exploration action and refreshes the feedback label.
+func _show_explore_message(message: String) -> void:
+	explore_message = message
+	_refresh_explore_feedback()
+
+## Feedback label under the map: the last action message, then (on its own line) why Rest is
+## disabled, so the player always knows why the button cannot be pressed.
+func _refresh_explore_feedback() -> void:
+	if is_instance_valid(explore_feedback):
+		explore_feedback.text = _join_lines([explore_message, _get_rest_block_hint()])
 
 func _collect_treasure() -> void:
 	if dungeon_exit_pending or current_location.is_empty() or current_location.get("type") != DungeonGenerator.LOCATION_QUEST or bool(current_location.get("visited", false)):
@@ -1161,7 +1251,7 @@ func _collect_treasure() -> void:
 	var previous_life := int(player_state.get("current_life", 0))
 	var result: Dictionary = CombatRules.resolve_quest(player_state, current_location, next_quest_roll)
 	next_quest_roll = -1.0
-	explore_feedback.text = tr(String(result.get("message_key", "COMBAT_QUEST_TRAP")))
+	_show_explore_message(tr(String(result.get("message_key", "COMBAT_QUEST_TRAP"))))
 	_render_map()
 	_update_direction_buttons()
 	_update_exploration_actions()
@@ -1296,6 +1386,7 @@ func _finish_depleted_dungeon_exit() -> void:
 	flee_button.disabled = false
 
 func _clear_feedback() -> void:
+	explore_message = ""
 	if is_instance_valid(explore_feedback):
 		explore_feedback.text = ""
 	if is_instance_valid(encounter_feedback):
@@ -1673,9 +1764,18 @@ func _add_hub_header() -> void:
 	header.add_theme_constant_override("margin_bottom", 0)
 	new_game_view.add_child(header)
 	new_game_view.move_child(header, 0)
+	# The level and its progression hint stack in one column (DNG-15).
+	var rows := VBoxContainer.new()
+	rows.name = "Rows"
+	rows.add_theme_constant_override("separation", 2)
+	header.add_child(rows)
 	hub_level_label = _create_label("LevelLabel", &"TitleLabel", false)
 	hub_level_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	header.add_child(hub_level_label)
+	rows.add_child(hub_level_label)
+	hub_progression_hint_label = _create_label("ProgressionHint", &"CaptionLabel")
+	hub_progression_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	hub_progression_hint_label.visible = false
+	rows.add_child(hub_progression_hint_label)
 
 ## Survival stats as a compact HUD above the map, so the bottom third holds only controls.
 func _add_explore_hud() -> void:
@@ -1840,6 +1940,16 @@ func _add_level_allocation_view() -> void:
 	allocation_remaining_label = _create_label("RemainingPoints", &"HeaderLabel")
 	allocation_remaining_label.add_theme_color_override("font_color", UiTheme.ACCENT_BRIGHT)
 	layout.add_child(allocation_remaining_label)
+
+	# Progression hints sit right under the remaining points, where the player first sees them.
+	var hints := VBoxContainer.new()
+	hints.name = "ProgressionHints"
+	hints.add_theme_constant_override("separation", 2)
+	layout.add_child(hints)
+	allocation_points_hint_label = _create_label("PointsHint", &"CaptionLabel")
+	hints.add_child(allocation_points_hint_label)
+	allocation_class_hint_label = _create_label("ClassUnlockHint", &"CaptionLabel")
+	hints.add_child(allocation_class_hint_label)
 
 	# Rows and class choices scroll, so the actions stay reachable on short screens.
 	var scroll := ScrollContainer.new()
@@ -2120,6 +2230,7 @@ func _update_level_allocation_view() -> void:
 		allocation_remaining_label.text = tr(ALLOCATION_REMAINING_KEY) % str(remaining)
 	_rebuild_allocation_rows(reserved_points, remaining)
 	_rebuild_allocation_stat_guide()
+	_update_allocation_hints()
 	_rebuild_class_choices()
 	allocation_confirm_button.disabled = reserved_points <= 0 or _get_staged_points() <= 0
 
@@ -2184,12 +2295,38 @@ func _get_allocation_preview_source(stat_key: String) -> Dictionary:
 	source["current_%s" % stat_key] = int(source.get("current_%s" % stat_key, player_state.get(stat_key, 0))) + increase
 	return source
 
+## Level Up hint about points (DNG-15). At level 1 it explains the starting points and the
+## points per level; from level 2 on only the points per level. Hidden once a class is chosen,
+## because the class then owns the progression.
+func _get_allocation_points_hint_text() -> String:
+	if _has_selected_class():
+		return ""
+	if int(player_state.get("level", 1)) <= 1:
+		return tr(LEVEL_HINT_START_POINTS_KEY) % [str(CombatRules.INITIAL_PROGRESSION_POINTS), str(CombatRules.LEVEL_UP_POINTS)]
+	return tr(LEVEL_HINT_LEVEL_POINTS_KEY) % str(CombatRules.LEVEL_UP_POINTS)
+
+## Level Up hint about the class unlock (DNG-15): only before the class level. From that level
+## the class choice itself is shown, and after choosing there is nothing left to unlock.
+func _get_allocation_class_hint_text() -> String:
+	if _has_selected_class() or int(player_state.get("level", 1)) >= CombatRules.CLASS_CHOICE_LEVEL:
+		return ""
+	return tr(LEVEL_HINT_CLASS_UNLOCK_KEY) % str(CombatRules.CLASS_CHOICE_LEVEL)
+
+## Sets both Level Up hint captions and hides the empty ones.
+func _update_allocation_hints() -> void:
+	if not is_instance_valid(allocation_points_hint_label):
+		return
+	allocation_points_hint_label.text = _get_allocation_points_hint_text()
+	allocation_points_hint_label.visible = allocation_points_hint_label.text != ""
+	allocation_class_hint_label.text = _get_allocation_class_hint_text()
+	allocation_class_hint_label.visible = allocation_class_hint_label.text != ""
+
 func _rebuild_class_choices() -> void:
 	for child: Node in class_choice_container.get_children():
 		if child is CanvasItem:
 			(child as CanvasItem).visible = false
 		child.queue_free()
-	if int(player_state.get("level", 1)) < 10 or String(player_state.get("selected_class", "")) != "":
+	if int(player_state.get("level", 1)) < CombatRules.CLASS_CHOICE_LEVEL or _has_selected_class():
 		class_choice_container.visible = false
 		return
 	class_choice_container.visible = true
@@ -2276,14 +2413,16 @@ func _get_map_window() -> Dictionary:
 func _update_exploration_actions() -> void:
 	collect_treasure_button.visible = current_location.get("type") == DungeonGenerator.LOCATION_QUEST and not bool(current_location.get("visited", false))
 	collect_treasure_button.disabled = dungeon_exit_pending
-	rest_button.disabled = dungeon_exit_pending
+	# Rest is disabled with a visible reason when it cannot be used (like Fight, DNG-16).
+	rest_button.disabled = dungeon_exit_pending or CombatRules.get_rest_block_reason(player_state) != ""
+	_refresh_explore_feedback()
 	retreat_button.disabled = current_location.get("type") != DungeonGenerator.LOCATION_ENTRANCE
 
 func _retreat() -> void:
 	if dungeon_exit_pending:
 		return
 	if current_location.get("type") != DungeonGenerator.LOCATION_ENTRANCE:
-		explore_feedback.text = tr("EXPLORE_RETREAT_ENTRANCE_ONLY")
+		_show_explore_message(tr("EXPLORE_RETREAT_ENTRANCE_ONLY"))
 		return
 	var result := CombatRules.retreat_from_entrance(player_state)
 	if bool(result.get("depleted", false)):

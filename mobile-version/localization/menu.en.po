@@ -103,6 +103,18 @@ msgstr "Exit"
 msgid "EXPLORE_REST"
 msgstr "Rest"
 
+msgid "EXPLORE_REST_WITH_COST"
+msgstr "Rest · %s mana"
+
+msgid "EXPLORE_REST_RESULT"
+msgstr "+{life} life, +{energy} energy, −{mana} mana"
+
+msgid "EXPLORE_REST_NEEDS_MANA"
+msgstr "Rest needs %s mana."
+
+msgid "EXPLORE_REST_NOT_NEEDED"
+msgstr "Life and energy are full."
+
 msgid "EXPLORE_RETREAT"
 msgstr "Retreat"
 
@@ -465,7 +477,7 @@ msgid "TUTORIAL_REST_TITLE"
 msgstr "Rest"
 
 msgid "TUTORIAL_REST_BODY"
-msgstr "Rest costs %s mana and restores %s to %s%% of your energy and %s to %s%% of your life. Use it while exploring when you are tired or hurt."
+msgstr "Rest costs %s mana and restores %s%% of your maximum life and %s%% of your maximum energy. Use it while exploring when you are tired or hurt."
 
 msgid "TUTORIAL_SANCTUARY_TITLE"
 msgstr "Sanctuary and treasure"
@@ -571,3 +583,18 @@ msgstr "Your armor stopped {monster}'s {attack}"
 
 msgid "COMBAT_LOG_FLEE_FAILED"
 msgstr "You tried to flee, but {monster} blocked your way"
+
+msgid "LEVEL_HINT_START_POINTS"
+msgstr "You start with %s points to spend. Each new level gives %s more."
+
+msgid "LEVEL_HINT_LEVEL_POINTS"
+msgstr "Each new level gives %s points to spend."
+
+msgid "LEVEL_HINT_CLASS_UNLOCK"
+msgstr "At level %s you choose a class."
+
+msgid "HUB_HINT_START_POINTS"
+msgstr "You start with %s points to spend in Progression."
+
+msgid "HUB_HINT_CLASS_READY"
+msgstr "Choose your class in Progression."

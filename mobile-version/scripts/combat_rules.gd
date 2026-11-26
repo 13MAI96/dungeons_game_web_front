@@ -9,16 +9,20 @@ const QUEST_REWARD_EXPERIENCE := 5
 const QUEST_FAILURE_DAMAGE := 2
 ## A treasure (quest) succeeds on a d20 roll of this value or more; lower rolls trigger the trap.
 const QUEST_SUCCESS_ROLL := 10
-## Rest restores a random percentage of maximum energy and life within these bounds.
-const REST_ENERGY_PERCENT_MIN := 5
-const REST_ENERGY_PERCENT_MAX := 25
-const REST_LIFE_PERCENT_MIN := 10
-const REST_LIFE_PERCENT_MAX := 40
+## Rest restores a fixed percentage of maximum energy and life, so its result is predictable
+## (DNG-16; values chosen with the balance bot, see openspec/changes/rest-rework/design.md).
+const REST_ENERGY_PERCENT := 20
+const REST_LIFE_PERCENT := 30
+## Reasons `get_rest_block_reason()` gives when Rest cannot be used ("" means it can).
+const REST_BLOCKED_NO_MANA := "no_mana"
+const REST_BLOCKED_FULL := "full"
 ## A sanctuary restores a random percentage of maximum life, energy and mana within these bounds.
 const SANCTUARY_PERCENT_MIN := 50
 const SANCTUARY_PERCENT_MAX := 100
 const LEVEL_UP_POINTS := 3
 const INITIAL_PROGRESSION_POINTS := 5
+## Player level at which the class choice unlocks (also used by the Level Up and hub hints).
+const CLASS_CHOICE_LEVEL := 10
 const ATTACK_BASE_DIFFICULTY := 10
 const MIN_REQUIRED_ATTACK_ROLL := 3
 const MAX_REQUIRED_ATTACK_ROLL := 19
@@ -261,7 +265,7 @@ static func get_player_class(class_id: String) -> Dictionary:
 	return {}
 
 static func select_player_class(player: Dictionary, class_id: String) -> Dictionary:
-	if int(player.get("level", 1)) < 10:
+	if int(player.get("level", 1)) < CLASS_CHOICE_LEVEL:
 		return {"selected": false, "message": "CLASS_LOCKED"}
 	if String(player.get("selected_class", "")) != "":
 		return {"selected": false, "message": "CLASS_ALREADY_SELECTED"}
@@ -505,20 +509,37 @@ static func get_attack_damage(attack: Dictionary, critical: bool = false, streng
 	var multiplier := 1.0 + float(critical_damage_percent) / 100.0
 	return floori(float(base_damage) * multiplier)
 
-static func rest(player: Dictionary, energy_percent: int = -1, life_percent: int = -1) -> Dictionary:
+## Why the player cannot rest right now: REST_BLOCKED_NO_MANA when current mana is below the
+## cost, REST_BLOCKED_FULL when life and energy are already at maximum (resting would only
+## waste mana), or "" when Rest is allowed. The mana reason wins when both apply.
+static func get_rest_block_reason(player: Dictionary) -> String:
 	if int(player.get("current_mana", 0)) < REST_MANA_COST:
-		return {"rested": false, "message_key": "COMBAT_INSUFFICIENT_MANA"}
-	var energy_restore := energy_percent if energy_percent >= 0 else randi_range(REST_ENERGY_PERCENT_MIN, REST_ENERGY_PERCENT_MAX)
-	var life_restore := life_percent if life_percent >= 0 else randi_range(REST_LIFE_PERCENT_MIN, REST_LIFE_PERCENT_MAX)
-	var energy_percent_applied := clampi(energy_restore, REST_ENERGY_PERCENT_MIN, REST_ENERGY_PERCENT_MAX)
-	var life_percent_applied := clampi(life_restore, REST_LIFE_PERCENT_MIN, REST_LIFE_PERCENT_MAX)
+		return REST_BLOCKED_NO_MANA
+	var life_full := int(player.get("current_life", 0)) >= _get_effective_max_life(player)
+	var energy_full := int(player.get("current_energy", 0)) >= int(player.get("energy", 0))
+	if life_full and energy_full:
+		return REST_BLOCKED_FULL
+	return ""
+
+## Spends REST_MANA_COST mana to restore REST_LIFE_PERCENT of maximum life and
+## REST_ENERGY_PERCENT of maximum energy (each capped at its maximum).
+## Returns {"rested": false, "reason": <REST_BLOCKED_*>} when Rest is blocked (nothing changes),
+## or {"rested": true, "life_restored", "energy_restored", "mana_spent", "message_key"} with
+## the points really gained, so the UI can show the exact result.
+static func rest(player: Dictionary) -> Dictionary:
+	var reason := get_rest_block_reason(player)
+	if reason != "":
+		return {"rested": false, "reason": reason}
+	var life_before := int(player.get("current_life", 0))
+	var energy_before := int(player.get("current_energy", 0))
 	player["current_mana"] = int(player.get("current_mana", 0)) - REST_MANA_COST
-	_restore_energy(player, energy_percent_applied)
-	_restore_life(player, life_percent_applied)
+	_restore_energy(player, REST_ENERGY_PERCENT)
+	_restore_life(player, REST_LIFE_PERCENT)
 	return {
 		"rested": true,
-		"energy_percent": energy_percent_applied,
-		"life_percent": life_percent_applied,
+		"life_restored": int(player["current_life"]) - life_before,
+		"energy_restored": int(player["current_energy"]) - energy_before,
+		"mana_spent": REST_MANA_COST,
 		"message_key": "COMBAT_REST",
 	}
 

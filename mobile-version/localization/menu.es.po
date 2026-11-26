@@ -103,6 +103,18 @@ msgstr "Salir"
 msgid "EXPLORE_REST"
 msgstr "Descansar"
 
+msgid "EXPLORE_REST_WITH_COST"
+msgstr "Descansar · %s maná"
+
+msgid "EXPLORE_REST_RESULT"
+msgstr "+{life} de vida, +{energy} de energía, −{mana} de maná"
+
+msgid "EXPLORE_REST_NEEDS_MANA"
+msgstr "Para descansar necesitás %s de maná."
+
+msgid "EXPLORE_REST_NOT_NEEDED"
+msgstr "Tenés la vida y la energía al máximo."
+
 msgid "EXPLORE_RETREAT"
 msgstr "Retirada"
 
@@ -465,7 +477,7 @@ msgid "TUTORIAL_REST_TITLE"
 msgstr "Descansar"
 
 msgid "TUTORIAL_REST_BODY"
-msgstr "Descansar cuesta %s de maná y restaura entre %s y %s%% de tu energía y entre %s y %s%% de tu vida. Usalo mientras explorás, cuando estés cansado o herido."
+msgstr "Descansar cuesta %s de maná y restaura el %s%% de tu vida máxima y el %s%% de tu energía máxima. Usalo mientras explorás, cuando estés cansado o herido."
 
 msgid "TUTORIAL_SANCTUARY_TITLE"
 msgstr "Santuario y tesoro"
@@ -571,3 +583,18 @@ msgstr "Tu armadura frenó el ataque de {monster} ({attack})"
 
 msgid "COMBAT_LOG_FLEE_FAILED"
 msgstr "Intentaste huir, pero {monster} te cerró el paso"
+
+msgid "LEVEL_HINT_START_POINTS"
+msgstr "Empezás con %s puntos para repartir. Cada nivel nuevo te da %s más."
+
+msgid "LEVEL_HINT_LEVEL_POINTS"
+msgstr "Cada nivel nuevo te da %s puntos para repartir."
+
+msgid "LEVEL_HINT_CLASS_UNLOCK"
+msgstr "En el nivel %s elegís una clase."
+
+msgid "HUB_HINT_START_POINTS"
+msgstr "Empezás con %s puntos para repartir en Progresión."
+
+msgid "HUB_HINT_CLASS_READY"
+msgstr "Elegí tu clase en Progresión."
