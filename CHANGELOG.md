@@ -10,6 +10,17 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
+## 2026-11-26 — Mobile: dialog fixes and combat feedback (DNG-11 to DNG-13)
+### Changes
+- DNG-11: Back on Level Up (on-screen and Android back) asks "Discard changes?" when points are staged; leaves at once otherwise.
+- DNG-12: hub Exit asks "Exit game?" (progress is saved). Root cause: `CONFIRM_EXIT_*` had carried the Level Up discard warning since the first version. Every confirmation now sets its own title, message and button labels, and closing clears the pending action.
+- DNG-13: floating damage numbers and "Blocked"/"Dodged"/"Critical!" labels over both fighters; fight log of the last 4 attacks with numbers; plain-language combat text replaces the "was protected" jargon (`scripts/combat_feedback.gd`, `fight_log.gd`, `damage_numbers.gd`). Combat rules unchanged; results now also report the damage dealt.
+- New tests `verify_dialog_fixes`, `verify_combat_feedback`; full suite 25/25. OpenSpec changes `confirmation-dialog-fixes`, `combat-feedback`.
+### Issues
+- OpenSpec changes not validated/archived (CLI missing, DNG-24).
+- On the emulator, a full 4-line fight log moves the encounter layout up a few pixels.
+- Dialog changes checked by tests only, not on a device.
+
 ## 2026-11-26 — Mobile: P1 user-test fixes (`2f6b0fb`, DNG-5 to DNG-10)
 ### Changes
 - DNG-5: main menu shows a logo (`assets/ui/logo.svg`) and the translated title.

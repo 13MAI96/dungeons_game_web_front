@@ -317,6 +317,8 @@ static func attempt_flee(player: Dictionary, location: Dictionary, flee_roll: fl
 		"player_dodge_roll": 0,
 		"monster_attack_name": "",
 		"monster_attack_effects": [],
+		# Life the monster's counterattack took from the player (0 when it did not hit).
+		"counterattack_damage": 0,
 		"message_key": "ENCOUNTER_FLEE_SUCCESS",
 	}
 	_consume_energy(player, ENERGY_MOVE_COST)
@@ -350,6 +352,7 @@ static func attempt_flee(player: Dictionary, location: Dictionary, flee_roll: fl
 	result["counterattack_miss"] = bool(counter["miss"])
 	if bool(counter["hit"]):
 		result["player_damaged"] = true
+		result["counterattack_damage"] = int(counter["damage"])
 		_damage_actor(player, int(counter["damage"]))
 	else:
 		result["monster_attack_effects"] = []
@@ -378,6 +381,10 @@ static func attack_monster(player: Dictionary, location: Dictionary, attack_roll
 		"monster_attack_name": "",
 		"monster_attack_effects": [],
 		"insufficient_resources": false,
+		# Life the player's attack took from the monster, and the counterattack from the player
+		# (0 when that attack did not hit). Reported for the fight feedback; rules are unchanged.
+		"player_attack_damage": 0,
+		"counterattack_damage": 0,
 		"message_key": "COMBAT_MISS",
 	}
 	if location.is_empty() or not location.has("content"):
@@ -404,6 +411,7 @@ static func attack_monster(player: Dictionary, location: Dictionary, attack_roll
 	result["miss"] = bool(player_attack["miss"])
 
 	if bool(player_attack["hit"]):
+		result["player_attack_damage"] = int(player_attack["damage"])
 		_damage_actor(monster, int(player_attack["damage"]))
 		result["message_key"] = "COMBAT_CRITICAL_HIT" if bool(player_attack["critical"]) else "COMBAT_HIT"
 	elif bool(player_attack["dodged"]):
@@ -435,6 +443,7 @@ static func attack_monster(player: Dictionary, location: Dictionary, attack_roll
 		if bool(counter["hit"]):
 			result["player_damaged"] = true
 			result["message_key"] = "COMBAT_COUNTERATTACK_HIT"
+			result["counterattack_damage"] = int(counter["damage"])
 			_damage_actor(player, int(counter["damage"]))
 		else:
 			result["monster_attack_effects"] = []

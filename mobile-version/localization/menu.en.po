@@ -38,16 +38,28 @@ msgid "CONFIRM_NEW_GAME_MESSAGE"
 msgstr "Your current saved game will be replaced. This cannot be undone."
 
 msgid "CONFIRM_EXIT_TITLE"
-msgstr "Return to the main menu?"
+msgstr "Exit game?"
 
 msgid "CONFIRM_EXIT_MESSAGE"
-msgstr "Your progress is saved. Any unconfirmed allocation changes will be discarded."
+msgstr "Your progress is saved. You can continue later with Load Game."
 
 msgid "CONFIRM_ACCEPT"
 msgstr "Confirm"
 
 msgid "CONFIRM_CANCEL"
 msgstr "Cancel"
+
+msgid "CONFIRM_EXIT_ACCEPT"
+msgstr "Exit"
+
+msgid "CONFIRM_DISCARD_TITLE"
+msgstr "Discard changes?"
+
+msgid "CONFIRM_DISCARD_MESSAGE"
+msgstr "The points you assigned are not confirmed yet. If you leave, they go back to your reserve."
+
+msgid "CONFIRM_DISCARD_ACCEPT"
+msgstr "Discard"
 
 msgid "RESULT_CONTINUE"
 msgstr "Continue"
@@ -113,19 +125,19 @@ msgid "ENCOUNTER_FLEE_FAILED"
 msgstr "You could not escape"
 
 msgid "COMBAT_HIT"
-msgstr "Hit"
+msgstr "Your attack hit"
 
 msgid "COMBAT_CRITICAL_HIT"
-msgstr "Critical hit"
+msgstr "Critical hit: extra damage"
 
 msgid "COMBAT_COUNTERATTACK_HIT"
-msgstr "The monster hit you"
+msgstr "The monster hurt you"
 
 msgid "COMBAT_MISS"
-msgstr "Miss"
+msgstr "The monster's armor stopped your attack"
 
 msgid "COMBAT_DODGED"
-msgstr "Dodged"
+msgstr "The monster dodged your attack"
 
 msgid "COMBAT_EXPERIENCE_GAINED"
 msgstr "You gained experience"
@@ -225,36 +237,6 @@ msgstr "none"
 
 msgid "ENCOUNTER_MONSTER_NO_ATTACKS"
 msgstr "No attacks"
-
-msgid "COMBAT_FEEDBACK_PLAYER_CRITICAL"
-msgstr "Your attack was a critical hit."
-
-msgid "COMBAT_FEEDBACK_PLAYER_HIT"
-msgstr "Your attack hit."
-
-msgid "COMBAT_FEEDBACK_PLAYER_DODGED"
-msgstr "Your attack was dodged."
-
-msgid "COMBAT_FEEDBACK_PLAYER_PROTECTED"
-msgstr "Your attack was protected."
-
-msgid "COMBAT_FEEDBACK_PLAYER_MISSED"
-msgstr "Your attack missed."
-
-msgid "COMBAT_FEEDBACK_MONSTER_CRITICAL"
-msgstr "%s was a critical hit."
-
-msgid "COMBAT_FEEDBACK_MONSTER_HIT"
-msgstr "%s hit you."
-
-msgid "COMBAT_FEEDBACK_MONSTER_DODGED"
-msgstr "%s was dodged."
-
-msgid "COMBAT_FEEDBACK_MONSTER_PROTECTED"
-msgstr "%s was protected."
-
-msgid "COMBAT_FEEDBACK_MONSTER_MISSED"
-msgstr "%s missed."
 
 msgid "CONFIRM_QUIT_TITLE"
 msgstr "Quit the game?"
@@ -547,3 +529,45 @@ msgstr "What each stat does"
 
 msgid "LEVEL_ALLOCATION_GUIDE_GROWTH"
 msgstr "+%s per point"
+
+msgid "COMBAT_OUTCOME_HIT"
+msgstr "Hit"
+
+msgid "COMBAT_OUTCOME_CRITICAL"
+msgstr "Critical!"
+
+msgid "COMBAT_OUTCOME_DODGED"
+msgstr "Dodged"
+
+msgid "COMBAT_OUTCOME_BLOCKED"
+msgstr "Blocked"
+
+msgid "COMBAT_OUTCOME_FLEE_FAILED"
+msgstr "No escape"
+
+msgid "COMBAT_LOG_PLAYER_HIT"
+msgstr "You hit {monster} for {damage}"
+
+msgid "COMBAT_LOG_PLAYER_CRITICAL"
+msgstr "Critical hit on {monster} for {damage}"
+
+msgid "COMBAT_LOG_PLAYER_DODGED"
+msgstr "{monster} dodged your {attack}"
+
+msgid "COMBAT_LOG_PLAYER_BLOCKED"
+msgstr "{monster}'s armor stopped your {attack}"
+
+msgid "COMBAT_LOG_MONSTER_HIT"
+msgstr "{monster} hit you with {attack} for {damage}"
+
+msgid "COMBAT_LOG_MONSTER_CRITICAL"
+msgstr "{monster} landed a critical {attack} for {damage}"
+
+msgid "COMBAT_LOG_MONSTER_DODGED"
+msgstr "You dodged {monster}'s {attack}"
+
+msgid "COMBAT_LOG_MONSTER_BLOCKED"
+msgstr "Your armor stopped {monster}'s {attack}"
+
+msgid "COMBAT_LOG_FLEE_FAILED"
+msgstr "You tried to flee, but {monster} blocked your way"

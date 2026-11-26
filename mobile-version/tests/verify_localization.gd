@@ -18,6 +18,7 @@ const SettingsStore := preload("res://scripts/settings_store.gd")
 const CombatRules := preload("res://scripts/combat_rules.gd")
 const DungeonGenerator := preload("res://scripts/dungeon_generator.gd")
 const LocalizedNames := preload("res://scripts/localized_names.gd")
+const CombatFeedback := preload("res://scripts/combat_feedback.gd")
 const TEST_SAVE_PATH := "user://verify_localization.json"
 const TEST_SETTINGS_PATH := "user://verify_localization.cfg"
 const ENGLISH_PO := "res://localization/menu.en.po"
@@ -215,6 +216,9 @@ func _capture_ui_texts(locale: String, switch_to: String = "") -> Dictionary:
 	main._show_level_allocation_view()
 	main._stage_level_point("life")
 	_collect(main, main, "level_up", texts)
+	main._request_leave_level_allocation()  # staged point: the discard confirmation opens
+	_collect(main, main, "confirm_discard", texts)
+	main._cancel_pending_action()
 	main._show_new_game_view()
 
 	_enter_test_dungeon(main)
@@ -274,10 +278,19 @@ func _capture_encounters(main: Control, texts: Dictionary) -> void:
 		main._show_monster_encounter(location)
 		var step := "encounter_%s" % String(template.get("name", ""))
 		_collect(main, main, step, texts)
-		# The fight log line is built by the same formatter _fight() uses, for every attack.
+		# Fight log lines and floating numbers for every attack, through the same path _fight()
+		# uses (DNG-13). Each attack is shown with every outcome: hit, critical, dodged, blocked.
 		for attack: Dictionary in monster.get("attacks", []):
-			main.encounter_feedback.text = main._format_combat_feedback({"hit": true, "monster_attack_name": attack["name"], "counterattack_hit": true})
-			_collect(main, main, "%s_%s" % [step, String(attack["name"])], texts)
+			for flags: Dictionary in [
+				{"hit": true, "counterattack_hit": true},
+				{"critical": true, "hit": true, "counterattack_critical": true, "counterattack_hit": true},
+				{"dodged": true, "counterattack_dodged": true},
+				{"miss": true, "counterattack_miss": true},
+			]:
+				var result := flags.duplicate()
+				result["monster_attack_name"] = attack["name"]
+				main._show_combat_entries(CombatFeedback.entries_for_attack(result, String(monster.get("name", "")), "Strike"))
+				_collect(main, main, "%s_%s_%s" % [step, String(attack["name"]), str(flags.keys())], texts)
 		seed(7)  # same random attack choice in both languages
 		main._fight()
 		_collect(main, main, "%s_fight" % step, texts)

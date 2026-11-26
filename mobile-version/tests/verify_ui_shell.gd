@@ -8,6 +8,7 @@ const SettingsStore := preload("res://scripts/settings_store.gd")
 const AdSlotConfig := preload("res://scripts/ad_slot_config.gd")
 const UiTheme := preload("res://scripts/ui_theme.gd")
 const DungeonGenerator := preload("res://scripts/dungeon_generator.gd")
+const CombatFeedback := preload("res://scripts/combat_feedback.gd")
 const TEST_SAVE_PATH := "user://verify_ui_shell.json"
 const TEST_SETTINGS_PATH := "user://verify_ui_shell.cfg"
 
@@ -145,9 +146,10 @@ func _check_overlay_and_localization() -> bool:
 	if main.damage_overlay.mouse_filter != Control.MOUSE_FILTER_STOP:
 		return _fail("The feedback overlay should block taps on the actions underneath.")
 	TranslationServer.set_locale("es")
-	var feedback: String = main._format_combat_feedback({"hit": true, "monster_attack_name": "Mordisco", "counterattack_hit": true})
+	var entries: Array[Dictionary] = CombatFeedback.entries_for_attack({"hit": true, "player_attack_damage": 3, "monster_attack_name": "Bite", "counterattack_hit": true, "counterattack_damage": 1}, "Rat", "Strike")
+	var feedback := " / ".join(entries.map(func(entry: Dictionary) -> String: return String(entry["text"])))
 	TranslationServer.set_locale("en")
-	if feedback.contains("Your attack") or not feedback.contains("Mordisco"):
+	if feedback.contains("You hit") or not feedback.contains("Mordida") or not feedback.contains("Rata"):
 		return _fail("Combat feedback should be localized to Spanish: %s" % feedback)
 	return true
 

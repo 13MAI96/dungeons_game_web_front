@@ -7,6 +7,10 @@ const AdSlotConfig := preload("res://scripts/ad_slot_config.gd")
 const LocalizedNames := preload("res://scripts/localized_names.gd")
 const StatHelp := preload("res://scripts/stat_help.gd")
 const Tutorial := preload("res://scripts/tutorial.gd")
+## Fight feedback (DNG-13): plain-language log entries, the log widget and floating numbers.
+const CombatFeedback := preload("res://scripts/combat_feedback.gd")
+const FightLog := preload("res://scripts/fight_log.gd")
+const DamageNumbers := preload("res://scripts/damage_numbers.gd")
 
 const LOCALE_ENGLISH := "en"
 const LOCALE_SPANISH := "es"
@@ -68,6 +72,12 @@ const CONFIRM_NEW_GAME_TITLE_KEY := "CONFIRM_NEW_GAME_TITLE"
 const CONFIRM_NEW_GAME_MESSAGE_KEY := "CONFIRM_NEW_GAME_MESSAGE"
 const CONFIRM_EXIT_TITLE_KEY := "CONFIRM_EXIT_TITLE"
 const CONFIRM_EXIT_MESSAGE_KEY := "CONFIRM_EXIT_MESSAGE"
+## Accept label of the hub Exit confirmation ("Exit"), so the button names the action.
+const CONFIRM_EXIT_ACCEPT_KEY := "CONFIRM_EXIT_ACCEPT"
+## Level Up Back with staged (unconfirmed) points: "Discard changes?" (DNG-11).
+const CONFIRM_DISCARD_TITLE_KEY := "CONFIRM_DISCARD_TITLE"
+const CONFIRM_DISCARD_MESSAGE_KEY := "CONFIRM_DISCARD_MESSAGE"
+const CONFIRM_DISCARD_ACCEPT_KEY := "CONFIRM_DISCARD_ACCEPT"
 const CONFIRM_ACCEPT_KEY := "CONFIRM_ACCEPT"
 const CONFIRM_CANCEL_KEY := "CONFIRM_CANCEL"
 const RESULT_CONTINUE_KEY := "RESULT_CONTINUE"
@@ -256,6 +266,10 @@ var confirmation_message: Label
 var confirmation_accept_button: Button
 var confirmation_cancel_button: Button
 var pending_confirmation_action: Callable
+## Translation keys of the open confirmation ({"title", "message", "accept"}), empty when closed.
+## Every confirmation sets all of them, so no text can carry over from a previous dialog, and a
+## language change can re-translate the open dialog.
+var confirmation_text_keys: Dictionary = {}
 var ad_slot: Panel
 var ad_slot_label: Label
 var current_screen: String = AdSlotConfig.SCREEN_MENU
@@ -306,6 +320,10 @@ var fight_victory_message: Label
 var fight_victory_continue_button: Button
 ## Low-energy warning raised while the fight victory screen was open; shown when it is dismissed.
 var low_energy_warning_after_victory: String = ""
+## Last attacks of the current encounter, above the Fight button (DNG-13).
+var fight_log: FightLog
+## Layer for the damage numbers that float over the fighters' portraits (DNG-13).
+var damage_numbers: DamageNumbers
 
 @onready var main_menu_view: Control = $MainMenuView
 @onready var new_game_view: Control = $NewGameView
@@ -367,8 +385,6 @@ func _load_game_logo() -> void:
 	game_logo.texture = logo_texture
 	game_logo.visible = logo_texture != null
 
-## Sets every static UI text from the translation files. Called on start and again after a
-## language change, so it must cover every text that is not rebuilt when a screen opens.
 # --- Input cooldown after screen changes (DNG-9) -----------------------------------------
 
 ## Every screen, modal and overlay that can appear or disappear. Showing or hiding any of them
@@ -409,6 +425,8 @@ func _input(event: InputEvent) -> void:
 	if _is_tap_event(event) and is_input_cooldown_active():
 		get_viewport().set_input_as_handled()
 
+## Sets every static UI text from the translation files. Called on start and again after a
+## language change, so it must cover every text that is not rebuilt when a screen opens.
 func _apply_menu_text() -> void:
 	game_title_label.text = tr(GAME_TITLE_KEY)
 	start_game_button.text = tr(START_GAME_KEY)
@@ -448,8 +466,7 @@ func _apply_menu_text() -> void:
 	if is_instance_valid(tutorial_overlay):
 		tutorial_overlay.refresh_texts()
 	if is_instance_valid(confirmation_accept_button):
-		confirmation_accept_button.text = tr(CONFIRM_ACCEPT_KEY)
-		confirmation_cancel_button.text = tr(CONFIRM_CANCEL_KEY)
+		_refresh_confirmation_text()
 	if is_instance_valid(game_result_continue_button):
 		game_result_continue_button.text = tr(RESULT_CONTINUE_KEY)
 	if is_instance_valid(ad_slot_label):
@@ -538,30 +555,51 @@ func _start_new_game() -> void:
 func _request_new_game() -> void:
 	# Any existing file, even one that cannot be loaded, needs confirmation before it is replaced.
 	if SaveGame.has_save(save_path):
-		_show_confirmation(tr(CONFIRM_NEW_GAME_TITLE_KEY), tr(CONFIRM_NEW_GAME_MESSAGE_KEY), Callable(self, "_start_new_game"))
+		_show_confirmation(CONFIRM_NEW_GAME_TITLE_KEY, CONFIRM_NEW_GAME_MESSAGE_KEY, Callable(self, "_start_new_game"))
 		return
 	_start_new_game()
 
+## Hub Exit button and system back on the hub: asks "Exit game?" and, if confirmed, leaves the
+## current game for the main menu. Progress is already saved, so nothing is lost.
 func _request_exit_to_menu() -> void:
-	_show_confirmation(tr(CONFIRM_EXIT_TITLE_KEY), tr(CONFIRM_EXIT_MESSAGE_KEY), Callable(self, "_show_main_menu_view"))
+	_show_confirmation(CONFIRM_EXIT_TITLE_KEY, CONFIRM_EXIT_MESSAGE_KEY, Callable(self, "_show_main_menu_view"), CONFIRM_EXIT_ACCEPT_KEY)
 
-func _show_confirmation(title: String, message: String, action: Callable) -> void:
+## Opens the shared confirmation dialog. Takes translation keys, not texts: the title, message
+## and both button labels are all set on every call (the accept label defaults to "Confirm"),
+## so nothing from the previously shown confirmation can leak into this one (DNG-12).
+## `action` runs only if the player accepts.
+func _show_confirmation(title_key: String, message_key: String, action: Callable, accept_key: String = CONFIRM_ACCEPT_KEY) -> void:
 	pending_confirmation_action = action
-	confirmation_title.text = title
-	confirmation_message.text = message
+	confirmation_text_keys = {"title": title_key, "message": message_key, "accept": accept_key}
+	_refresh_confirmation_text()
 	action_confirmation.visible = true
 	confirmation_cancel_button.grab_focus.call_deferred()
 
-func _confirm_pending_action() -> void:
+## Translates the open confirmation's texts from confirmation_text_keys. With no confirmation
+## open, the labels are cleared and the buttons get their default labels.
+func _refresh_confirmation_text() -> void:
+	confirmation_title.text = tr(String(confirmation_text_keys["title"])) if confirmation_text_keys.has("title") else ""
+	confirmation_message.text = tr(String(confirmation_text_keys["message"])) if confirmation_text_keys.has("message") else ""
+	confirmation_accept_button.text = tr(String(confirmation_text_keys.get("accept", CONFIRM_ACCEPT_KEY)))
+	confirmation_cancel_button.text = tr(CONFIRM_CANCEL_KEY)
+
+## Hides the confirmation and forgets its action and texts, so a later dialog starts clean.
+func _close_confirmation() -> void:
 	action_confirmation.visible = false
-	var action := pending_confirmation_action
 	pending_confirmation_action = Callable()
+	confirmation_text_keys = {}
+	_refresh_confirmation_text()
+
+## Accept: closes the dialog first (the action may open a screen or another dialog), then runs it.
+func _confirm_pending_action() -> void:
+	var action := pending_confirmation_action
+	_close_confirmation()
 	if action.is_valid():
 		action.call()
 
+## Cancel (button or system back): closes the dialog without running its action.
 func _cancel_pending_action() -> void:
-	action_confirmation.visible = false
-	pending_confirmation_action = Callable()
+	_close_confirmation()
 
 func _load_game() -> void:
 	var result := SaveGame.load_player(CombatRules.create_default_player(), save_path)
@@ -694,11 +732,11 @@ func _handle_back() -> void:
 		AdSlotConfig.SCREEN_SETTINGS:
 			_show_main_menu_view()
 		AdSlotConfig.SCREEN_LEVEL_UP:
-			_show_new_game_view()
+			_request_leave_level_allocation()  # same as the on-screen Back button
 		AdSlotConfig.SCREEN_HUB:
 			_request_exit_to_menu()
 		AdSlotConfig.SCREEN_MENU:
-			_show_confirmation(tr(CONFIRM_QUIT_TITLE_KEY), tr(CONFIRM_QUIT_MESSAGE_KEY), Callable(get_tree(), "quit"))
+			_show_confirmation(CONFIRM_QUIT_TITLE_KEY, CONFIRM_QUIT_MESSAGE_KEY, Callable(get_tree(), "quit"))
 		AdSlotConfig.SCREEN_EXPLORE:
 			_request_abandon_expedition()
 		AdSlotConfig.SCREEN_ENCOUNTER:
@@ -707,7 +745,7 @@ func _handle_back() -> void:
 func _request_abandon_expedition() -> void:
 	if dungeon.is_empty() or dungeon_exit_pending or not active_monster_location.is_empty():
 		return
-	_show_confirmation(tr(CONFIRM_ABANDON_TITLE_KEY), tr(CONFIRM_ABANDON_MESSAGE_KEY), Callable(self, "_abandon_expedition"))
+	_show_confirmation(CONFIRM_ABANDON_TITLE_KEY, CONFIRM_ABANDON_MESSAGE_KEY, Callable(self, "_abandon_expedition"))
 
 ## Leaves the dungeon from any cell: the run's experience is lost, status restored as an alive exit.
 func _abandon_expedition() -> void:
@@ -736,8 +774,10 @@ func _activate_screen(view: Control, screen: String) -> void:
 	for other: Control in [main_menu_view, new_game_view, dungeon_explore_view, monster_encounter_view, settings_view, level_allocation_view, monster_info_modal]:
 		if is_instance_valid(other):
 			other.visible = false
+	# A confirmation belongs to the screen it was opened on: close it with its action, so a
+	# hidden dialog can never be accepted later.
 	if is_instance_valid(action_confirmation):
-		action_confirmation.visible = false
+		_close_confirmation()
 	# Overlays that belong to the previous screen close with it.
 	if is_instance_valid(stat_help_popup):
 		stat_help_popup.close()
@@ -863,7 +903,10 @@ func _show_monster_encounter(location: Dictionary) -> void:
 	_ensure_active_monster_max_stats()
 	_update_monster_encounter()
 	explore_feedback.text = ""
-	encounter_feedback.text = ""
+	_set_encounter_hint("")
+	# Each encounter starts with an empty fight log and no numbers left from the previous one.
+	fight_log.clear_entries()
+	damage_numbers.clear()
 	_clear_roll_displays()
 	_update_monster_info_button()
 	_activate_screen(monster_encounter_view, AdSlotConfig.SCREEN_ENCOUNTER)
@@ -1046,7 +1089,7 @@ func _update_fight_availability() -> void:
 		return
 	var hint := tr(CANNOT_AFFORD_ATTACK_KEY)
 	if not encounter_feedback.text.contains(hint):
-		encounter_feedback.text = ("%s %s" % [encounter_feedback.text, hint]).strip_edges()
+		_set_encounter_hint(("%s %s" % [encounter_feedback.text, hint]).strip_edges())
 
 func _fight() -> void:
 	if active_monster_location.is_empty() or dungeon_exit_pending:
@@ -1057,7 +1100,10 @@ func _fight() -> void:
 	next_counter_roll = -1.0
 	next_dodge_roll = -1.0
 	next_player_dodge_roll = -1.0
-	encounter_feedback.text = _format_combat_feedback(result)
+	# The fight log and floating numbers explain the round; the hint line only says why an
+	# attack could not be made.
+	_set_encounter_hint(tr(String(result["message_key"])) if bool(result.get("insufficient_resources", false)) else "")
+	var round_entries := _show_combat_entries(CombatFeedback.entries_for_attack(result, _active_monster_data_name(), _player_attack_data_name()))
 	_update_roll_displays(result)
 	_apply_player_stats()
 
@@ -1087,7 +1133,7 @@ func _fight() -> void:
 		return
 
 	if int(player_state.get("current_life", 0)) < previous_life:
-		_show_damage_overlay(tr(String(result.get("message_key", "COMBAT_COUNTERATTACK_HIT"))))
+		_show_damage_overlay(_damage_overlay_message(round_entries, result))
 	_update_monster_encounter()
 	_warn_if_energy_low()
 	_persist_run_checkpoint()
@@ -1253,7 +1299,7 @@ func _clear_feedback() -> void:
 	if is_instance_valid(explore_feedback):
 		explore_feedback.text = ""
 	if is_instance_valid(encounter_feedback):
-		encounter_feedback.text = ""
+		_set_encounter_hint("")
 
 func _get_player_current_stat(stat_name: String) -> int:
 	if stat_name == "experience":
@@ -1302,6 +1348,7 @@ func _build_runtime_ui() -> void:
 	player_roll_display = _create_roll_display("PlayerRollDisplay")
 	encounter_player_stats.get_parent().add_child(player_roll_display)
 	_add_damage_overlay()
+	_add_combat_feedback_ui()  # Right after the damage overlay: numbers float above it.
 	_add_monster_info_modal()
 	_add_level_allocation_view()
 	_add_settings_view()
@@ -1826,7 +1873,7 @@ func _add_level_allocation_view() -> void:
 	allocation_back_button = _create_button("BackButton")
 	allocation_back_button.text = tr(ALLOCATION_BACK_KEY)
 	allocation_back_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	allocation_back_button.pressed.connect(Callable(self, "_show_new_game_view"))
+	allocation_back_button.pressed.connect(Callable(self, "_request_leave_level_allocation"))
 	actions.add_child(allocation_back_button)
 
 	allocation_confirm_button = _create_button("ConfirmAllocationButton", &"PrimaryButton", UiTheme.PRIMARY_HEIGHT)
@@ -2022,6 +2069,23 @@ func _get_staged_points() -> int:
 	for stat_variant: Variant in CombatRules.STAT_GROWTH.keys():
 		total += int(staged_allocation.get(String(stat_variant), 0))
 	return total
+
+## True when the Level Up screen holds staged points that have not been confirmed yet.
+func _has_unconfirmed_allocation() -> bool:
+	return _get_staged_points() > 0
+
+## Level Up Back button and system back (DNG-11). Without staged points it returns to the hub at
+## once; with staged points it asks "Discard changes?" first, and cancelling keeps them as staged.
+func _request_leave_level_allocation() -> void:
+	if not _has_unconfirmed_allocation():
+		_show_new_game_view()
+		return
+	_show_confirmation(CONFIRM_DISCARD_TITLE_KEY, CONFIRM_DISCARD_MESSAGE_KEY, Callable(self, "_discard_level_allocation"), CONFIRM_DISCARD_ACCEPT_KEY)
+
+## Confirmed discard: drops the staged points (they stay in the reserve) and returns to the hub.
+func _discard_level_allocation() -> void:
+	staged_allocation = {}
+	_show_new_game_view()
 
 func _stage_level_point(stat_key: String) -> void:
 	_stage_level_point_delta(stat_key, 1)
@@ -2330,7 +2394,8 @@ func _flee_encounter() -> void:
 	next_flee_roll = -1.0
 	next_counter_roll = -1.0
 	next_player_dodge_roll = -1.0
-	encounter_feedback.text = _format_flee_feedback(result)
+	_set_encounter_hint("")
+	var flee_entries := _show_combat_entries(CombatFeedback.entries_for_flee(result, _active_monster_data_name()))
 	_update_roll_displays(result)
 	_apply_player_stats()
 
@@ -2338,11 +2403,11 @@ func _flee_encounter() -> void:
 		return
 
 	if int(player_state.get("current_life", 0)) < previous_life:
-		_show_damage_overlay(tr(String(result.get("message_key", "COMBAT_COUNTERATTACK_HIT"))))
+		_show_damage_overlay(_damage_overlay_message(flee_entries, result))
 
 	if bool(result.get("fled", false)):
 		active_monster_location = {}
-		encounter_feedback.text = ""
+		_set_encounter_hint("")
 		_show_dungeon_explore_view()
 		_warn_if_energy_low()
 		_persist_run_checkpoint()
@@ -2352,48 +2417,66 @@ func _flee_encounter() -> void:
 	_warn_if_energy_low()
 	_persist_run_checkpoint()
 
-func _format_combat_feedback(result: Dictionary) -> String:
-	if bool(result.get("insufficient_resources", false)):
-		return tr(String(result.get("message_key", "COMBAT_INSUFFICIENT_RESOURCES")))
-	var parts: Array[String] = []
-	if bool(result.get("critical", false)):
-		parts.append(tr("COMBAT_FEEDBACK_PLAYER_CRITICAL"))
-	elif bool(result.get("hit", false)):
-		parts.append(tr("COMBAT_FEEDBACK_PLAYER_HIT"))
-	elif bool(result.get("dodged", false)):
-		parts.append(tr("COMBAT_FEEDBACK_PLAYER_DODGED"))
-	elif bool(result.get("miss", false)):
-		parts.append(tr("COMBAT_FEEDBACK_PLAYER_PROTECTED"))
-	else:
-		parts.append(tr("COMBAT_FEEDBACK_PLAYER_MISSED"))
+# --- Fight feedback: log, floating numbers, hint (DNG-13) ----------------------------------
 
-	var monster_attack_name := String(result.get("monster_attack_name", ""))
-	if monster_attack_name != "":
-		parts.append(_format_monster_attack_feedback(monster_attack_name, result))
-	return " ".join(parts)
+## Builds the fight log (above the Fight button) and the floating-number layer. The layer is
+## added right after the damage overlay so numbers stay visible over it, under every modal.
+func _add_combat_feedback_ui() -> void:
+	fight_log = FightLog.new()
+	var action_buttons := encounter_feedback.get_parent()
+	action_buttons.add_child(fight_log)
+	action_buttons.move_child(fight_log, encounter_feedback.get_index())
+	damage_numbers = DamageNumbers.new()
+	add_child(damage_numbers)
+	# Numbers belong to the fight: they disappear as soon as the encounter view closes
+	# (victory, escape, depletion) instead of floating over the next screen.
+	monster_encounter_view.visibility_changed.connect(func() -> void:
+		if not monster_encounter_view.visible:
+			damage_numbers.clear())
+	# The hint line is only shown when it has text, so it takes no room during a normal fight.
+	encounter_feedback.custom_minimum_size = Vector2.ZERO
+	_set_encounter_hint("")
 
-func _format_flee_feedback(result: Dictionary) -> String:
-	if bool(result.get("fled", false)):
-		return tr("ENCOUNTER_FLEE_SUCCESS")
-	var parts: Array[String] = [tr("ENCOUNTER_FLEE_FAILED")]
-	var monster_attack_name := String(result.get("monster_attack_name", ""))
-	if monster_attack_name != "":
-		parts.append(_format_monster_attack_feedback(monster_attack_name, result))
-	return " ".join(parts)
+## Adds one action's entries to the fight log and floats each attack's damage (or outcome
+## word) over the portrait of whoever received it. Returns the entries for the caller.
+func _show_combat_entries(entries: Array[Dictionary]) -> Array[Dictionary]:
+	if entries.is_empty():
+		return entries
+	fight_log.add_entries(entries)
+	for entry: Dictionary in entries:
+		var text := CombatFeedback.float_text(entry)
+		if text == "":
+			continue
+		var target_is_player := String(entry["target"]) == CombatFeedback.TARGET_PLAYER
+		var is_damage := int(entry.get("damage", 0)) > 0
+		var portrait: Control = encounter_player_asset if target_is_player else monster_image_asset
+		damage_numbers.spawn(portrait, text, DamageNumbers.color_for(is_damage, target_is_player), is_damage)
+	return entries
 
-## Fight-log sentence for the monster's attack. `english_attack_name` is the data name and is
-## translated here, so every caller gets the localized attack name.
-func _format_monster_attack_feedback(english_attack_name: String, result: Dictionary) -> String:
-	var attack_name := LocalizedNames.ability(english_attack_name)
-	if bool(result.get("counterattack_critical", false)):
-		return tr("COMBAT_FEEDBACK_MONSTER_CRITICAL") % attack_name
-	if bool(result.get("counterattack_hit", false)):
-		return tr("COMBAT_FEEDBACK_MONSTER_HIT") % attack_name
-	if bool(result.get("counterattack_dodged", false)):
-		return tr("COMBAT_FEEDBACK_MONSTER_DODGED") % attack_name
-	if bool(result.get("counterattack_miss", false)):
-		return tr("COMBAT_FEEDBACK_MONSTER_PROTECTED") % attack_name
-	return tr("COMBAT_FEEDBACK_MONSTER_MISSED") % attack_name
+## Text of the damage overlay after the player was hurt: the log line of the attack that hurt
+## them ("Bat hit you with Bite for 2"), or the rules message when there is no such line.
+func _damage_overlay_message(entries: Array[Dictionary], result: Dictionary) -> String:
+	for entry: Dictionary in entries:
+		if String(entry["target"]) == CombatFeedback.TARGET_PLAYER and int(entry.get("damage", 0)) > 0:
+			return String(entry["text"])
+	return tr(String(result.get("message_key", "COMBAT_COUNTERATTACK_HIT")))
+
+## Sets the encounter hint line (e.g. "Not enough energy or mana to attack") and hides the line
+## when it is empty.
+func _set_encounter_hint(text: String) -> void:
+	encounter_feedback.text = text
+	encounter_feedback.visible = text != ""
+
+## English data name of the monster being fought ("" when there is none).
+func _active_monster_data_name() -> String:
+	return String((active_monster_location.get("content", {}) as Dictionary).get("name", ""))
+
+## English data name of the attack the Fight button uses (the player's first attack).
+func _player_attack_data_name() -> String:
+	var attacks: Array = player_state.get("attacks", [])
+	if attacks.is_empty() or not attacks[0] is Dictionary:
+		return String(CombatRules.DEFAULT_PLAYER_ATTACK["name"])
+	return String((attacks[0] as Dictionary).get("name", CombatRules.DEFAULT_PLAYER_ATTACK["name"]))
 
 func _update_monster_info_button() -> void:
 	if not is_instance_valid(monster_info_button):

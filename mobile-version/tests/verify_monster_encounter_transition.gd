@@ -74,8 +74,11 @@ func _init() -> void:
 		quit(1)
 		return
 
-	if not root.encounter_feedback.text.contains("Your attack hit") or not root.encounter_feedback.text.contains("Bite was protected"):
-		push_error("Encounter should explain player and monster attack outcomes in feedback text.")
+	# The fight log explains both attacks in plain language, with the damage dealt (DNG-13).
+	var log_texts: Array[String] = root.fight_log.get_entry_texts()
+	var expected_hit := "You hit Rat for %d" % (4 - expected_life)
+	if log_texts != [expected_hit, "Your armor stopped Rat's Bite"]:
+		push_error("Encounter should explain player and monster attack outcomes in the fight log, got %s." % [log_texts])
 		quit(1)
 		return
 

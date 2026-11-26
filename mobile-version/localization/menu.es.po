@@ -38,16 +38,28 @@ msgid "CONFIRM_NEW_GAME_MESSAGE"
 msgstr "La partida guardada actual será reemplazada. Esta acción no se puede deshacer."
 
 msgid "CONFIRM_EXIT_TITLE"
-msgstr "¿Volver al menú principal?"
+msgstr "¿Salir de la partida?"
 
 msgid "CONFIRM_EXIT_MESSAGE"
-msgstr "Tu progreso está guardado. Los cambios de atributos sin confirmar se descartarán."
+msgstr "Tu progreso está guardado. Podés seguir más tarde con Cargar Partida."
 
 msgid "CONFIRM_ACCEPT"
 msgstr "Confirmar"
 
 msgid "CONFIRM_CANCEL"
 msgstr "Cancelar"
+
+msgid "CONFIRM_EXIT_ACCEPT"
+msgstr "Salir"
+
+msgid "CONFIRM_DISCARD_TITLE"
+msgstr "¿Descartar los cambios?"
+
+msgid "CONFIRM_DISCARD_MESSAGE"
+msgstr "Los puntos que asignaste todavía no están confirmados. Si salís, vuelven a tu reserva."
+
+msgid "CONFIRM_DISCARD_ACCEPT"
+msgstr "Descartar"
 
 msgid "RESULT_CONTINUE"
 msgstr "Continuar"
@@ -113,19 +125,19 @@ msgid "ENCOUNTER_FLEE_FAILED"
 msgstr "No pudiste huir"
 
 msgid "COMBAT_HIT"
-msgstr "Golpeaste"
+msgstr "Tu ataque acertó"
 
 msgid "COMBAT_CRITICAL_HIT"
-msgstr "Golpe crítico"
+msgstr "Golpe crítico: daño extra"
 
 msgid "COMBAT_COUNTERATTACK_HIT"
-msgstr "El monstruo te golpeó"
+msgstr "El monstruo te lastimó"
 
 msgid "COMBAT_MISS"
-msgstr "Fallaste"
+msgstr "La armadura del monstruo frenó tu ataque"
 
 msgid "COMBAT_DODGED"
-msgstr "Esquivado"
+msgstr "El monstruo esquivó tu ataque"
 
 msgid "COMBAT_EXPERIENCE_GAINED"
 msgstr "Ganaste experiencia"
@@ -225,36 +237,6 @@ msgstr "ninguno"
 
 msgid "ENCOUNTER_MONSTER_NO_ATTACKS"
 msgstr "Sin ataques"
-
-msgid "COMBAT_FEEDBACK_PLAYER_CRITICAL"
-msgstr "¡Tu ataque fue un golpe crítico!"
-
-msgid "COMBAT_FEEDBACK_PLAYER_HIT"
-msgstr "Tu ataque acertó."
-
-msgid "COMBAT_FEEDBACK_PLAYER_DODGED"
-msgstr "Tu ataque fue esquivado."
-
-msgid "COMBAT_FEEDBACK_PLAYER_PROTECTED"
-msgstr "Tu ataque fue bloqueado por la armadura."
-
-msgid "COMBAT_FEEDBACK_PLAYER_MISSED"
-msgstr "Tu ataque falló."
-
-msgid "COMBAT_FEEDBACK_MONSTER_CRITICAL"
-msgstr "¡%s fue un golpe crítico!"
-
-msgid "COMBAT_FEEDBACK_MONSTER_HIT"
-msgstr "%s te golpeó."
-
-msgid "COMBAT_FEEDBACK_MONSTER_DODGED"
-msgstr "Esquivaste %s."
-
-msgid "COMBAT_FEEDBACK_MONSTER_PROTECTED"
-msgstr "Tu armadura detuvo %s."
-
-msgid "COMBAT_FEEDBACK_MONSTER_MISSED"
-msgstr "%s falló."
 
 msgid "CONFIRM_QUIT_TITLE"
 msgstr "¿Salir del juego?"
@@ -547,3 +529,45 @@ msgstr "Qué hace cada atributo"
 
 msgid "LEVEL_ALLOCATION_GUIDE_GROWTH"
 msgstr "+%s por punto"
+
+msgid "COMBAT_OUTCOME_HIT"
+msgstr "Golpe"
+
+msgid "COMBAT_OUTCOME_CRITICAL"
+msgstr "¡Crítico!"
+
+msgid "COMBAT_OUTCOME_DODGED"
+msgstr "Esquivado"
+
+msgid "COMBAT_OUTCOME_BLOCKED"
+msgstr "Bloqueado"
+
+msgid "COMBAT_OUTCOME_FLEE_FAILED"
+msgstr "Sin escape"
+
+msgid "COMBAT_LOG_PLAYER_HIT"
+msgstr "Golpeaste a {monster}: {damage} de daño"
+
+msgid "COMBAT_LOG_PLAYER_CRITICAL"
+msgstr "Golpe crítico a {monster}: {damage} de daño"
+
+msgid "COMBAT_LOG_PLAYER_DODGED"
+msgstr "{monster} esquivó tu {attack}"
+
+msgid "COMBAT_LOG_PLAYER_BLOCKED"
+msgstr "La armadura de {monster} frenó tu {attack}"
+
+msgid "COMBAT_LOG_MONSTER_HIT"
+msgstr "{monster} te golpeó con {attack}: {damage} de daño"
+
+msgid "COMBAT_LOG_MONSTER_CRITICAL"
+msgstr "{monster} te dio un golpe crítico con {attack}: {damage} de daño"
+
+msgid "COMBAT_LOG_MONSTER_DODGED"
+msgstr "Esquivaste el ataque de {monster} ({attack})"
+
+msgid "COMBAT_LOG_MONSTER_BLOCKED"
+msgstr "Tu armadura frenó el ataque de {monster} ({attack})"
+
+msgid "COMBAT_LOG_FLEE_FAILED"
+msgstr "Intentaste huir, pero {monster} te cerró el paso"
