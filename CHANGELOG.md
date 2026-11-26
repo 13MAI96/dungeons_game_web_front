@@ -10,7 +10,7 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
-## 2026-11-26 — Mobile: P1 user-test fixes (DNG-5 to DNG-10)
+## 2026-11-26 — Mobile: P1 user-test fixes (`2f6b0fb`, DNG-5 to DNG-10)
 ### Changes
 - DNG-5: main menu shows a logo (`assets/ui/logo.svg`) and the translated title.
 - DNG-6: 6-page "How to play" tutorial on the first dungeon entry (`scripts/tutorial.gd`); Skip/Next/Done, reopenable from Settings; "seen" flag stored in the settings file. Rest/Sanctuary/treasure numbers are now named constants in `combat_rules.gd` (values unchanged).
@@ -26,7 +26,7 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Checked on the Android emulators: menu, stat help, and tutorial. The victory screen and the Spanish UI were checked by tests only.
 - Spanish name choices to review: Goblin → "Trasgo", Kobold → "Kóbold".
 
-## 2026-11-26 — Mobile: low-energy warning and experience-lost message (DNG-4)
+## 2026-11-26 — Mobile: low-energy warning and experience-lost message (`b5bd00b`, DNG-4)
 ### Changes
 - One-time "Low energy" warning per run when energy drops to 25% of maximum or below. It shows the energy left and the dungeon XP at risk, and advises retreating at the entrance (`mobile-version/scripts/main.gd`, `_warn_if_energy_low`).
 - Energy and life depletion results now state the dungeon experience lost.
