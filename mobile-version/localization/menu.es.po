@@ -276,3 +276,15 @@ msgstr "No tenés suficiente energía o maná para atacar. Todavía podés huir.
 
 msgid "COMBAT_SANCTUARY_USED"
 msgstr "Este santuario ya fue usado."
+
+msgid "DUNGEON_EXPERIENCE_LOST"
+msgstr "Perdiste %s de experiencia de mazmorra ganada en esta expedición."
+
+msgid "LOW_ENERGY_TITLE"
+msgstr "Energía baja"
+
+msgid "LOW_ENERGY_MESSAGE"
+msgstr "Te quedan %s de energía. Cada paso y cada ronda de combate gastan energía. Si llega a 0, la expedición termina y perdés %s de experiencia de mazmorra ganada en esta expedición. Volvé a la entrada verde y usá Retirada para conservarla."
+
+msgid "LOW_ENERGY_MESSAGE_NO_EXPERIENCE"
+msgstr "Te quedan %s de energía. Cada paso y cada ronda de combate gastan energía. Si llega a 0, la expedición termina. Volvé a la entrada verde y usá Retirada para salir a salvo."

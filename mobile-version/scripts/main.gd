@@ -32,6 +32,19 @@ const CLASS_CHOICE_TITLE_KEY := "LEVEL_CLASS_CHOICE_TITLE"
 const PROGRESSION_PENDING_KEY := "LEVEL_PROGRESSION_PENDING"
 const DUNGEON_ENERGY_DEPLETED_KEY := "DUNGEON_ENERGY_DEPLETED"
 const DUNGEON_LIFE_DEPLETED_KEY := "DUNGEON_LIFE_DEPLETED"
+## Line added to a depletion result stating how much provisional dungeon experience was lost.
+const DUNGEON_EXPERIENCE_LOST_KEY := "DUNGEON_EXPERIENCE_LOST"
+## One-time low-energy warning shown during a run (title, and message with energy / dungeon XP).
+const LOW_ENERGY_TITLE_KEY := "LOW_ENERGY_TITLE"
+const LOW_ENERGY_MESSAGE_KEY := "LOW_ENERGY_MESSAGE"
+## Variant used when the run has not earned dungeon experience yet (nothing to lose but the run).
+const LOW_ENERGY_MESSAGE_NO_EXPERIENCE_KEY := "LOW_ENERGY_MESSAGE_NO_EXPERIENCE"
+## Delay before the warning when a short feedback overlay (0.8 s) is still visible.
+const LOW_ENERGY_WARNING_DELAY_SECONDS := 0.85
+## The warning fires when current energy drops to this percentage of maximum energy or below.
+const LOW_ENERGY_WARNING_PERCENT := 25
+## Flag stored in the dungeon dictionary (saved with the run) so the warning shows once per run.
+const LOW_ENERGY_WARNED_FLAG := "low_energy_warned"
 const MONSTER_INFO_KEY := "ENCOUNTER_MONSTER_INFO"
 const MONSTER_ATTACKS_TITLE_KEY := "ENCOUNTER_MONSTER_ATTACKS_TITLE"
 const MONSTER_ATTACK_LINE_KEY := "ENCOUNTER_MONSTER_ATTACK_LINE"
@@ -223,6 +236,8 @@ var map_player_marker: Panel
 ## True while a game (new or loaded) is in progress; controls saving when the app is backgrounded.
 var session_active: bool = false
 var save_failure_reported: bool = false
+## Optional seeded generator for dungeon layouts (tests and tools/playtest.gd); null = random.
+var dungeon_rng: RandomNumberGenerator = null
 var game_result_modal: ColorRect
 var game_result_title: Label
 var game_result_message: Label
@@ -236,8 +251,6 @@ var monster_info_button: Button
 var monster_info_modal: Control
 var monster_info_text: Label
 var dungeon_exit_pending: bool = false
-## Optional seeded generator for dungeon layouts (tests and tools/playtest.gd); null = random.
-var dungeon_rng: RandomNumberGenerator = null
 var staged_allocation: Dictionary = {}
 var save_path: String = SaveGame.DEFAULT_SAVE_PATH
 var settings_path: String = SettingsStore.DEFAULT_SETTINGS_PATH
@@ -438,6 +451,7 @@ func _load_game() -> void:
 		_update_load_game_button()
 		return
 	player_state = (result["player"] as Dictionary).duplicate(true)
+	CombatRules.refresh_player_attacks(player_state)
 	session_active = true
 	_apply_player_stats()
 	var run := result.get("run", {}) as Dictionary
@@ -451,7 +465,6 @@ func _load_game() -> void:
 		_apply_player_stats()
 	_show_new_game_view()
 
-	CombatRules.refresh_player_attacks(player_state)
 func _persist_player_state() -> bool:
 	if bool(player_state.get("save_deleted", false)):
 		var deleted := SaveGame.delete_save(save_path)
@@ -701,6 +714,7 @@ func move_player(direction: String) -> void:
 
 	if DungeonGenerator.is_monster_alive(current_location):
 		_show_monster_encounter(current_location)
+	_warn_if_energy_low()
 	_persist_run_checkpoint()
 
 func _show_dungeon_explore_view() -> void:
@@ -912,6 +926,7 @@ func _fight() -> void:
 		_show_dungeon_explore_view()
 		explore_feedback.text = ""
 		_show_experience_overlay(experience_gained)
+		_warn_if_energy_low()
 		_persist_run_checkpoint()
 		return
 
@@ -921,6 +936,7 @@ func _fight() -> void:
 	if int(player_state.get("current_life", 0)) < previous_life:
 		_show_damage_overlay(tr(String(result.get("message_key", "COMBAT_COUNTERATTACK_HIT"))))
 	_update_monster_encounter()
+	_warn_if_energy_low()
 	_persist_run_checkpoint()
 
 func _apply_current_location_effect() -> void:
@@ -956,6 +972,7 @@ func _collect_treasure() -> void:
 		return
 	if int(player_state.get("current_life", 0)) < previous_life:
 		_show_damage_overlay(tr(String(result.get("message_key", "COMBAT_QUEST_TRAP"))))
+	_warn_if_energy_low()
 	_persist_run_checkpoint()
 
 func _exit_dungeon_if_player_depleted() -> bool:
@@ -964,20 +981,71 @@ func _exit_dungeon_if_player_depleted() -> bool:
 	if dungeon_exit_pending:
 		return true
 
+	# Captured before the depletion rules reset it, so the result can say what the run cost.
+	var experience_lost := int(player_state.get("dungeon_experience", 0))
+	var lost_line := _format_experience_lost(experience_lost)
+
 	if int(player_state.get("current_life", 0)) <= 0:
 		var death_result := CombatRules.apply_death_sequel(player_state)
 		_persist_player_state()
+		var death_details := _join_lines([lost_line, tr(String(death_result.get("message_key", "COMBAT_DEATH_SEQUEL")))])
 		pending_game_result_title = tr(RESULT_GAME_OVER_TITLE_KEY) if bool(death_result.get("save_deleted", false)) else tr(RESULT_DEFEAT_TITLE_KEY)
-		pending_game_result_message = "%s\n%s" % [tr(DUNGEON_LIFE_DEPLETED_KEY), tr(String(death_result.get("message_key", "COMBAT_DEATH_SEQUEL")))]
-		_begin_depleted_dungeon_exit(tr(DUNGEON_LIFE_DEPLETED_KEY), tr(String(death_result.get("message_key", "COMBAT_DEATH_SEQUEL"))))
+		pending_game_result_message = _join_lines([tr(DUNGEON_LIFE_DEPLETED_KEY), death_details])
+		_begin_depleted_dungeon_exit(tr(DUNGEON_LIFE_DEPLETED_KEY), death_details)
 	else:
 		CombatRules.discard_dungeon_experience(player_state)
 		CombatRules.restore_status_after_alive_exit(player_state)
 		_persist_player_state()
 		pending_game_result_title = tr(RESULT_ENDED_TITLE_KEY)
-		pending_game_result_message = tr(DUNGEON_ENERGY_DEPLETED_KEY)
-		_begin_depleted_dungeon_exit(tr(DUNGEON_ENERGY_DEPLETED_KEY), "")
+		pending_game_result_message = _join_lines([tr(DUNGEON_ENERGY_DEPLETED_KEY), lost_line])
+		_begin_depleted_dungeon_exit(tr(DUNGEON_ENERGY_DEPLETED_KEY), lost_line)
 	return true
+
+## Localized "You lost N dungeon experience" line, or "" when the run had earned nothing.
+func _format_experience_lost(experience_lost: int) -> String:
+	if experience_lost <= 0:
+		return ""
+	return tr(DUNGEON_EXPERIENCE_LOST_KEY) % str(experience_lost)
+
+## Joins the non-empty lines with newlines (keeps result messages free of blank lines).
+func _join_lines(lines: Array) -> String:
+	var kept: Array[String] = []
+	for line: Variant in lines:
+		if String(line) != "":
+			kept.append(String(line))
+	return "\n".join(kept)
+
+## Shows a one-time warning per run when energy falls to LOW_ENERGY_WARNING_PERCENT or below,
+## telling the player that running out ends the run and loses the dungeon experience.
+## Call after any in-dungeon action that may spend energy, once depletion has been handled.
+func _warn_if_energy_low() -> void:
+	if dungeon.is_empty() or dungeon_exit_pending or bool(dungeon.get(LOW_ENERGY_WARNED_FLAG, false)):
+		return
+	var current_energy := int(player_state.get("current_energy", 0))
+	var maximum_energy := int(player_state.get("energy", 0))
+	if maximum_energy <= 0 or current_energy <= 0:
+		return
+	var threshold := maxi(1, ceili(maximum_energy * LOW_ENERGY_WARNING_PERCENT / 100.0))
+	if current_energy > threshold:
+		return
+	dungeon[LOW_ENERGY_WARNED_FLAG] = true
+	var dungeon_experience := int(player_state.get("dungeon_experience", 0))
+	var message := tr(LOW_ENERGY_MESSAGE_KEY) % [str(current_energy), str(dungeon_experience)]
+	if dungeon_experience <= 0:
+		message = tr(LOW_ENERGY_MESSAGE_NO_EXPERIENCE_KEY) % str(current_energy)
+	# A short feedback overlay (XP gained, damage taken) may be showing for this same action;
+	# wait for it to close so the warning does not hide it.
+	if is_instance_valid(damage_overlay) and damage_overlay.visible:
+		get_tree().create_timer(LOW_ENERGY_WARNING_DELAY_SECONDS).timeout.connect(
+			Callable(self, "_show_low_energy_warning").bind(message))
+		return
+	_show_low_energy_warning(message)
+
+## Displays the low-energy warning unless the run ended while it was waiting.
+func _show_low_energy_warning(message: String) -> void:
+	if dungeon.is_empty() or dungeon_exit_pending:
+		return
+	_show_game_result(tr(LOW_ENERGY_TITLE_KEY), message)
 
 func _begin_depleted_dungeon_exit(message: String, secondary_message: String) -> void:
 	dungeon_exit_pending = true
@@ -1948,10 +2016,12 @@ func _flee_encounter() -> void:
 		active_monster_location = {}
 		encounter_feedback.text = ""
 		_show_dungeon_explore_view()
+		_warn_if_energy_low()
 		_persist_run_checkpoint()
 		return
 
 	_update_monster_encounter()
+	_warn_if_energy_low()
 	_persist_run_checkpoint()
 
 func _format_combat_feedback(result: Dictionary) -> String:

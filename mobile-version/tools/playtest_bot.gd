@@ -112,6 +112,10 @@ func _play_dungeon(totals: Dictionary) -> String:
 		if step % 8 == 0:
 			await tree.process_frame
 		_settle()
+		# The low-energy warning is an in-run notice, not a run result: dismiss it and keep playing.
+		if main.game_result_modal.visible and main.game_result_title.text == main.tr(main.LOW_ENERGY_TITLE_KEY):
+			main._hide_game_result()
+			continue
 		if main.game_result_modal.visible:
 			var title: String = main.game_result_title.text
 			var message: String = main.game_result_message.text

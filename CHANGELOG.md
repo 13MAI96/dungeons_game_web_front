@@ -10,15 +10,25 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
+## 2026-11-26 — Mobile: low-energy warning and experience-lost message (DNG-4)
+### Changes
+- One-time "Low energy" warning per run when energy drops to 25% of maximum or below. It shows the energy left and the dungeon XP at risk, and advises retreating at the entrance (`mobile-version/scripts/main.gd`, `_warn_if_energy_low`).
+- Energy and life depletion results now state the dungeon experience lost.
+- EN/ES strings `LOW_ENERGY_TITLE`, `LOW_ENERGY_MESSAGE`, `DUNGEON_EXPERIENCE_LOST`.
+- OpenSpec change `openspec/changes/energy-loss-feedback` (not archived yet) and new `tests/verify_energy_warning.gd`.
+- Origin: user test with two simulated players on Android emulators; 20 follow-up tickets DNG-4 to DNG-23.
+### Issues
+- OpenSpec CLI is not installed here, so the change has not been validated or archived yet.
+
 ## 2026-11-26 — Project documentation
 ### Changes
 - Added `INDEX.md` (project, architecture, definitions, rules, testing, deployment, CI/CD) and this `CHANGELOG.md`.
 ### Issues
 - None known.
 
-## 2026-11-14 — Mobile: progression balance (uncommitted)
+## 2026-11-14 — Mobile: progression balance (`566dc9e`, DNG-3)
 ### Changes
-- OpenSpec change `progression-balance` (archived in the working tree, not yet committed).
+- OpenSpec change `progression-balance` (archived).
 - Basic attack 3 damage / 1 energy; Strength adds damage; easier level-1 monsters; monster XP × 4.
 - One monster-count formula at every level; map grows with level from 10 (max 25×25); narrower monster level ranges.
 - Post-level-10 experience/reputation thresholds grow ~11% per level instead of ~120%.
@@ -27,7 +37,6 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Measured: dungeons completed 0% → 56%, out-of-energy runs 66% → 6%, level 10 reached in ~25 runs.
 ### Issues
 - Levels 5–9 are easy (~87% of dungeons completed).
-- Work is not committed yet.
 
 ## 2026-11-14 — Mobile: release-blocking gameplay fixes (`dbd160a`)
 ### Changes

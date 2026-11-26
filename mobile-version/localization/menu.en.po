@@ -276,3 +276,15 @@ msgstr "Not enough energy or mana to attack. You can still flee."
 
 msgid "COMBAT_SANCTUARY_USED"
 msgstr "This sanctuary has already been used."
+
+msgid "DUNGEON_EXPERIENCE_LOST"
+msgstr "You lost %s dungeon experience earned in this run."
+
+msgid "LOW_ENERGY_TITLE"
+msgstr "Low energy"
+
+msgid "LOW_ENERGY_MESSAGE"
+msgstr "You have %s energy left. Every step and every fight round costs energy. If it reaches 0, the expedition ends and you lose %s dungeon experience earned in this run. Go back to the green entrance and use Retreat to keep it."
+
+msgid "LOW_ENERGY_MESSAGE_NO_EXPERIENCE"
+msgstr "You have %s energy left. Every step and every fight round costs energy. If it reaches 0, the expedition ends. Go back to the green entrance and use Retreat to leave safely."
