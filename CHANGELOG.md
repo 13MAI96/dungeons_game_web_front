@@ -10,7 +10,7 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
-## 2026-11-26 — Mobile: dialog fixes and combat feedback (DNG-11 to DNG-13)
+## 2026-11-26 — Mobile: dialog fixes and combat feedback (`047a9e5`, DNG-11 to DNG-13)
 ### Changes
 - DNG-11: Back on Level Up (on-screen and Android back) asks "Discard changes?" when points are staged; leaves at once otherwise.
 - DNG-12: hub Exit asks "Exit game?" (progress is saved). Root cause: `CONFIRM_EXIT_*` had carried the Level Up discard warning since the first version. Every confirmation now sets its own title, message and button labels, and closing clears the pending action.
