@@ -63,6 +63,8 @@ Single scene app; the full description is in [mobile-version/README.md](mobile-v
 | `scripts/dungeon_generator.gd` | Level-scaled map, monsters, quest, sanctuary. |
 | `scripts/save_game.gd` | Local save (atomic write, format v2, active-run persistence). |
 | `scripts/settings_store.gd` | Language and other settings. |
+| `scripts/tutorial.gd` | First-run how-to-play overlay (paged, reopened from Settings). |
+| `scripts/stat_help.gd` | Shared popup that explains a stat when its bar is tapped. |
 | `scripts/ui_theme.gd` | Single source of UI styling. |
 | `scripts/ad_slot_config.gd` | Reserved banner slot (no ad SDK yet). |
 | `data/*.json` | Data-driven monsters, effects, abilities, classes. |

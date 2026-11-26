@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <!-- Dungeons emblem: stone archway, dark passage, torch flame, crossed swords. No text. -->
+  <!-- Outer stone arch -->
+  <path d="M28 232V112C28 62 74 24 128 24s100 38 100 88v120z" fill="#3a2b1f" stroke="#5a4330" stroke-width="6" stroke-linejoin="round"/>
+  <!-- Arch stone blocks -->
+  <g stroke="#5a4330" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M128 24v28M60 46l14 22M196 46l-14 22M36 90h22M220 90h-22M28 150h22M228 150h-22M28 200h22M228 200h-22"/>
+  </g>
+  <!-- Dark passage -->
+  <path d="M60 232V118C60 84 90 58 128 58s68 26 68 60v114z" fill="#140e0a" stroke="#a8741f" stroke-width="4" stroke-linejoin="round"/>
+  <!-- Steps -->
+  <path d="M60 232v-14h136v14zM76 218v-14h104v14z" fill="#2a1f17" stroke="#5a4330" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Torch glow -->
+  <circle cx="128" cy="92" r="30" fill="#d9a441" opacity="0.18"/>
+  <!-- Torch handle -->
+  <path d="M123 106h10l3 40h-16z" fill="#a8741f" stroke="#5a4330" stroke-width="3" stroke-linejoin="round"/>
+  <!-- Flame -->
+  <path d="M128 60c12 14 18 22 18 32a18 18 0 0 1-36 0c0-8 4-12 8-18 1 6 4 8 6 8-3-8-2-14 4-22z" fill="#c4553c"/>
+  <path d="M128 72c8 10 12 16 12 23a12 12 0 0 1-24 0c0-6 3-10 7-14 1 4 3 5 5 5-2-6-1-9 0-14z" fill="#d9a441"/>
+  <path d="M128 86c4 5 6 8 6 12a6 6 0 0 1-12 0c0-4 3-7 6-12z" fill="#ffd75e"/>
+  <!-- Crossed swords -->
+  <g stroke-linejoin="round" stroke-linecap="round">
+    <path d="M70 224L186 150" stroke="#f2e8d8" stroke-width="10" fill="none"/>
+    <path d="M186 224L70 150" stroke="#b8a890" stroke-width="10" fill="none"/>
+    <path d="M70 224L186 150M186 224L70 150" stroke="#1b130d" stroke-width="2" fill="none" opacity="0.35"/>
+    <path d="M170 200l-14 18M86 200l14 18" stroke="#d9a441" stroke-width="7" fill="none"/>
+    <circle cx="186" cy="224" r="6" fill="#ffd75e" stroke="#a8741f" stroke-width="2"/>
+    <circle cx="70" cy="224" r="6" fill="#ffd75e" stroke="#a8741f" stroke-width="2"/>
+  </g>
+</svg>

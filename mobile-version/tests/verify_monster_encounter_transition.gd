@@ -176,15 +176,17 @@ func _init() -> void:
 		quit(1)
 		return
 
-	if not root.damage_overlay.visible:
-		push_error("Experience gain should be shown through the feedback overlay.")
+	if not root.fight_victory_modal.visible or not root.fight_victory_message.text.contains("+1"):
+		push_error("Experience gain should be shown on the fight victory screen.")
 		quit(1)
 		return
 
-	if root.damage_overlay_icon.texture == null or String(root.damage_overlay_icon.texture.resource_path) != "res://assets/feedback/underhand.svg":
+	var victory_icon := root.fight_victory_modal.find_child("Icon", true, false) as TextureRect
+	if victory_icon == null or victory_icon.texture == null or String(victory_icon.texture.resource_path) != "res://assets/feedback/underhand.svg":
 		push_error("Experience feedback should use underhand asset.")
 		quit(1)
 		return
+	root._hide_fight_victory()
 
 	root.current_location = root.dungeon["locations"][0]
 	root.previous_location = {}

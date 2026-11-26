@@ -4,6 +4,9 @@ const SaveGame := preload("res://scripts/save_game.gd")
 const SettingsStore := preload("res://scripts/settings_store.gd")
 const UiTheme := preload("res://scripts/ui_theme.gd")
 const AdSlotConfig := preload("res://scripts/ad_slot_config.gd")
+const LocalizedNames := preload("res://scripts/localized_names.gd")
+const StatHelp := preload("res://scripts/stat_help.gd")
+const Tutorial := preload("res://scripts/tutorial.gd")
 
 const LOCALE_ENGLISH := "en"
 const LOCALE_SPANISH := "es"
@@ -45,6 +48,13 @@ const LOW_ENERGY_WARNING_DELAY_SECONDS := 0.85
 const LOW_ENERGY_WARNING_PERCENT := 25
 ## Flag stored in the dungeon dictionary (saved with the run) so the warning shows once per run.
 const LOW_ENERGY_WARNED_FLAG := "low_energy_warned"
+## Taps that arrive this soon after a screen, modal or overlay change are ignored, so a fast
+## second tap meant for the previous screen cannot trigger a button on the new one (DNG-9).
+const SCREEN_CHANGE_INPUT_COOLDOWN_MSEC := 300
+const FIGHT_VICTORY_TITLE_KEY := "FIGHT_VICTORY_TITLE"
+const FIGHT_VICTORY_DEFEATED_KEY := "FIGHT_VICTORY_DEFEATED"
+const FIGHT_VICTORY_EXPERIENCE_KEY := "FIGHT_VICTORY_EXPERIENCE"
+const FIGHT_VICTORY_RUN_TOTAL_KEY := "FIGHT_VICTORY_RUN_TOTAL"
 const MONSTER_INFO_KEY := "ENCOUNTER_MONSTER_INFO"
 const MONSTER_ATTACKS_TITLE_KEY := "ENCOUNTER_MONSTER_ATTACKS_TITLE"
 const MONSTER_ATTACK_LINE_KEY := "ENCOUNTER_MONSTER_ATTACK_LINE"
@@ -76,6 +86,26 @@ const CONFIRM_ABANDON_TITLE_KEY := "CONFIRM_ABANDON_TITLE"
 const CONFIRM_ABANDON_MESSAGE_KEY := "CONFIRM_ABANDON_MESSAGE"
 const RESULT_ABANDONED_MESSAGE_KEY := "RESULT_ABANDONED_MESSAGE"
 const CANNOT_AFFORD_ATTACK_KEY := "ENCOUNTER_CANNOT_AFFORD_ATTACK"
+## Main menu branding: translated game title and the logo drawn above the menu buttons.
+const GAME_TITLE_KEY := "GAME_TITLE"
+const GAME_LOGO_ASSET := "res://assets/ui/logo.svg"
+## Encounter header "<monster> Lv. <level>" and the name used when a monster has none.
+const MONSTER_NAME_LEVEL_KEY := "ENCOUNTER_MONSTER_NAME_LEVEL"
+const FALLBACK_MONSTER_NAME_KEY := "ENCOUNTER_MONSTER"
+## Tooltips of the D-pad arrow buttons (visible on hover with a mouse).
+const DIRECTION_TOOLTIP_KEYS := {
+	"left": "DIRECTION_LEFT",
+	"right": "DIRECTION_RIGHT",
+	"up": "DIRECTION_UP",
+	"down": "DIRECTION_DOWN",
+}
+## Settings button that reopens the "how to play" tutorial.
+const SETTINGS_HOW_TO_PLAY_KEY := "SETTINGS_HOW_TO_PLAY"
+## Level Up stat guide: card title and the "+N per point" growth line of each stat.
+const ALLOCATION_GUIDE_TITLE_KEY := "LEVEL_ALLOCATION_GUIDE_TITLE"
+const ALLOCATION_GUIDE_GROWTH_KEY := "LEVEL_ALLOCATION_GUIDE_GROWTH"
+## Stats that take level-up points, in the order of the allocation rows and the stat guide.
+const ALLOCATABLE_STATS := ["life", "energy", "mana", "armor", "speed", "strength"]
 const DIRECTION_ICON_PATHS := {
 	"left": "res://assets/icons/arrow_left.svg",
 	"right": "res://assets/icons/arrow_right.svg",
@@ -250,12 +280,32 @@ var class_choice_container: VBoxContainer
 var monster_info_button: Button
 var monster_info_modal: Control
 var monster_info_text: Label
+## Static texts of runtime-built screens, kept so a language change can re-translate them.
+var allocation_title_label: Label
+var allocation_back_button: Button
+var monster_info_title: Label
+var monster_info_close_button: Button
 var dungeon_exit_pending: bool = false
 var staged_allocation: Dictionary = {}
 var save_path: String = SaveGame.DEFAULT_SAVE_PATH
 var settings_path: String = SettingsStore.DEFAULT_SETTINGS_PATH
 var pending_game_result_title: String = ""
 var pending_game_result_message: String = ""
+## Shared popup that explains a stat when its bar is tapped (every screen uses this one).
+var stat_help_popup: StatHelp
+## "How to play" overlay: shown on the first dungeon entry and from Settings.
+var tutorial_overlay: Tutorial
+var settings_tutorial_button: Button
+## Level Up card that lists what each allocatable stat does and its growth per point.
+var allocation_stat_guide: VBoxContainer
+## Engine time (Time.get_ticks_msec) until which real taps are swallowed; see _start_input_cooldown().
+var input_cooldown_until_msec: int = 0
+var fight_victory_modal: ColorRect
+var fight_victory_title: Label
+var fight_victory_message: Label
+var fight_victory_continue_button: Button
+## Low-energy warning raised while the fight victory screen was open; shown when it is dismissed.
+var low_energy_warning_after_victory: String = ""
 
 @onready var main_menu_view: Control = $MainMenuView
 @onready var new_game_view: Control = $NewGameView
@@ -264,6 +314,8 @@ var pending_game_result_message: String = ""
 @onready var start_game_button: Button = $MainMenuView/MenuArea/MenuButtons/StartGameButton
 @onready var load_game_button: Button = $MainMenuView/MenuArea/MenuButtons/LoadGameButton
 @onready var settings_button: Button = $MainMenuView/MenuArea/MenuButtons/SettingsButton
+@onready var game_logo: TextureRect = $MainMenuView/Branding/BrandingStack/LogoFrame/Logo
+@onready var game_title_label: Label = $MainMenuView/Branding/BrandingStack/GameTitle
 @onready var character_placeholder: Label = $NewGameView/CharacterArea/CharacterColumns/CharacterImageSlot/CharacterImagePlaceholder
 @onready var stats_column: VBoxContainer = $NewGameView/CharacterArea/CharacterColumns/StatsColumn
 @onready var explore_dungeon_button: Button = $NewGameView/ActionArea/ActionButtons/ExploreDungeonButton
@@ -294,17 +346,71 @@ func _ready() -> void:
 	theme = UiTheme.build()
 	$Background.color = UiTheme.BACKGROUND
 	_build_runtime_ui()
+	_load_game_logo()
 	_apply_menu_text()
 	_apply_player_stats()
 	_connect_navigation_signals()
 	_update_load_game_button()
 	get_viewport().size_changed.connect(Callable(self, "_on_viewport_size_changed"))
+	_watch_screen_changes_for_input_cooldown()
 	_show_main_menu_view()
 
 func _get_supported_locale() -> String:
 	return LOCALE_SPANISH if OS.get_locale_language() == LOCALE_SPANISH else LOCALE_ENGLISH
 
+## Loads the main menu logo. The art is optional: when the file is missing or fails to load
+## the logo stays empty (hidden) and the title alone brands the menu, instead of crashing.
+func _load_game_logo() -> void:
+	var logo_texture: Texture2D = null
+	if ResourceLoader.exists(GAME_LOGO_ASSET):
+		logo_texture = load(GAME_LOGO_ASSET) as Texture2D
+	game_logo.texture = logo_texture
+	game_logo.visible = logo_texture != null
+
+## Sets every static UI text from the translation files. Called on start and again after a
+## language change, so it must cover every text that is not rebuilt when a screen opens.
+# --- Input cooldown after screen changes (DNG-9) -----------------------------------------
+
+## Every screen, modal and overlay that can appear or disappear. Showing or hiding any of them
+## counts as a screen change for the input cooldown.
+func _screen_change_watched_nodes() -> Array[Control]:
+	return [
+		main_menu_view, new_game_view, dungeon_explore_view, monster_encounter_view, settings_view,
+		level_allocation_view, monster_info_modal, action_confirmation, game_result_modal,
+		fight_victory_modal, damage_overlay, tutorial_overlay,
+	]
+
+## Starts the input cooldown whenever a watched screen, modal or overlay changes visibility.
+## Hooking visibility_changed keeps the rule central: every current and future code path that
+## switches screens or opens/closes a modal gets the cooldown without touching each button.
+func _watch_screen_changes_for_input_cooldown() -> void:
+	var start_cooldown := Callable(self, "_start_input_cooldown")
+	for node: Control in _screen_change_watched_nodes():
+		if is_instance_valid(node) and not node.visibility_changed.is_connected(start_cooldown):
+			node.visibility_changed.connect(start_cooldown)
+
+## Ignores real taps for SCREEN_CHANGE_INPUT_COOLDOWN_MSEC from now.
+func _start_input_cooldown() -> void:
+	input_cooldown_until_msec = Time.get_ticks_msec() + SCREEN_CHANGE_INPUT_COOLDOWN_MSEC
+
+## True while taps are still being ignored after the last screen change.
+func is_input_cooldown_active() -> bool:
+	return Time.get_ticks_msec() < input_cooldown_until_msec
+
+## True for the events a tap or click produces (press and release). On Android a touch also
+## arrives as an emulated mouse button event, so both kinds are gated.
+func _is_tap_event(event: InputEvent) -> bool:
+	return event is InputEventScreenTouch or event is InputEventMouseButton
+
+## Swallows taps during the cooldown. _input runs before the GUI receives the event, so marking
+## it handled keeps it away from every button. Only real input events are affected: code (and
+## the playtest bot) calling the action methods directly is never blocked.
+func _input(event: InputEvent) -> void:
+	if _is_tap_event(event) and is_input_cooldown_active():
+		get_viewport().set_input_as_handled()
+
 func _apply_menu_text() -> void:
+	game_title_label.text = tr(GAME_TITLE_KEY)
 	start_game_button.text = tr(START_GAME_KEY)
 	load_game_button.text = tr(LOAD_GAME_KEY)
 	settings_button.text = tr(SETTINGS_KEY)
@@ -337,6 +443,10 @@ func _apply_menu_text() -> void:
 		settings_spanish_button.text = tr(SETTINGS_SPANISH_KEY)
 	if is_instance_valid(settings_back_button):
 		settings_back_button.text = tr(SETTINGS_BACK_KEY)
+	if is_instance_valid(settings_tutorial_button):
+		settings_tutorial_button.text = tr(SETTINGS_HOW_TO_PLAY_KEY)
+	if is_instance_valid(tutorial_overlay):
+		tutorial_overlay.refresh_texts()
 	if is_instance_valid(confirmation_accept_button):
 		confirmation_accept_button.text = tr(CONFIRM_ACCEPT_KEY)
 		confirmation_cancel_button.text = tr(CONFIRM_CANCEL_KEY)
@@ -344,6 +454,14 @@ func _apply_menu_text() -> void:
 		game_result_continue_button.text = tr(RESULT_CONTINUE_KEY)
 	if is_instance_valid(ad_slot_label):
 		ad_slot_label.text = tr(AD_PLACEHOLDER_KEY)
+	if is_instance_valid(allocation_title_label):
+		allocation_title_label.text = tr(ALLOCATION_TITLE_KEY)
+		allocation_back_button.text = tr(ALLOCATION_BACK_KEY)
+	if is_instance_valid(monster_info_title):
+		monster_info_title.text = tr(MONSTER_ATTACKS_TITLE_KEY)
+		monster_info_close_button.text = tr(MONSTER_INFO_CLOSE_KEY)
+	manage_equipment_button.tooltip_text = tr(PROGRESSION_PENDING_KEY)
+	_apply_direction_tooltips()
 	_update_hub_header()
 
 func _apply_player_stats() -> void:
@@ -550,6 +668,12 @@ func handle_back() -> void:
 func _handle_back() -> void:
 	if not is_node_ready():
 		return
+	if is_instance_valid(stat_help_popup) and stat_help_popup.is_open():
+		stat_help_popup.close()
+		return
+	if is_instance_valid(tutorial_overlay) and tutorial_overlay.is_open():
+		tutorial_overlay.skip()
+		return
 	if is_instance_valid(action_confirmation) and action_confirmation.visible:
 		_cancel_pending_action()
 		return
@@ -559,6 +683,9 @@ func _handle_back() -> void:
 		return
 	if is_instance_valid(game_result_modal) and game_result_modal.visible:
 		_hide_game_result()
+		return
+	if is_instance_valid(fight_victory_modal) and fight_victory_modal.visible:
+		_hide_fight_victory()  # Back acts like Continue: the victory is only a summary.
 		return
 	if is_instance_valid(monster_info_modal) and monster_info_modal.visible:
 		_hide_monster_info()
@@ -611,6 +738,11 @@ func _activate_screen(view: Control, screen: String) -> void:
 			other.visible = false
 	if is_instance_valid(action_confirmation):
 		action_confirmation.visible = false
+	# Overlays that belong to the previous screen close with it.
+	if is_instance_valid(stat_help_popup):
+		stat_help_popup.close()
+	if is_instance_valid(tutorial_overlay):
+		tutorial_overlay.dismiss_silently()
 	view.visible = true
 	current_screen = screen
 	_apply_layout_insets()
@@ -636,6 +768,8 @@ func _select_locale(locale: String) -> void:
 		return
 	TranslationServer.set_locale(locale)
 	_apply_menu_text()
+	# Stat bars carry translated labels ("Total XP"); rebuild them in the new language too.
+	_apply_player_stats()
 	_update_settings_view()
 
 func _update_settings_view() -> void:
@@ -660,6 +794,7 @@ func start_dungeon_exploration(dungeon_type: int = 1) -> void:
 	_update_exploration_actions()
 	_show_dungeon_explore_view()
 	_persist_run_checkpoint()
+	_show_first_run_tutorial_if_needed()
 
 func get_valid_directions() -> Dictionary:
 	if current_location.is_empty():
@@ -871,15 +1006,22 @@ func _apply_direction_icons() -> void:
 		var button := buttons[direction] as Button
 		button.text = ""
 		button.icon = load(String(DIRECTION_ICON_PATHS[direction]))
-		button.tooltip_text = direction.capitalize()
+	_apply_direction_tooltips()
+
+## Translated tooltips for the D-pad arrows (they have icons, not text).
+func _apply_direction_tooltips() -> void:
+	var buttons := {"left": move_left_button, "right": move_right_button, "up": move_up_button, "down": move_down_button}
+	for direction: String in buttons:
+		(buttons[direction] as Button).tooltip_text = tr(String(DIRECTION_TOOLTIP_KEYS[direction]))
 
 func _update_monster_encounter() -> void:
 	var monster := active_monster_location.get("content", {}) as Dictionary
 	monster_image.visible = false
 	encounter_player_image.visible = false
 	monster_image_asset.texture = load(_get_monster_asset_path(monster))
-	monster_image.text = String(monster.get("image", "Monster"))
-	monster_name.text = "%s Lv. %s" % [String(monster.get("name", "Monster")), str(int(monster.get("level", 1)))]
+	var display_name := _get_monster_display_name(monster)
+	monster_image.text = display_name
+	monster_name.text = tr(MONSTER_NAME_LEVEL_KEY) % [display_name, str(int(monster.get("level", 1)))]
 	monster_stats.visible = false
 	encounter_player_stats.visible = false
 	_populate_stat_bars(monster_stat_bars, MONSTER_STATS, _normalize_monster_stat_source(monster), true)
@@ -888,6 +1030,13 @@ func _update_monster_encounter() -> void:
 	_populate_stat_bars(encounter_player_stat_bars, encounter_stats, player_state, true)
 	_update_monster_info_button()
 	_update_fight_availability()
+
+## Translated monster name for the UI; the data keeps the English name (used for its art).
+func _get_monster_display_name(monster: Dictionary) -> String:
+	var english_name := String(monster.get("name", ""))
+	if english_name.is_empty():
+		return tr(FALLBACK_MONSTER_NAME_KEY)
+	return LocalizedNames.monster(english_name)
 
 ## Fight is disabled (with an explanation) when the attack cannot be paid; Flee stays available.
 func _update_fight_availability() -> void:
@@ -916,17 +1065,21 @@ func _fight() -> void:
 	# dungeon (and keeps the defeated monster defeated) before depletion is checked.
 	if bool(result.get("monster_defeated", false)):
 		var experience_gained := int(result.get("experience_gained", 0))
+		var defeated_monster := active_monster_location.get("content", {}) as Dictionary
 		active_monster_location = {}
 		_render_map()
 		_update_direction_buttons()
-		if _complete_dungeon_if_ready(experience_gained):
+		# The last kill completes the dungeon: its result modal also names the defeated monster,
+		# so the player sees one result instead of a victory screen stacked on the completion.
+		if _complete_dungeon_if_ready(experience_gained, _format_victory_lines(defeated_monster, experience_gained, false)):
 			return
+		# A kill that spent the last energy ends the run; the depletion result explains it.
 		if _exit_dungeon_if_player_depleted():
 			return
 		_show_dungeon_explore_view()
 		explore_feedback.text = ""
-		_show_experience_overlay(experience_gained)
-		_warn_if_energy_low()
+		_show_fight_victory(defeated_monster, experience_gained)
+		_warn_if_energy_low()  # Waits for the victory screen to be dismissed.
 		_persist_run_checkpoint()
 		return
 
@@ -1033,6 +1186,10 @@ func _warn_if_energy_low() -> void:
 	var message := tr(LOW_ENERGY_MESSAGE_KEY) % [str(current_energy), str(dungeon_experience)]
 	if dungeon_experience <= 0:
 		message = tr(LOW_ENERGY_MESSAGE_NO_EXPERIENCE_KEY) % str(current_energy)
+	# The fight victory screen of this same action stays first; the warning follows its Continue.
+	if is_instance_valid(fight_victory_modal) and fight_victory_modal.visible:
+		low_energy_warning_after_victory = message
+		return
 	# A short feedback overlay (XP gained, damage taken) may be showing for this same action;
 	# wait for it to close so the warning does not hide it.
 	if is_instance_valid(damage_overlay) and damage_overlay.visible:
@@ -1044,6 +1201,11 @@ func _warn_if_energy_low() -> void:
 ## Displays the low-energy warning unless the run ended while it was waiting.
 func _show_low_energy_warning(message: String) -> void:
 	if dungeon.is_empty() or dungeon_exit_pending:
+		return
+	# A delayed warning (after a feedback overlay) may come due while a victory result is open;
+	# keep it for that result's Continue instead of covering it.
+	if is_instance_valid(fight_victory_modal) and fight_victory_modal.visible:
+		low_energy_warning_after_victory = message
 		return
 	_show_game_result(tr(LOW_ENERGY_TITLE_KEY), message)
 
@@ -1063,7 +1225,11 @@ func _begin_depleted_dungeon_exit(message: String, secondary_message: String) ->
 		full_message = "%s\n%s" % [message, secondary_message]
 	_show_feedback_overlay(full_message, DAMAGE_FEEDBACK_ASSET, Callable(self, "_finish_depleted_dungeon_exit"))
 
+## Ends a depleted run after its notification. Runs once per exit: a second call (e.g. the
+## overlay timer firing after the exit was already settled) would wipe a newer run.
 func _finish_depleted_dungeon_exit() -> void:
+	if not dungeon_exit_pending:
+		return
 	dungeon = {}
 	current_location = {}
 	previous_location = {}
@@ -1141,6 +1307,9 @@ func _build_runtime_ui() -> void:
 	_add_settings_view()
 	_add_action_confirmation()
 	_add_game_result_modal()
+	_add_tutorial_overlay()
+	_add_stat_help_popup()
+	_add_fight_victory_modal()
 	_add_ad_slot()
 
 # --- App shell: safe area + reserved ad slot -------------------------------------------------
@@ -1193,7 +1362,7 @@ func _apply_layout_insets() -> void:
 		if is_instance_valid(view):
 			_set_inset_offsets(view, left, top, right, bottom + ad_height)
 	# Overlays: dim the whole screen except the banner, so the banner is never covered.
-	for overlay: Control in [monster_info_modal, damage_overlay, action_confirmation, game_result_modal]:
+	for overlay: Control in [monster_info_modal, damage_overlay, action_confirmation, game_result_modal, fight_victory_modal, tutorial_overlay, stat_help_popup]:
 		if is_instance_valid(overlay):
 			_set_inset_offsets(overlay, 0.0, 0.0, 0.0, bottom + ad_height)
 	if is_instance_valid(ad_slot):
@@ -1326,6 +1495,65 @@ func _show_game_result(title: String, message: String) -> void:
 func _hide_game_result() -> void:
 	game_result_modal.visible = false
 
+# --- Fight victory result (DNG-10) -------------------------------------------------------
+
+## Builds the "Victory" modal shown after a won fight that does not end the run: the experience
+## icon, the defeated monster, the experience gained and a Continue button back to the map.
+func _add_fight_victory_modal() -> void:
+	var modal := _create_modal("FightVictoryModal", Color(UiTheme.BACKGROUND, 0.96))
+	fight_victory_modal = modal["root"]
+	var content: VBoxContainer = modal["content"]
+	content.name = "VictoryPanel"
+	content.add_theme_constant_override("separation", 18)
+	var icon := TextureRect.new()
+	icon.name = "Icon"
+	icon.texture = load(EXPERIENCE_FEEDBACK_ASSET)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2(96, 96)
+	content.add_child(icon)
+	fight_victory_title = _create_label("Title", &"TitleLabel")
+	content.add_child(fight_victory_title)
+	fight_victory_message = _create_label("Message")
+	fight_victory_message.add_theme_font_size_override("font_size", 18)
+	content.add_child(fight_victory_message)
+	fight_victory_continue_button = _create_button("ContinueButton", &"PrimaryButton", UiTheme.PRIMARY_HEIGHT)
+	fight_victory_continue_button.pressed.connect(Callable(self, "_hide_fight_victory"))
+	content.add_child(fight_victory_continue_button)
+
+## Shows the victory result for `monster` over the exploration map.
+func _show_fight_victory(monster: Dictionary, experience_gained: int) -> void:
+	low_energy_warning_after_victory = ""
+	fight_victory_title.text = tr(FIGHT_VICTORY_TITLE_KEY)
+	fight_victory_message.text = _format_victory_lines(monster, experience_gained, true)
+	fight_victory_continue_button.text = tr(RESULT_CONTINUE_KEY)
+	fight_victory_modal.visible = true
+	_apply_layout_insets()
+
+## Closes the victory result (back to the map) and then shows a low-energy warning raised by
+## the same fight, so the two never stack.
+func _hide_fight_victory() -> void:
+	fight_victory_modal.visible = false
+	var warning := low_energy_warning_after_victory
+	low_energy_warning_after_victory = ""
+	if warning != "":
+		_show_low_energy_warning(warning)
+
+## Victory text: the defeated monster and the experience gained (omitted when zero). With
+## `include_run_total`, adds the provisional dungeon experience and how to keep it, which only
+## matters while the run continues (the completion result already reports what was kept).
+func _format_victory_lines(monster: Dictionary, experience_gained: int, include_run_total: bool) -> String:
+	var lines: Array = [tr(FIGHT_VICTORY_DEFEATED_KEY) % _translated_monster_name(monster)]
+	if experience_gained > 0:
+		lines.append(tr(FIGHT_VICTORY_EXPERIENCE_KEY) % str(experience_gained))
+	if include_run_total:
+		lines.append(tr(FIGHT_VICTORY_RUN_TOTAL_KEY) % str(int(player_state.get("dungeon_experience", 0))))
+	return _join_lines(lines)
+
+## Localized monster name, delegated to LocalizedNames so every screen uses the same keys.
+func _translated_monster_name(monster: Dictionary) -> String:
+	return LocalizedNames.monster(String(monster.get("name", "Monster")))
+
 ## Full-rect screen with the theme background and a centred, width-limited column.
 func _create_screen(node_name: String) -> Dictionary:
 	var screen := Control.new()
@@ -1379,6 +1607,10 @@ func _add_settings_view() -> void:
 	settings_spanish_button = _create_button("SpanishButton", &"SelectedButton")
 	settings_spanish_button.pressed.connect(Callable(self, "_select_locale").bind(LOCALE_SPANISH))
 	card_content.add_child(settings_spanish_button)
+
+	settings_tutorial_button = _create_button("HowToPlayButton")
+	settings_tutorial_button.pressed.connect(Callable(self, "_open_tutorial"))
+	panel.add_child(settings_tutorial_button)
 
 	settings_back_button = _create_button("BackButton")
 	settings_back_button.pressed.connect(Callable(self, "_show_main_menu_view"))
@@ -1491,18 +1723,18 @@ func _add_monster_info_modal() -> void:
 	var panel: VBoxContainer = modal["content"]
 	panel.name = "Panel"
 
-	var title := _create_label("Title", &"HeaderLabel")
-	title.text = tr(MONSTER_ATTACKS_TITLE_KEY)
-	panel.add_child(title)
+	monster_info_title = _create_label("Title", &"HeaderLabel")
+	monster_info_title.text = tr(MONSTER_ATTACKS_TITLE_KEY)
+	panel.add_child(monster_info_title)
 
 	monster_info_text = _create_label("AttackList")
 	monster_info_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	panel.add_child(monster_info_text)
 
-	var close_button := _create_button("CloseButton", &"PrimaryButton")
-	close_button.text = tr(MONSTER_INFO_CLOSE_KEY)
-	close_button.pressed.connect(Callable(self, "_hide_monster_info"))
-	panel.add_child(close_button)
+	monster_info_close_button = _create_button("CloseButton", &"PrimaryButton")
+	monster_info_close_button.text = tr(MONSTER_INFO_CLOSE_KEY)
+	monster_info_close_button.pressed.connect(Callable(self, "_hide_monster_info"))
+	panel.add_child(monster_info_close_button)
 
 func _add_damage_overlay() -> void:
 	damage_overlay = ColorRect.new()
@@ -1554,9 +1786,9 @@ func _add_level_allocation_view() -> void:
 	layout.add_theme_constant_override("separation", 12)
 	(screen["margin"] as MarginContainer).add_child(layout)
 
-	var title := _create_label("Title", &"TitleLabel", false)
-	title.text = tr(ALLOCATION_TITLE_KEY)
-	layout.add_child(title)
+	allocation_title_label = _create_label("Title", &"TitleLabel", false)
+	allocation_title_label.text = tr(ALLOCATION_TITLE_KEY)
+	layout.add_child(allocation_title_label)
 
 	allocation_remaining_label = _create_label("RemainingPoints", &"HeaderLabel")
 	allocation_remaining_label.add_theme_color_override("font_color", UiTheme.ACCENT_BRIGHT)
@@ -1579,6 +1811,8 @@ func _add_level_allocation_view() -> void:
 	allocation_buttons_container.add_theme_constant_override("separation", 8)
 	panel.add_child(allocation_buttons_container)
 
+	allocation_stat_guide = _create_allocation_stat_guide(panel)
+
 	class_choice_container = VBoxContainer.new()
 	class_choice_container.name = "ClassChoices"
 	class_choice_container.add_theme_constant_override("separation", 8)
@@ -1589,17 +1823,103 @@ func _add_level_allocation_view() -> void:
 	actions.add_theme_constant_override("separation", 10)
 	layout.add_child(actions)
 
-	var back_button := _create_button("BackButton")
-	back_button.text = tr(ALLOCATION_BACK_KEY)
-	back_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	back_button.pressed.connect(Callable(self, "_show_new_game_view"))
-	actions.add_child(back_button)
+	allocation_back_button = _create_button("BackButton")
+	allocation_back_button.text = tr(ALLOCATION_BACK_KEY)
+	allocation_back_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	allocation_back_button.pressed.connect(Callable(self, "_show_new_game_view"))
+	actions.add_child(allocation_back_button)
 
 	allocation_confirm_button = _create_button("ConfirmAllocationButton", &"PrimaryButton", UiTheme.PRIMARY_HEIGHT)
 	allocation_confirm_button.text = tr(ALLOCATION_CONFIRM_KEY)
 	allocation_confirm_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	allocation_confirm_button.pressed.connect(Callable(self, "_confirm_level_allocation"))
 	actions.add_child(allocation_confirm_button)
+
+# --- First-run tutorial and stat help (DNG-6, DNG-7) ---------------------------------------
+
+## Creates the "how to play" overlay; closing it (Skip, Done or back) marks the tutorial as seen.
+func _add_tutorial_overlay() -> void:
+	tutorial_overlay = Tutorial.new()
+	tutorial_overlay.closed.connect(Callable(self, "_on_tutorial_closed"))
+	add_child(tutorial_overlay)
+
+## Creates the single stat help popup that every stat bar is wired to.
+func _add_stat_help_popup() -> void:
+	stat_help_popup = StatHelp.new()
+	add_child(stat_help_popup)
+
+## Shows the tutorial over the current screen (first dungeon entry or the Settings button).
+func _open_tutorial() -> void:
+	if not is_instance_valid(tutorial_overlay):
+		return
+	tutorial_overlay.open()
+	_apply_layout_insets()
+
+## First run only: opens the tutorial the first time the player enters a dungeon, while the
+## settings file has no "tutorial seen" flag. Called at the end of start_dungeon_exploration.
+func _show_first_run_tutorial_if_needed() -> void:
+	if SettingsStore.load_tutorial_seen(settings_path):
+		return
+	_open_tutorial()
+
+## Skipping and finishing both count as "seen": the tutorial is not shown automatically again.
+func _on_tutorial_closed(_completed: bool) -> void:
+	SettingsStore.save_tutorial_seen(true, settings_path)
+
+## Builds the Level Up "what each stat does" card inside `parent` and returns its row container.
+func _create_allocation_stat_guide(parent: Container) -> VBoxContainer:
+	var card := PanelContainer.new()
+	card.name = "StatGuideCard"
+	card.theme_type_variation = &"CardPanel"
+	parent.add_child(card)
+	var guide := VBoxContainer.new()
+	guide.name = "StatGuide"
+	guide.add_theme_constant_override("separation", 10)
+	card.add_child(guide)
+	return guide
+
+## Fills the stat guide: per allocatable stat, its name, the gain of one point for this
+## player's class, and the shared stat description.
+func _rebuild_allocation_stat_guide() -> void:
+	if not is_instance_valid(allocation_stat_guide):
+		return
+	for child: Node in allocation_stat_guide.get_children():
+		allocation_stat_guide.remove_child(child)
+		child.free()
+	var title := _create_label("Title", &"HeaderLabel")
+	title.text = tr(ALLOCATION_GUIDE_TITLE_KEY)
+	allocation_stat_guide.add_child(title)
+	for stat_key: String in ALLOCATABLE_STATS:
+		allocation_stat_guide.add_child(_create_stat_guide_entry(stat_key))
+
+## One stat guide entry: tinted icon, "Name: +N per point" heading and the description below.
+func _create_stat_guide_entry(stat_key: String) -> VBoxContainer:
+	var entry := VBoxContainer.new()
+	entry.name = "%sGuide" % stat_key.capitalize().replace(" ", "")
+	entry.add_theme_constant_override("separation", 2)
+	var heading_row := HBoxContainer.new()
+	heading_row.name = "Heading"
+	heading_row.add_theme_constant_override("separation", 6)
+	entry.add_child(heading_row)
+	var icon := TextureRect.new()
+	icon.name = "Icon"
+	icon.texture = load(String(STAT_ICON_PATHS[stat_key]))
+	icon.modulate = _get_stat_color(stat_key)
+	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	icon.custom_minimum_size = Vector2(20, 20)
+	heading_row.add_child(icon)
+	var heading := _create_label("Name", &"", false)
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	var growth := CombatRules.get_stat_growth_for_player(player_state, stat_key)
+	heading.text = "%s: %s" % [StatHelp.get_stat_name(stat_key), tr(ALLOCATION_GUIDE_GROWTH_KEY) % str(growth)]
+	heading.add_theme_color_override("font_color", _get_stat_color(stat_key))
+	heading_row.add_child(heading)
+	var description := _create_label("Description", &"CaptionLabel")
+	description.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	description.text = StatHelp.get_stat_description(stat_key)
+	entry.add_child(description)
+	return entry
 
 func _populate_stat_bars(container: Control, stats: Array, source: Dictionary, compact: bool) -> void:
 	for child: Node in container.get_children():
@@ -1659,6 +1979,9 @@ func _create_stat_bar(stat: Dictionary, source: Dictionary, compact: bool) -> HB
 	value.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bar.add_child(value)
 	row.add_child(bar)
+	# Tapping the bar (icon, label or value) explains the stat in the shared popup.
+	if is_instance_valid(stat_help_popup):
+		stat_help_popup.attach(row, stat_key, stat_color)
 	return row
 
 func _create_stat_stylebox(color: Color) -> StyleBoxFlat:
@@ -1732,6 +2055,7 @@ func _update_level_allocation_view() -> void:
 	else:
 		allocation_remaining_label.text = tr(ALLOCATION_REMAINING_KEY) % str(remaining)
 	_rebuild_allocation_rows(reserved_points, remaining)
+	_rebuild_allocation_stat_guide()
 	_rebuild_class_choices()
 	allocation_confirm_button.disabled = reserved_points <= 0 or _get_staged_points() <= 0
 
@@ -1740,7 +2064,7 @@ func _rebuild_allocation_rows(reserved_points: int, remaining: int) -> void:
 		if child is CanvasItem:
 			(child as CanvasItem).visible = false
 		child.queue_free()
-	for stat_key in ["life", "energy", "mana", "armor", "speed", "strength"]:
+	for stat_key: String in ALLOCATABLE_STATS:
 		allocation_buttons_container.add_child(_create_allocation_row(stat_key, reserved_points, remaining))
 
 func _create_allocation_row(stat_key: String, reserved_points: int, remaining: int) -> HBoxContainer:
@@ -1810,7 +2134,8 @@ func _rebuild_class_choices() -> void:
 	class_choice_container.add_child(title)
 	for player_class: Dictionary in CombatRules.load_player_classes():
 		var button := _create_button("%sClassButton" % String(player_class.get("id", "class")).capitalize())
-		button.text = String(player_class.get("name", player_class.get("id", "Class")))
+		var class_id := String(player_class.get("id", ""))
+		button.text = LocalizedNames.player_class(class_id, String(player_class.get("name", class_id)))
 		button.pressed.connect(Callable(self, "_select_player_class").bind(String(player_class.get("id", ""))), CONNECT_DEFERRED)
 		class_choice_container.add_child(button)
 
@@ -1948,7 +2273,9 @@ func _clear_roll_displays() -> void:
 	if is_instance_valid(monster_roll_display):
 		monster_roll_display.text = ""
 
-func _complete_dungeon_if_ready(_experience_gained: int) -> bool:
+## Completes the dungeon when every monster is defeated and shows its result. `victory_summary`
+## (the last fight's victory lines) is placed above the rewards so one modal covers both.
+func _complete_dungeon_if_ready(_experience_gained: int, victory_summary: String = "") -> bool:
 	var total_monsters: int = DungeonGenerator.count_total_monsters(dungeon)
 	var defeated_monsters: int = DungeonGenerator.count_defeated_monsters(dungeon)
 	dungeon["total_monsters"] = total_monsters
@@ -1973,7 +2300,8 @@ func _complete_dungeon_if_ready(_experience_gained: int) -> bool:
 	_clear_feedback()
 	_apply_player_stats()
 	_show_new_game_view()
-	_show_game_result(tr(RESULT_COMPLETED_TITLE_KEY), tr("DUNGEON_COMPLETED_REWARDS") % [str(experience_gained), str(reputation_gained)])
+	var rewards := tr("DUNGEON_COMPLETED_REWARDS") % [str(experience_gained), str(reputation_gained)]
+	_show_game_result(tr(RESULT_COMPLETED_TITLE_KEY), _join_lines([victory_summary, rewards]))
 	return true
 
 func _move_left() -> void:
@@ -2053,7 +2381,10 @@ func _format_flee_feedback(result: Dictionary) -> String:
 		parts.append(_format_monster_attack_feedback(monster_attack_name, result))
 	return " ".join(parts)
 
-func _format_monster_attack_feedback(attack_name: String, result: Dictionary) -> String:
+## Fight-log sentence for the monster's attack. `english_attack_name` is the data name and is
+## translated here, so every caller gets the localized attack name.
+func _format_monster_attack_feedback(english_attack_name: String, result: Dictionary) -> String:
+	var attack_name := LocalizedNames.ability(english_attack_name)
 	if bool(result.get("counterattack_critical", false)):
 		return tr("COMBAT_FEEDBACK_MONSTER_CRITICAL") % attack_name
 	if bool(result.get("counterattack_hit", false)):
@@ -2080,12 +2411,12 @@ func _show_monster_info() -> void:
 			continue
 		var attack := attack_variant as Dictionary
 		var effects: Array = attack.get("effects", [])
-		var effect_ids := PackedStringArray()
+		var effect_names := PackedStringArray()
 		for effect_variant: Variant in effects:
-			effect_ids.append(String(effect_variant))
-		var effect_text := tr("ENCOUNTER_MONSTER_NO_EFFECTS") if effect_ids.is_empty() else ", ".join(effect_ids)
+			effect_names.append(LocalizedNames.effect(String(effect_variant)))
+		var effect_text := tr("ENCOUNTER_MONSTER_NO_EFFECTS") if effect_names.is_empty() else ", ".join(effect_names)
 		lines.append(tr(MONSTER_ATTACK_LINE_KEY) % [
-			String(attack.get("name", "Attack")),
+			LocalizedNames.ability(String(attack.get("name", "Attack"))),
 			# Show the damage the attack really deals, including the monster's Strength bonus.
 			str(CombatRules.get_attack_damage(attack, false, int(monster.get("current_strength", monster.get("strength", 0))))),
 			str(int(attack.get("mana_cost", attack.get("energy_cost", 0)))),

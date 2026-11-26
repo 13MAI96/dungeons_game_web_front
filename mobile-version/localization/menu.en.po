@@ -288,3 +288,262 @@ msgstr "You have %s energy left. Every step and every fight round costs energy. 
 
 msgid "LOW_ENERGY_MESSAGE_NO_EXPERIENCE"
 msgstr "You have %s energy left. Every step and every fight round costs energy. If it reaches 0, the expedition ends. Go back to the green entrance and use Retreat to leave safely."
+
+# Main menu branding (DNG-5)
+
+msgid "GAME_TITLE"
+msgstr "Dungeons"
+
+# Encounter header and D-pad tooltips (DNG-8)
+
+msgid "ENCOUNTER_MONSTER"
+msgstr "Monster"
+
+msgid "ENCOUNTER_MONSTER_NAME_LEVEL"
+msgstr "%s Lv. %s"
+
+msgid "DIRECTION_LEFT"
+msgstr "Left"
+
+msgid "DIRECTION_RIGHT"
+msgstr "Right"
+
+msgid "DIRECTION_UP"
+msgstr "Up"
+
+msgid "DIRECTION_DOWN"
+msgstr "Down"
+
+# Monster names: MONSTER_NAME_<name> (data/monsters.json, scripts/localized_names.gd)
+msgid "FIGHT_VICTORY_TITLE"
+msgstr "Victory!"
+
+msgid "FIGHT_VICTORY_DEFEATED"
+msgstr "Enemy defeated: %s"
+
+msgid "FIGHT_VICTORY_EXPERIENCE"
+msgstr "+%s dungeon experience"
+
+msgid "FIGHT_VICTORY_RUN_TOTAL"
+msgstr "Dungeon experience this run: %s. Retreat from the entrance or clear the dungeon to keep it."
+
+msgid "MONSTER_NAME_MONSTER"
+msgstr "Monster"
+
+msgid "MONSTER_NAME_RAT"
+msgstr "Rat"
+
+msgid "MONSTER_NAME_SNAKE"
+msgstr "Snake"
+
+msgid "MONSTER_NAME_GIANT_SPIDER"
+msgstr "Giant Spider"
+
+msgid "MONSTER_NAME_BAT"
+msgstr "Bat"
+
+msgid "MONSTER_NAME_GOLEM"
+msgstr "Golem"
+
+msgid "MONSTER_NAME_WASP"
+msgstr "Wasp"
+
+msgid "MONSTER_NAME_WOLF"
+msgstr "Wolf"
+
+msgid "MONSTER_NAME_GIANT_SCORPION"
+msgstr "Giant Scorpion"
+
+msgid "MONSTER_NAME_KOBOLD"
+msgstr "Kobold"
+
+msgid "MONSTER_NAME_GOBLIN"
+msgstr "Goblin"
+
+# Monster attacks and player abilities: ABILITY_NAME_<name> (data/monsters.json, data/player_abilities.json)
+
+msgid "ABILITY_NAME_ATTACK"
+msgstr "Attack"
+
+msgid "ABILITY_NAME_CLAW"
+msgstr "Claw"
+
+msgid "ABILITY_NAME_STRIKE"
+msgstr "Strike"
+
+msgid "ABILITY_NAME_BITE"
+msgstr "Bite"
+
+msgid "ABILITY_NAME_VENOM_BITE"
+msgstr "Venom Bite"
+
+msgid "ABILITY_NAME_WEB_BITE"
+msgstr "Web Bite"
+
+msgid "ABILITY_NAME_SCREECH"
+msgstr "Screech"
+
+msgid "ABILITY_NAME_CRUSHING_BLOW"
+msgstr "Crushing Blow"
+
+msgid "ABILITY_NAME_STING"
+msgstr "Sting"
+
+msgid "ABILITY_NAME_VENOM_STING"
+msgstr "Venom Sting"
+
+msgid "ABILITY_NAME_DIRTY_TRICK"
+msgstr "Dirty Trick"
+
+msgid "ABILITY_NAME_KNIFE_CUT"
+msgstr "Knife Cut"
+
+msgid "ABILITY_NAME_GUARDED_REST"
+msgstr "Guarded Rest"
+
+msgid "ABILITY_NAME_HEAVY_ATTACK"
+msgstr "Heavy Attack"
+
+msgid "ABILITY_NAME_ARCANE_SPARK"
+msgstr "Arcane Spark"
+
+msgid "ABILITY_NAME_MANA_SHELL"
+msgstr "Mana Shell"
+
+msgid "ABILITY_NAME_SHIELD_WALL"
+msgstr "Shield Wall"
+
+msgid "ABILITY_NAME_QUICK_HANDS"
+msgstr "Quick Hands"
+
+# Player classes: CLASS_NAME_<id> (data/player_classes.json)
+
+msgid "CLASS_NAME_MAGE"
+msgstr "Mage"
+
+msgid "CLASS_NAME_KNIGHT"
+msgstr "Knight"
+
+msgid "CLASS_NAME_THIEF"
+msgstr "Thief"
+
+# Status effects: EFFECT_NAME_<id> (data/effects.json)
+
+msgid "EFFECT_NAME_FATIGUE"
+msgstr "Fatigue"
+
+msgid "EFFECT_NAME_POISON"
+msgstr "Poison"
+
+msgid "EFFECT_NAME_DIZZINESS"
+msgstr "Dizziness"
+msgid "SETTINGS_HOW_TO_PLAY"
+msgstr "How to play"
+
+msgid "TUTORIAL_TITLE"
+msgstr "How to play"
+
+msgid "TUTORIAL_PAGE_COUNTER"
+msgstr "%s / %s"
+
+msgid "TUTORIAL_NEXT"
+msgstr "Next"
+
+msgid "TUTORIAL_SKIP"
+msgstr "Skip"
+
+msgid "TUTORIAL_DONE"
+msgstr "Done"
+
+msgid "TUTORIAL_GRID_TITLE"
+msgstr "The dungeon"
+
+msgid "TUTORIAL_GRID_BODY"
+msgstr "The dungeon is a grid of rooms seen from above. Use the arrow buttons to move one room at a time. You start on the green entrance. Red rooms hold monsters, purple rooms a treasure and blue rooms a sanctuary. Defeat every monster to complete the dungeon."
+
+msgid "TUTORIAL_ENERGY_TITLE"
+msgstr "Energy"
+
+msgid "TUTORIAL_ENERGY_BODY"
+msgstr "Everything in the dungeon costs energy (yellow bar): %s per step, %s per fight round, %s per flee attempt and %s to open a treasure. If your energy reaches 0, the expedition ends."
+
+msgid "TUTORIAL_EXPERIENCE_TITLE"
+msgstr "Dungeon XP"
+
+msgid "TUTORIAL_EXPERIENCE_BODY"
+msgstr "Experience earned in a dungeon is provisional (Dungeon XP bar). You keep it when you complete the dungeon or when you Retreat. You lose it if your energy or your life run out."
+
+msgid "TUTORIAL_RETREAT_TITLE"
+msgstr "Retreat"
+
+msgid "TUTORIAL_RETREAT_BODY"
+msgstr "Retreat only works on the green entrance. It costs %s energy, ends the expedition safely and keeps your dungeon XP. Save enough energy to walk back."
+
+msgid "TUTORIAL_REST_TITLE"
+msgstr "Rest"
+
+msgid "TUTORIAL_REST_BODY"
+msgstr "Rest costs %s mana and restores %s to %s%% of your energy and %s to %s%% of your life. Use it while exploring when you are tired or hurt."
+
+msgid "TUTORIAL_SANCTUARY_TITLE"
+msgstr "Sanctuary and treasure"
+
+msgid "TUTORIAL_SANCTUARY_BODY"
+msgstr "A sanctuary (blue room) restores %s to %s%% of your life, energy and mana, once per expedition. A treasure (purple room) is opened with Collect Treasure for %s energy: on a d20 roll of %s or more you gain %s XP, otherwise a trap deals %s damage."
+
+msgid "STAT_LIFE"
+msgstr "Life"
+
+msgid "STAT_ENERGY"
+msgstr "Energy"
+
+msgid "STAT_MANA"
+msgstr "Mana"
+
+msgid "STAT_ARMOR"
+msgstr "Armor"
+
+msgid "STAT_STRENGTH"
+msgstr "Strength"
+
+msgid "STAT_SPEED"
+msgstr "Speed"
+
+msgid "STAT_REPUTATION"
+msgstr "Reputation"
+
+msgid "STAT_LIFE_HELP"
+msgstr "Your health. Monster hits and traps lower it. If it reaches 0 the expedition ends, you lose the dungeon XP and keep a permanent life penalty. A monster at 0 life is defeated."
+
+msgid "STAT_ENERGY_HELP"
+msgstr "Spent in the dungeon: %s per step and %s per fight round. If it reaches 0 the expedition ends and the dungeon XP is lost. It refills when you leave the dungeon."
+
+msgid "STAT_MANA_HELP"
+msgstr "Magic power. Rest costs %s mana, and some attacks also cost mana."
+
+msgid "STAT_ARMOR_HELP"
+msgstr "Protection. The higher it is, the higher the d20 roll an attacker needs to hit."
+
+msgid "STAT_STRENGTH_HELP"
+msgstr "Attack power. It lowers the roll you need to get past the enemy's armor and adds 1 damage for every 2 points above %s."
+
+msgid "STAT_SPEED_HELP"
+msgstr "Agility. It helps you dodge attacks, makes your attacks harder to dodge and helps you flee."
+
+msgid "STAT_REPUTATION_HELP"
+msgstr "Fame. Completing a dungeon gives +1 for each monster defeated in it. Fill the bar to reach the next reputation level."
+
+msgid "STAT_EXPERIENCE_HELP"
+msgstr "The total XP you have kept. When the bar fills you level up and get %s points to spend in Progression."
+
+msgid "STAT_DUNGEON_EXPERIENCE_HELP"
+msgstr "XP earned in this expedition. It is provisional: kept when you complete the dungeon or Retreat at the entrance, lost if your energy or life run out."
+
+msgid "STAT_HELP_CLOSE_HINT"
+msgstr "Tap anywhere to close"
+
+msgid "LEVEL_ALLOCATION_GUIDE_TITLE"
+msgstr "What each stat does"
+
+msgid "LEVEL_ALLOCATION_GUIDE_GROWTH"
+msgstr "+%s per point"

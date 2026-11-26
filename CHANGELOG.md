@@ -10,6 +10,22 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
+## 2026-11-26 — Mobile: P1 user-test fixes (DNG-5 to DNG-10)
+### Changes
+- DNG-5: main menu shows a logo (`assets/ui/logo.svg`) and the translated title.
+- DNG-6: 6-page "How to play" tutorial on the first dungeon entry (`scripts/tutorial.gd`); Skip/Next/Done, reopenable from Settings; "seen" flag stored in the settings file. Rest/Sanctuary/treasure numbers are now named constants in `combat_rules.gd` (values unchanged).
+- DNG-7: tapping any stat bar (hub, exploration, Level Up, fight panel) shows its name and description (`scripts/stat_help.gd`); Level Up shows a "What each stat does" guide.
+- DNG-8: complete Spanish UI: data names (monsters, abilities, classes, effects) translated at display time (`scripts/localized_names.gd`); static texts refreshed on language change; new `tests/verify_localization.gd` sweeps every screen.
+- DNG-9: 300 ms input cooldown after any screen/modal change swallows carried-over taps.
+- DNG-10: "Victory!" screen after a won fight (monster, XP gained, run XP) with Continue; the last monster folds into the single dungeon-completed result.
+- Fix: a delayed `_finish_depleted_dungeon_exit()` could run twice and wipe the next run (made automated balance runs timing-dependent).
+- New tests: `verify_first_run_tutorial`, `verify_stat_help`, `verify_localization`, `verify_input_cooldown`, `verify_fight_victory`. Full suite 23/23.
+- OpenSpec changes: `main-menu-branding`, `first-run-tutorial`, `stat-help`, `complete-spanish-localization`, `input-cooldown-after-screen-change`, `fight-victory-result`.
+### Issues
+- OpenSpec CLI not installed: the six changes are not validated or archived yet (see DNG-24).
+- Checked on the Android emulators: menu, stat help, and tutorial. The victory screen and the Spanish UI were checked by tests only.
+- Spanish name choices to review: Goblin → "Trasgo", Kobold → "Kóbold".
+
 ## 2026-11-26 — Mobile: low-energy warning and experience-lost message (DNG-4)
 ### Changes
 - One-time "Low energy" warning per run when energy drops to 25% of maximum or below. It shows the energy left and the dungeon XP at risk, and advises retreating at the entrance (`mobile-version/scripts/main.gd`, `_warn_if_energy_low`).

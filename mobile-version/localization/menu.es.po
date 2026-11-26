@@ -288,3 +288,262 @@ msgstr "Te quedan %s de energía. Cada paso y cada ronda de combate gastan energ
 
 msgid "LOW_ENERGY_MESSAGE_NO_EXPERIENCE"
 msgstr "Te quedan %s de energía. Cada paso y cada ronda de combate gastan energía. Si llega a 0, la expedición termina. Volvé a la entrada verde y usá Retirada para salir a salvo."
+
+# Main menu branding (DNG-5)
+
+msgid "GAME_TITLE"
+msgstr "Mazmorras"
+
+# Encounter header and D-pad tooltips (DNG-8)
+
+msgid "ENCOUNTER_MONSTER"
+msgstr "Monstruo"
+
+msgid "ENCOUNTER_MONSTER_NAME_LEVEL"
+msgstr "%s Nv. %s"
+
+msgid "DIRECTION_LEFT"
+msgstr "Izquierda"
+
+msgid "DIRECTION_RIGHT"
+msgstr "Derecha"
+
+msgid "DIRECTION_UP"
+msgstr "Arriba"
+
+msgid "DIRECTION_DOWN"
+msgstr "Abajo"
+
+# Monster names: MONSTER_NAME_<name> (data/monsters.json, scripts/localized_names.gd)
+msgid "FIGHT_VICTORY_TITLE"
+msgstr "¡Victoria!"
+
+msgid "FIGHT_VICTORY_DEFEATED"
+msgstr "Enemigo vencido: %s"
+
+msgid "FIGHT_VICTORY_EXPERIENCE"
+msgstr "+%s de experiencia de mazmorra"
+
+msgid "FIGHT_VICTORY_RUN_TOTAL"
+msgstr "Experiencia de mazmorra en esta expedición: %s. Retirate desde la entrada o completá la mazmorra para conservarla."
+
+msgid "MONSTER_NAME_MONSTER"
+msgstr "Monstruo"
+
+msgid "MONSTER_NAME_RAT"
+msgstr "Rata"
+
+msgid "MONSTER_NAME_SNAKE"
+msgstr "Serpiente"
+
+msgid "MONSTER_NAME_GIANT_SPIDER"
+msgstr "Araña gigante"
+
+msgid "MONSTER_NAME_BAT"
+msgstr "Murciélago"
+
+msgid "MONSTER_NAME_GOLEM"
+msgstr "Gólem"
+
+msgid "MONSTER_NAME_WASP"
+msgstr "Avispa"
+
+msgid "MONSTER_NAME_WOLF"
+msgstr "Lobo"
+
+msgid "MONSTER_NAME_GIANT_SCORPION"
+msgstr "Escorpión gigante"
+
+msgid "MONSTER_NAME_KOBOLD"
+msgstr "Kóbold"
+
+msgid "MONSTER_NAME_GOBLIN"
+msgstr "Trasgo"
+
+# Monster attacks and player abilities: ABILITY_NAME_<name> (data/monsters.json, data/player_abilities.json)
+
+msgid "ABILITY_NAME_ATTACK"
+msgstr "Ataque"
+
+msgid "ABILITY_NAME_CLAW"
+msgstr "Zarpazo"
+
+msgid "ABILITY_NAME_STRIKE"
+msgstr "Golpe"
+
+msgid "ABILITY_NAME_BITE"
+msgstr "Mordida"
+
+msgid "ABILITY_NAME_VENOM_BITE"
+msgstr "Mordida venenosa"
+
+msgid "ABILITY_NAME_WEB_BITE"
+msgstr "Mordida de telaraña"
+
+msgid "ABILITY_NAME_SCREECH"
+msgstr "Chillido"
+
+msgid "ABILITY_NAME_CRUSHING_BLOW"
+msgstr "Golpe aplastante"
+
+msgid "ABILITY_NAME_STING"
+msgstr "Picadura"
+
+msgid "ABILITY_NAME_VENOM_STING"
+msgstr "Aguijón venenoso"
+
+msgid "ABILITY_NAME_DIRTY_TRICK"
+msgstr "Truco sucio"
+
+msgid "ABILITY_NAME_KNIFE_CUT"
+msgstr "Cuchillazo"
+
+msgid "ABILITY_NAME_GUARDED_REST"
+msgstr "Descanso en guardia"
+
+msgid "ABILITY_NAME_HEAVY_ATTACK"
+msgstr "Ataque pesado"
+
+msgid "ABILITY_NAME_ARCANE_SPARK"
+msgstr "Chispa arcana"
+
+msgid "ABILITY_NAME_MANA_SHELL"
+msgstr "Escudo de maná"
+
+msgid "ABILITY_NAME_SHIELD_WALL"
+msgstr "Muro de escudos"
+
+msgid "ABILITY_NAME_QUICK_HANDS"
+msgstr "Manos rápidas"
+
+# Player classes: CLASS_NAME_<id> (data/player_classes.json)
+
+msgid "CLASS_NAME_MAGE"
+msgstr "Mago"
+
+msgid "CLASS_NAME_KNIGHT"
+msgstr "Caballero"
+
+msgid "CLASS_NAME_THIEF"
+msgstr "Ladrón"
+
+# Status effects: EFFECT_NAME_<id> (data/effects.json)
+
+msgid "EFFECT_NAME_FATIGUE"
+msgstr "Fatiga"
+
+msgid "EFFECT_NAME_POISON"
+msgstr "Veneno"
+
+msgid "EFFECT_NAME_DIZZINESS"
+msgstr "Mareo"
+msgid "SETTINGS_HOW_TO_PLAY"
+msgstr "Cómo jugar"
+
+msgid "TUTORIAL_TITLE"
+msgstr "Cómo jugar"
+
+msgid "TUTORIAL_PAGE_COUNTER"
+msgstr "%s / %s"
+
+msgid "TUTORIAL_NEXT"
+msgstr "Siguiente"
+
+msgid "TUTORIAL_SKIP"
+msgstr "Omitir"
+
+msgid "TUTORIAL_DONE"
+msgstr "Listo"
+
+msgid "TUTORIAL_GRID_TITLE"
+msgstr "La mazmorra"
+
+msgid "TUTORIAL_GRID_BODY"
+msgstr "La mazmorra es una grilla de salas vista desde arriba. Usá las flechas para moverte de a una sala. Empezás en la entrada verde. Las salas rojas tienen monstruos, las violetas un tesoro y las azules un santuario. Derrotá a todos los monstruos para completar la mazmorra."
+
+msgid "TUTORIAL_ENERGY_TITLE"
+msgstr "Energía"
+
+msgid "TUTORIAL_ENERGY_BODY"
+msgstr "Todo en la mazmorra gasta energía (barra amarilla): %s por paso, %s por ronda de combate, %s por intento de huida y %s por abrir un tesoro. Si tu energía llega a 0, la expedición termina."
+
+msgid "TUTORIAL_EXPERIENCE_TITLE"
+msgstr "XP de mazmorra"
+
+msgid "TUTORIAL_EXPERIENCE_BODY"
+msgstr "La experiencia que ganás en una mazmorra es provisoria (barra XP mazmorra). La conservás si completás la mazmorra o si usás Retirada. La perdés si te quedás sin energía o sin vida."
+
+msgid "TUTORIAL_RETREAT_TITLE"
+msgstr "Retirada"
+
+msgid "TUTORIAL_RETREAT_BODY"
+msgstr "La Retirada solo funciona en la entrada verde. Cuesta %s de energía, termina la expedición a salvo y conserva tu XP de mazmorra. Guardá energía suficiente para volver."
+
+msgid "TUTORIAL_REST_TITLE"
+msgstr "Descansar"
+
+msgid "TUTORIAL_REST_BODY"
+msgstr "Descansar cuesta %s de maná y restaura entre %s y %s%% de tu energía y entre %s y %s%% de tu vida. Usalo mientras explorás, cuando estés cansado o herido."
+
+msgid "TUTORIAL_SANCTUARY_TITLE"
+msgstr "Santuario y tesoro"
+
+msgid "TUTORIAL_SANCTUARY_BODY"
+msgstr "Un santuario (sala azul) restaura entre %s y %s%% de tu vida, energía y maná, una vez por expedición. Un tesoro (sala violeta) se abre con Recolectar Tesoro por %s de energía: con una tirada d20 de %s o más ganás %s de XP; si no, una trampa te hace %s de daño."
+
+msgid "STAT_LIFE"
+msgstr "Vida"
+
+msgid "STAT_ENERGY"
+msgstr "Energía"
+
+msgid "STAT_MANA"
+msgstr "Maná"
+
+msgid "STAT_ARMOR"
+msgstr "Armadura"
+
+msgid "STAT_STRENGTH"
+msgstr "Fuerza"
+
+msgid "STAT_SPEED"
+msgstr "Velocidad"
+
+msgid "STAT_REPUTATION"
+msgstr "Reputación"
+
+msgid "STAT_LIFE_HELP"
+msgstr "Tu salud. Los golpes de los monstruos y las trampas la bajan. Si llega a 0 la expedición termina, perdés la XP de mazmorra y te queda una secuela permanente de vida. Un monstruo con 0 de vida queda derrotado."
+
+msgid "STAT_ENERGY_HELP"
+msgstr "Se gasta en la mazmorra: %s por paso y %s por ronda de combate. Si llega a 0 la expedición termina y se pierde la XP de mazmorra. Se recarga al salir de la mazmorra."
+
+msgid "STAT_MANA_HELP"
+msgstr "Poder mágico. Descansar cuesta %s de maná, y algunos ataques también gastan maná."
+
+msgid "STAT_ARMOR_HELP"
+msgstr "Protección. Cuanto más alta, mayor es la tirada d20 que necesita el atacante para acertarte."
+
+msgid "STAT_STRENGTH_HELP"
+msgstr "Poder de ataque. Baja la tirada que necesitás para superar la armadura enemiga y suma 1 de daño por cada 2 puntos por encima de %s."
+
+msgid "STAT_SPEED_HELP"
+msgstr "Agilidad. Te ayuda a esquivar ataques, hace que tus ataques sean más difíciles de esquivar y te ayuda a huir."
+
+msgid "STAT_REPUTATION_HELP"
+msgstr "Fama. Completar una mazmorra da +1 por cada monstruo derrotado en ella. Llená la barra para alcanzar el siguiente nivel de reputación."
+
+msgid "STAT_EXPERIENCE_HELP"
+msgstr "La XP total que conservaste. Cuando la barra se llena subís de nivel y obtenés %s puntos para gastar en Progresión."
+
+msgid "STAT_DUNGEON_EXPERIENCE_HELP"
+msgstr "La XP ganada en esta expedición. Es provisoria: se conserva si completás la mazmorra o usás Retirada en la entrada, y se pierde si te quedás sin energía o sin vida."
+
+msgid "STAT_HELP_CLOSE_HINT"
+msgstr "Tocá en cualquier lugar para cerrar"
+
+msgid "LEVEL_ALLOCATION_GUIDE_TITLE"
+msgstr "Qué hace cada atributo"
+
+msgid "LEVEL_ALLOCATION_GUIDE_GROWTH"
+msgstr "+%s por punto"

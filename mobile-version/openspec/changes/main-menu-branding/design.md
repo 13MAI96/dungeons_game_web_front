@@ -1,0 +1,6 @@
+## Decisions
+
+1. **Scene structure.** `MainMenuView/Branding` (MarginContainer, stretch ratio 1.8, same share of the screen the empty `LogoSpace` had) holds `BrandingStack` (VBox) with `LogoFrame` (AspectRatioContainer, ratio 1, bottom-aligned) → `Logo` (TextureRect, keep aspect centered), then `GameTitle` (Label, `GameTitleLabel`). The logo grows with the available height and stays right above the title; the buttons area is unchanged.
+2. **Fit.** With the project's 390x844 canvas-items stretch (`expand`), both 1440x3088 and 1080x2220 resolve to an 844 px tall viewport (393 and 410 px wide). Measured: logo 297-314 px square, title at y 435-496, buttons at y 544-740, ad slot from y 784. `tests/verify_ui_shell.gd` resizes the window to both sizes and asserts that the logo, title and buttons do not overlap and that the buttons stay above the ad slot.
+3. **Null-safe logo.** `_load_game_logo()` checks `ResourceLoader.exists()` before loading and hides the TextureRect when there is no texture, so a missing asset never breaks the menu.
+4. **Text.** The title text is the `GAME_TITLE` key (also set in the scene, so it is translated even before `_apply_menu_text()` runs) and is re-applied on a language change.

@@ -100,6 +100,9 @@ func _spend_points() -> void:
 
 ## Settles timers the UI would wait for, so the bot never waits on real time.
 func _settle() -> void:
+	# The first-run tutorial opens on the first dungeon entry; skip it like a returning player.
+	if main.tutorial_overlay.is_open():
+		main.tutorial_overlay.skip()
 	if main.damage_overlay.visible:
 		main._hide_damage_overlay()
 	if main.dungeon_exit_pending:
@@ -112,6 +115,11 @@ func _play_dungeon(totals: Dictionary) -> String:
 		if step % 8 == 0:
 			await tree.process_frame
 		_settle()
+		# The fight victory screen is an in-run summary, not a run result: press Continue and keep
+		# playing (a low-energy warning from the same fight may follow and is handled below).
+		if main.fight_victory_modal.visible:
+			main._hide_fight_victory()
+			continue
 		# The low-energy warning is an in-run notice, not a run result: dismiss it and keep playing.
 		if main.game_result_modal.visible and main.game_result_title.text == main.tr(main.LOW_ENERGY_TITLE_KEY):
 			main._hide_game_result()

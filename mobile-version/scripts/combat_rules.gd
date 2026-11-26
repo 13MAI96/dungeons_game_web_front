@@ -7,6 +7,16 @@ const ENERGY_RETREAT_COST := 1
 const REST_MANA_COST := 5
 const QUEST_REWARD_EXPERIENCE := 5
 const QUEST_FAILURE_DAMAGE := 2
+## A treasure (quest) succeeds on a d20 roll of this value or more; lower rolls trigger the trap.
+const QUEST_SUCCESS_ROLL := 10
+## Rest restores a random percentage of maximum energy and life within these bounds.
+const REST_ENERGY_PERCENT_MIN := 5
+const REST_ENERGY_PERCENT_MAX := 25
+const REST_LIFE_PERCENT_MIN := 10
+const REST_LIFE_PERCENT_MAX := 40
+## A sanctuary restores a random percentage of maximum life, energy and mana within these bounds.
+const SANCTUARY_PERCENT_MIN := 50
+const SANCTUARY_PERCENT_MAX := 100
 const LEVEL_UP_POINTS := 3
 const INITIAL_PROGRESSION_POINTS := 5
 const ATTACK_BASE_DIFFICULTY := 10
@@ -489,15 +499,17 @@ static func get_attack_damage(attack: Dictionary, critical: bool = false, streng
 static func rest(player: Dictionary, energy_percent: int = -1, life_percent: int = -1) -> Dictionary:
 	if int(player.get("current_mana", 0)) < REST_MANA_COST:
 		return {"rested": false, "message_key": "COMBAT_INSUFFICIENT_MANA"}
-	var energy_restore := energy_percent if energy_percent >= 0 else randi_range(5, 25)
-	var life_restore := life_percent if life_percent >= 0 else randi_range(10, 40)
+	var energy_restore := energy_percent if energy_percent >= 0 else randi_range(REST_ENERGY_PERCENT_MIN, REST_ENERGY_PERCENT_MAX)
+	var life_restore := life_percent if life_percent >= 0 else randi_range(REST_LIFE_PERCENT_MIN, REST_LIFE_PERCENT_MAX)
+	var energy_percent_applied := clampi(energy_restore, REST_ENERGY_PERCENT_MIN, REST_ENERGY_PERCENT_MAX)
+	var life_percent_applied := clampi(life_restore, REST_LIFE_PERCENT_MIN, REST_LIFE_PERCENT_MAX)
 	player["current_mana"] = int(player.get("current_mana", 0)) - REST_MANA_COST
-	_restore_energy(player, clampi(energy_restore, 5, 25))
-	_restore_life(player, clampi(life_restore, 10, 40))
+	_restore_energy(player, energy_percent_applied)
+	_restore_life(player, life_percent_applied)
 	return {
 		"rested": true,
-		"energy_percent": clampi(energy_restore, 5, 25),
-		"life_percent": clampi(life_restore, 10, 40),
+		"energy_percent": energy_percent_applied,
+		"life_percent": life_percent_applied,
 		"message_key": "COMBAT_REST",
 	}
 
@@ -505,21 +517,21 @@ static func rest_with_mana(player: Dictionary) -> Dictionary:
 	return rest(player)
 
 static func apply_sanctuary(player: Dictionary, location: Dictionary, life_percent: int = -1, energy_percent: int = -1, mana_percent: int = -1) -> Dictionary:
-	var life_restore := life_percent if life_percent >= 0 else randi_range(50, 100)
-	var energy_restore := energy_percent if energy_percent >= 0 else randi_range(50, 100)
-	var mana_restore := mana_percent if mana_percent >= 0 else randi_range(50, 100)
+	var life_restore := life_percent if life_percent >= 0 else randi_range(SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX)
+	var energy_restore := energy_percent if energy_percent >= 0 else randi_range(SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX)
+	var mana_restore := mana_percent if mana_percent >= 0 else randi_range(SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX)
 	if bool(location.get("visited", false)):
 		# Each sanctuary heals once per run; re-entering a used one does nothing.
 		return {"sanctuary": false, "message_key": "COMBAT_SANCTUARY_USED"}
-	_restore_life(player, clampi(life_restore, 50, 100))
-	_restore_energy(player, clampi(energy_restore, 50, 100))
-	_restore_mana(player, clampi(mana_restore, 50, 100))
+	_restore_life(player, clampi(life_restore, SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX))
+	_restore_energy(player, clampi(energy_restore, SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX))
+	_restore_mana(player, clampi(mana_restore, SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX))
 	location["visited"] = true
 	return {
 		"sanctuary": true,
-		"life_percent": clampi(life_restore, 50, 100),
-		"energy_percent": clampi(energy_restore, 50, 100),
-		"mana_percent": clampi(mana_restore, 50, 100),
+		"life_percent": clampi(life_restore, SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX),
+		"energy_percent": clampi(energy_restore, SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX),
+		"mana_percent": clampi(mana_restore, SANCTUARY_PERCENT_MIN, SANCTUARY_PERCENT_MAX),
 		"message_key": "COMBAT_SANCTUARY",
 	}
 
@@ -527,7 +539,7 @@ static func resolve_quest(player: Dictionary, location: Dictionary, quest_roll: 
 	_consume_energy(player, ENERGY_QUEST_COST)
 	location["visited"] = true
 	var roll := _roll_twenty(quest_roll)
-	if roll >= 10:
+	if roll >= QUEST_SUCCESS_ROLL:
 		_add_experience(player, QUEST_REWARD_EXPERIENCE)
 		return {
 			"success": true,

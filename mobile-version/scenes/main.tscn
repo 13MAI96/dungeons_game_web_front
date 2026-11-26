@@ -30,10 +30,38 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 
-[node name="LogoSpace" type="Control" parent="MainMenuView"]
+[node name="Branding" type="MarginContainer" parent="MainMenuView"]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 1.8
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 0
+
+[node name="BrandingStack" type="VBoxContainer" parent="MainMenuView/Branding"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="LogoFrame" type="AspectRatioContainer" parent="MainMenuView/Branding/BrandingStack"]
+custom_minimum_size = Vector2(0, 96)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+alignment_vertical = 2
+
+[node name="Logo" type="TextureRect" parent="MainMenuView/Branding/BrandingStack/LogoFrame"]
+layout_mode = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="GameTitle" type="Label" parent="MainMenuView/Branding/BrandingStack"]
+layout_mode = 2
+theme_type_variation = &"GameTitleLabel"
+text = "GAME_TITLE"
+horizontal_alignment = 1
 
 [node name="MenuArea" type="MarginContainer" parent="MainMenuView"]
 layout_mode = 2
@@ -53,17 +81,17 @@ alignment = 1
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "Start Game"
+text = "MENU_START_GAME"
 
 [node name="LoadGameButton" type="Button" parent="MainMenuView/MenuArea/MenuButtons"]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-text = "Load Game"
+text = "MENU_LOAD_GAME"
 
 [node name="SettingsButton" type="Button" parent="MainMenuView/MenuArea/MenuButtons"]
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
-text = "Settings"
+text = "MENU_SETTINGS"
 
 [node name="NewGameView" type="VBoxContainer" parent="."]
 visible = false
@@ -95,7 +123,7 @@ theme_type_variation = &"CardPanel"
 
 [node name="CharacterImagePlaceholder" type="Label" parent="NewGameView/CharacterArea/CharacterColumns/CharacterImageSlot"]
 layout_mode = 2
-text = "Character"
+text = "NEW_GAME_CHARACTER_PLACEHOLDER"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -123,29 +151,29 @@ alignment = 1
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "Explore Dungeon"
+text = "NEW_GAME_EXPLORE_DUNGEON"
 
 [node name="ChallengeDungeonButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_type_variation = &"ComingSoonButton"
-text = "Challenge Dungeon"
+text = "NEW_GAME_CHALLENGE_DUNGEON"
 
 [node name="ManageEquipmentButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-text = "Manage Equipment"
+text = "NEW_GAME_MANAGE_EQUIPMENT"
 
 [node name="ShopButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_type_variation = &"ComingSoonButton"
-text = "Shop"
+text = "NEW_GAME_SHOP"
 
 [node name="ExitButton" type="Button" parent="NewGameView/ActionArea/ActionButtons"]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
-text = "Exit"
+text = "NEW_GAME_EXIT"
 
 [node name="DungeonExploreView" type="VBoxContainer" parent="."]
 visible = false
@@ -253,7 +281,7 @@ custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"CompactButton"
-text = "Rest"
+text = "EXPLORE_REST"
 autowrap_mode = 2
 
 [node name="RetreatButton" type="Button" parent="DungeonExploreView/ExploreActions/ExploreActionStack/ExploreSecondaryActions"]
@@ -261,7 +289,7 @@ custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"CompactButton"
-text = "Retreat"
+text = "EXPLORE_RETREAT"
 autowrap_mode = 2
 
 [node name="MonsterEncounterView" type="VBoxContainer" parent="."]
@@ -295,7 +323,7 @@ theme_override_constants/separation = 10
 custom_minimum_size = Vector2(132, 112)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Monster"
+text = "ENCOUNTER_MONSTER"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -329,7 +357,7 @@ alignment = 1
 [node name="EncounterPlayerTitle" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/PlayerRow/EncounterPlayerPanel"]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
-text = "Player"
+text = "ENCOUNTER_PLAYER"
 horizontal_alignment = 1
 
 [node name="EncounterPlayerStats" type="Label" parent="MonsterEncounterView/EncounterInfoArea/EncounterStack/PlayerRow/EncounterPlayerPanel"]
@@ -341,7 +369,7 @@ horizontal_alignment = 1
 custom_minimum_size = Vector2(132, 112)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Player"
+text = "ENCOUNTER_PLAYER"
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -372,13 +400,13 @@ max_lines_visible = 3
 custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_type_variation = &"PrimaryButton"
-text = "Fight"
+text = "ENCOUNTER_FIGHT"
 
 [node name="FleeButton" type="Button" parent="MonsterEncounterView/EncounterActions/EncounterActionButtons"]
 custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_type_variation = &"DangerButton"
-text = "Flee"
+text = "ENCOUNTER_FLEE"
 
 [connection signal="pressed" from="MainMenuView/MenuArea/MenuButtons/StartGameButton" to="." method="_request_new_game"]
 [connection signal="pressed" from="NewGameView/ActionArea/ActionButtons/ExitButton" to="." method="_request_exit_to_menu"]

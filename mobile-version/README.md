@@ -18,9 +18,9 @@ Behaviour is specified with **OpenSpec** before it is implemented.
 | Path | Contents |
 |---|---|
 | `scenes/` | Godot scenes (`main.tscn` is the entry point). |
-| `scripts/` | GDScript: `main.gd` (UI/flow), `combat_rules.gd`, `dungeon_generator.gd`, `save_game.gd`, `settings_store.gd`. |
+| `scripts/` | GDScript: `main.gd` (UI/flow), `combat_rules.gd`, `dungeon_generator.gd`, `save_game.gd`, `settings_store.gd`, `localized_names.gd` (display names for data), `tutorial.gd` (how-to-play overlay), `stat_help.gd` (stat tap help). |
 | `data/` | JSON game data: monsters, effects, player abilities and classes. |
-| `assets/` | SVG art: `characters/`, `monsters/`, `icons/`, `feedback/`. |
+| `assets/` | SVG art: `characters/`, `monsters/`, `icons/`, `feedback/`, `ui/` (main menu logo). |
 | `localization/` | Gettext `.po` translations. |
 | `tests/` | Headless verification scripts (`verify_*.gd`). |
 | `tools/` | `run_tests.sh`, `run_android.sh`, `build_release.sh`, `playtest.gd` (balance bot) and `analyze_balance.gd` (balance report). |
@@ -78,6 +78,11 @@ Each test exits with code `0` on success and `1` on the first failed check.
 - **Sizes**: buttons ≥ 48 px tall, primary actions 56 px, D-pad 64 px+, body text ≥ 14 px, stat text ≥ 12 px.
 - **Screens**: switch screens with `_activate_screen()` so only one is visible and insets are re-applied.
 - **Safe area**: views are inset by the device safe area (notch, gesture bar) on mobile.
+- **Localization**: every visible text goes through `localization/menu.en.po` and `menu.es.po` (Spanish uses
+  Rioplatense voseo). Names from `data/*.json` are translated at display time by `scripts/localized_names.gd`
+  with derived keys: `MONSTER_NAME_<NAME>`, `ABILITY_NAME_<NAME>` (monster attacks and player abilities),
+  `CLASS_NAME_<ID>`, `EFFECT_NAME_<ID>`. A new monster, attack, class or effect needs both keys, or
+  `tests/verify_localization.gd` fails. Texts set once at start-up must also be refreshed in `_apply_menu_text()`.
 - **Ad banner slot**: [`scripts/ad_slot_config.gd`](scripts/ad_slot_config.gd) reserves a 60 px bottom slot (+12 px gap)
   on menu, hub, settings and level-up screens; it is hidden during exploration and combat (AdMob placement policy).
   Set `AdSlotConfig.enabled = false` to collapse it. No ad SDK is integrated yet; when adding one

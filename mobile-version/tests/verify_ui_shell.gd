@@ -35,6 +35,8 @@ func _init() -> void:
 		return
 	if not _check_overlay_and_localization():
 		return
+	if not await _check_main_menu_branding():
+		return
 	SaveGame.delete_save(TEST_SAVE_PATH)
 	SettingsStore.delete_settings(TEST_SETTINGS_PATH)
 	quit(0)
@@ -147,6 +149,43 @@ func _check_overlay_and_localization() -> bool:
 	TranslationServer.set_locale("en")
 	if feedback.contains("Your attack") or not feedback.contains("Mordisco"):
 		return _fail("Combat feedback should be localized to Spanish: %s" % feedback)
+	return true
+
+## Phone screens (physical pixels) the main menu must fit: 1440x3088 and 1080x2220.
+const BRANDING_SCREEN_SIZES := [Vector2i(1440, 3088), Vector2i(1080, 2220)]
+
+## The main menu shows the logo and the translated game title above the buttons, and on each
+## target phone size neither overlaps the buttons or the reserved ad banner slot.
+func _check_main_menu_branding() -> bool:
+	main._show_main_menu_view()
+	var logo := main.get_node_or_null("MainMenuView/Branding/BrandingStack/LogoFrame/Logo") as TextureRect
+	var title := main.get_node_or_null("MainMenuView/Branding/BrandingStack/GameTitle") as Label
+	if logo == null or title == null:
+		return _fail("The main menu should have a Logo and a GameTitle above the menu buttons.")
+	if logo.texture == null or not logo.visible:
+		return _fail("The main menu logo should load res://assets/ui/logo.svg.")
+	if title.text != main.tr("GAME_TITLE") or title.text == "GAME_TITLE" or title.theme_type_variation != &"GameTitleLabel":
+		return _fail("The game title should be the translated GAME_TITLE styled as GameTitleLabel.")
+	var original_size := get_root().size
+	for screen_size: Vector2i in BRANDING_SCREEN_SIZES:
+		get_root().size = screen_size
+		await process_frame
+		await process_frame
+		var viewport_height: float = main.get_viewport_rect().size.y
+		var ad_top: float = main.ad_slot.get_global_rect().position.y
+		var buttons_rect: Rect2 = main.start_game_button.get_global_rect().merge(main.settings_button.get_global_rect())
+		var logo_rect := logo.get_global_rect()
+		var title_rect := title.get_global_rect()
+		if logo_rect.size.y < 64 or logo_rect.size.x < 64:
+			return _fail("On %s the logo should be at least 64 px tall and wide, got %s." % [screen_size, logo_rect.size])
+		if logo_rect.end.y > title_rect.position.y or title_rect.end.y > buttons_rect.position.y:
+			return _fail("On %s the logo, title and buttons should be stacked without overlapping." % screen_size)
+		if not main.is_ad_slot_visible() or buttons_rect.end.y > ad_top or ad_top > viewport_height:
+			return _fail("On %s the menu buttons should stay above the visible ad slot." % screen_size)
+		if logo_rect.position.y < 0.0:
+			return _fail("On %s the logo should start inside the screen." % screen_size)
+	get_root().size = original_size
+	await process_frame
 	return true
 
 func _fail(message: String) -> bool:

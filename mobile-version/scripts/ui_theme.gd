@@ -4,7 +4,7 @@ extends RefCounted
 ##
 ## Type variations (set `theme_type_variation` on a node):
 ##   Buttons: PrimaryButton, DangerButton, ComingSoonButton, DPadButton, IconButton, SelectedButton
-##   Labels:  TitleLabel, HeaderLabel, CaptionLabel, FeedbackLabel
+##   Labels:  GameTitleLabel, TitleLabel, HeaderLabel, CaptionLabel, FeedbackLabel
 ##   Panels:  CardPanel, DialogPanel, AdSlotPanel  (for PanelContainer and Panel)
 
 # Palette (dark brown-black base required by the menu/new-game specs).
@@ -37,6 +37,8 @@ const FONT_PRIMARY := 19
 const FONT_CAPTION := 14
 const FONT_HEADER := 20
 const FONT_TITLE := 28
+## Game name on the main menu: the largest text in the app.
+const FONT_GAME_TITLE := 44
 const FONT_STAT := 12
 const FONT_STAT_VALUE := 13
 
@@ -174,6 +176,14 @@ static func _build_labels(theme: Theme, bold: Font) -> void:
 	theme.set_font_size("font_size", "TitleLabel", FONT_TITLE)
 	theme.set_font("font", "TitleLabel", bold)
 	theme.set_color("font_color", "TitleLabel", ACCENT)
+
+	# Main menu game name: large bold gold text with a dark outline so it stands out under the logo.
+	theme.set_type_variation("GameTitleLabel", "Label")
+	theme.set_font_size("font_size", "GameTitleLabel", FONT_GAME_TITLE)
+	theme.set_font("font", "GameTitleLabel", bold)
+	theme.set_color("font_color", "GameTitleLabel", ACCENT_BRIGHT)
+	theme.set_color("font_outline_color", "GameTitleLabel", SURFACE_SUNKEN)
+	theme.set_constant("outline_size", "GameTitleLabel", 8)
 
 	theme.set_type_variation("HeaderLabel", "Label")
 	theme.set_font_size("font_size", "HeaderLabel", FONT_HEADER)
