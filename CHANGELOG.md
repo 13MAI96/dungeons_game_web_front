@@ -10,7 +10,7 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
-## 2026-11-26 — Mobile: progression hints and Rest rework (DNG-14 to DNG-16)
+## 2026-11-26 — Mobile: progression hints and Rest rework (`867cf10`, DNG-14 to DNG-16)
 ### Changes
 - DNG-14 (decision): 1.0 gets attack selection only; follow-up DNG-25. No code change.
 - DNG-15: hints for the 5 starting points and the level-10 class unlock on the hub and Level Up (`CLASS_CHOICE_LEVEL` constant). Playtest bot gains `allocation=` strategies. Analysis report `mobile-version/docs/progression-check-2026-11-26.md`: pacing on target (level 2 in 4.7 runs); level 1 is the slowest level; Strength is necessary but does not dominate. Tuning recommendations are listed there, not applied.
