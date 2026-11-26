@@ -114,7 +114,7 @@ func _check_victory_before_depletion() -> bool:
 	main.dungeon["locations"][1]["visited"] = true
 	main.current_location = main.dungeon["locations"][1]
 	main._show_monster_encounter(main.dungeon["locations"][2])
-	main.player_state["current_energy"] = 2  # exactly one attack
+	main.player_state["current_energy"] = int(CombatRules.get_player_ability("basic_attack")["energy_cost"])  # exactly one attack
 	main.next_attack_roll = 20.0
 	main.next_dodge_roll = 1.0
 	main._fight()
@@ -131,7 +131,7 @@ func _check_unaffordable_fight() -> bool:
 	main._start_new_game()
 	CombatRules.begin_dungeon_experience(main.player_state)
 	_corridor_dungeon(main)
-	main.player_state["current_energy"] = 1
+	main.player_state["current_energy"] = int(CombatRules.get_player_ability("basic_attack")["energy_cost"]) - 1
 	main._show_monster_encounter(main.dungeon["locations"][2])
 	var ok: bool = main.fight_button.disabled and not main.flee_button.disabled \
 		and main.encounter_feedback.text.contains(main.tr("ENCOUNTER_CANNOT_AFFORD_ATTACK"))

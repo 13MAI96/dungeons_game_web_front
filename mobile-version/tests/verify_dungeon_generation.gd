@@ -71,19 +71,30 @@ func _init() -> void:
 func _verify_large_dungeon_size_variance() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 2510
-	var minimum_dimension := 25
-	var maximum_dimension := 5
-	for _sample in range(200):
-		var dungeon := DungeonGenerator.create_dungeon(1, rng, 10)
-		minimum_dimension = mini(minimum_dimension, mini(int(dungeon["number_of_columns"]), int(dungeon["number_of_rows"])))
-		maximum_dimension = maxi(maximum_dimension, maxi(int(dungeon["number_of_columns"]), int(dungeon["number_of_rows"])))
-		if int(dungeon["total_monsters"]) * 4 < int(dungeon["q_locations"]):
-			push_error("Level 10 dungeons should place monsters in at least 25 percent of all cells.")
+	for level: int in [10, 18, 30]:
+		var minimum_dimension := 25
+		var maximum_dimension := 5
+		var max_side := mini(25, level)
+		for _sample in range(200):
+			var dungeon := DungeonGenerator.create_dungeon(1, rng, level)
+			var columns := int(dungeon["number_of_columns"])
+			var rows := int(dungeon["number_of_rows"])
+			minimum_dimension = mini(minimum_dimension, mini(columns, rows))
+			maximum_dimension = maxi(maximum_dimension, maxi(columns, rows))
+			if columns > max_side or rows > max_side:
+				push_error("Level %d dungeons should not exceed %d x %d." % [level, max_side, max_side])
+				quit(1)
+				return
+			var expected_min := 5 + floori(float(level - 1) / 3.0)
+			var monsters := int(dungeon["total_monsters"])
+			if monsters > expected_min + 2 or (monsters < expected_min and monsters < columns * rows - 3):
+				push_error("Level %d dungeons should have %d-%d monsters, got %d." % [level, expected_min, expected_min + 2, monsters])
+				quit(1)
+				return
+		if minimum_dimension > 7 or maximum_dimension < max_side - 2:
+			push_error("Level %d dungeons should sample both small and near-maximum dimensions from 5 to %d." % [level, max_side])
 			quit(1)
 			return
-	if minimum_dimension > 7 or maximum_dimension < 23:
-		push_error("Level 10 dungeons should sample both small and near-maximum dimensions from the 5-25 range.")
-		quit(1)
 
 func _verify_monster_template_json() -> void:
 	if not FileAccess.file_exists(DungeonGenerator.MONSTER_TEMPLATES_PATH):
@@ -128,13 +139,13 @@ func _verify_monster_template_json() -> void:
 
 func _verify_monster_leveling_rules() -> void:
 	var low_range: Vector2i = DungeonGenerator.get_monster_level_range(4)
-	if low_range.x != 1 or low_range.y != 4:
-		push_error("Pre-level-10 monster range should stay within player level and no more than 5 lower.")
+	if low_range.x != 2 or low_range.y != 4 or DungeonGenerator.get_monster_level_range(1) != Vector2i(1, 1):
+		push_error("Pre-level-10 monster range should stay within player level and no more than 2 lower.")
 		quit(1)
 		return
 	var high_range: Vector2i = DungeonGenerator.get_monster_level_range(10)
-	if high_range.x != 5 or high_range.y != 15:
-		push_error("Level-10 monster range should allow player level plus or minus 5.")
+	if high_range.x != 7 or high_range.y != 11:
+		push_error("Level-10 monster range should span 3 levels below to 1 level above the player.")
 		quit(1)
 		return
 

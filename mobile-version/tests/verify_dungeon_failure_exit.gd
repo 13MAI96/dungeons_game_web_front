@@ -9,7 +9,8 @@ func _verify_energy_depletion_exits_dungeon() -> void:
 	var root := await _create_root()
 	root.dungeon = _create_monster_dungeon()
 	root.current_location = root.dungeon["locations"][0]
-	root.player_state["current_energy"] = 3
+	# One move plus exactly one attack leaves zero energy.
+	root.player_state["current_energy"] = 1 + int(preload("res://scripts/combat_rules.gd").get_player_ability("basic_attack")["energy_cost"])
 	root.player_state["current_experience"] = 7
 	root.player_state["dungeon_experience"] = 5
 	root.player_state["in_dungeon"] = true

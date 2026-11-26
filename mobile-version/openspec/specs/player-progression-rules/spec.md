@@ -26,7 +26,7 @@ The mobile game SHALL create a new player with the rule-defined base stats neede
 - **THEN** attack-specific damage is resolved from the selected attack definition
 
 ### Requirement: Experience thresholds scale by level
-The mobile game SHALL calculate required experience for each player level using the updated game progression formula.
+The mobile game SHALL calculate required experience for each player level using the game progression formula, growing by a bounded percentage after level ten.
 
 #### Scenario: Experience threshold through level ten
 - **WHEN** the player is level 1 through level 10
@@ -36,10 +36,11 @@ The mobile game SHALL calculate required experience for each player level using 
 
 #### Scenario: Experience threshold after level ten
 - **WHEN** the player level is greater than 10
-- **THEN** the required experience increases from the previous threshold by `10 percent + level / 10`
+- **THEN** the required experience increases from the previous threshold by `(10 + level / 10)` percent
+- **THEN** level 11 requires 1111 experience
 
 ### Requirement: Reputation thresholds scale by shop level
-The mobile game SHALL calculate reputation thresholds for shop progression using the game reputation formula.
+The mobile game SHALL calculate reputation thresholds for shop progression using the game reputation formula, growing by a bounded percentage after level ten.
 
 #### Scenario: Reputation threshold through level ten
 - **WHEN** the shop progression level is 1 through 10
@@ -49,7 +50,8 @@ The mobile game SHALL calculate reputation thresholds for shop progression using
 
 #### Scenario: Reputation threshold after level ten
 - **WHEN** the shop progression level is greater than 10
-- **THEN** the required reputation increases from the previous threshold by `25 percent + level / 10`
+- **THEN** the required reputation increases from the previous threshold by `(25 + level / 10)` percent
+- **THEN** level 11 requires 126 reputation
 
 ### Requirement: Dungeon exit restores player status
 The mobile game SHALL restore player life, energy, and mana when the player exits a dungeon, except that death keeps the life sequel penalty until level-up.

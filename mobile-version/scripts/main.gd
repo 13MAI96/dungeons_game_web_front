@@ -236,6 +236,8 @@ var monster_info_button: Button
 var monster_info_modal: Control
 var monster_info_text: Label
 var dungeon_exit_pending: bool = false
+## Optional seeded generator for dungeon layouts (tests and tools/playtest.gd); null = random.
+var dungeon_rng: RandomNumberGenerator = null
 var staged_allocation: Dictionary = {}
 var save_path: String = SaveGame.DEFAULT_SAVE_PATH
 var settings_path: String = SettingsStore.DEFAULT_SETTINGS_PATH
@@ -449,6 +451,7 @@ func _load_game() -> void:
 		_apply_player_stats()
 	_show_new_game_view()
 
+	CombatRules.refresh_player_attacks(player_state)
 func _persist_player_state() -> bool:
 	if bool(player_state.get("save_deleted", false)):
 		var deleted := SaveGame.delete_save(save_path)
@@ -633,7 +636,7 @@ func _update_settings_view() -> void:
 func start_dungeon_exploration(dungeon_type: int = 1) -> void:
 	dungeon_exit_pending = false
 	CombatRules.begin_dungeon_experience(player_state)
-	dungeon = DungeonGenerator.create_dungeon(dungeon_type, null, int(player_state.get("level", 1)))
+	dungeon = DungeonGenerator.create_dungeon(dungeon_type, dungeon_rng, int(player_state.get("level", 1)))
 	current_location = DungeonGenerator.get_entrance(dungeon)
 	previous_location = {}
 	active_monster_location = {}
@@ -2013,7 +2016,8 @@ func _show_monster_info() -> void:
 		var effect_text := tr("ENCOUNTER_MONSTER_NO_EFFECTS") if effect_ids.is_empty() else ", ".join(effect_ids)
 		lines.append(tr(MONSTER_ATTACK_LINE_KEY) % [
 			String(attack.get("name", "Attack")),
-			str(int(attack.get("damage", 0))),
+			# Show the damage the attack really deals, including the monster's Strength bonus.
+			str(CombatRules.get_attack_damage(attack, false, int(monster.get("current_strength", monster.get("strength", 0))))),
 			str(int(attack.get("mana_cost", attack.get("energy_cost", 0)))),
 			str(int(attack.get("unlock_level", 1))),
 			effect_text,

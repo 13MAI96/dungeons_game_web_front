@@ -40,7 +40,7 @@ func _verify_player_defaults_and_thresholds() -> void:
 		push_error("Reputation thresholds through level 10 should increase by 10.")
 		quit(1)
 		return
-	if CombatRules.get_experience_threshold(11) != 2200 or CombatRules.get_reputation_threshold(11) != 235:
+	if CombatRules.get_experience_threshold(11) != 1111 or CombatRules.get_reputation_threshold(11) != 126:
 		push_error("Post-level-10 thresholds should use percentage plus level/10 scaling.")
 		quit(1)
 		return
@@ -142,7 +142,7 @@ func _verify_leveling_rules() -> void:
 	class_player["pending_level_points"] = 0
 	class_player["level"] = 10
 	class_player["selected_class"] = "mage"
-	class_player["current_experience"] = 2200
+	class_player["current_experience"] = 1200
 	var class_conversion: Dictionary = CombatRules.convert_available_level_ups(class_player)
 	if int(class_conversion["converted_levels"]) != 2 or int(class_player["level"]) != 12 or int(class_player["reserved_progression_points"]) != 6:
 		push_error("Class progression should always convert every available level into 3 assignable points.")
@@ -171,13 +171,13 @@ func _verify_critical_hit() -> void:
 	var location := _monster_location(6, 99, 1, 2)
 	var result: Dictionary = CombatRules.attack_monster(player, location, 20.0, 20.0, 1.0, 1.0)
 
-	if not bool(result["critical"]) or int(location["content"]["current_life"]) != 2:
+	if not bool(result["critical"]) or int(location["content"]["current_life"]) != 6 - _basic_damage() * 2:
 		push_error("Critical hit should bypass armor and apply configured critical damage.")
 		quit(1)
 		return
 
-	if int(player["current_energy"]) != 23:
-		push_error("Default attack should consume 2 energy.")
+	if int(player["current_energy"]) != 25 - _basic_energy_cost():
+		push_error("Default attack should consume its configured energy cost.")
 		quit(1)
 		return
 
@@ -201,7 +201,7 @@ func _verify_normal_hit_and_counterattack() -> void:
 	var location := _monster_location(6, 4, 1, 2)
 	var result: Dictionary = CombatRules.attack_monster(player, location, 11.0, 1.0, 11.0, 1.0)
 
-	if not bool(result["hit"]) or int(location["content"]["current_life"]) != 4:
+	if not bool(result["hit"]) or int(location["content"]["current_life"]) != 6 - _basic_damage():
 		push_error("Normal hit should apply selected attack damage.")
 		quit(1)
 		return
@@ -310,10 +310,10 @@ func _verify_strength_and_resource_rules() -> void:
 		return
 
 	var player := CombatRules.create_default_player()
-	player["current_energy"] = 1
+	player["current_energy"] = _basic_energy_cost() - 1
 	var location := _monster_location(6, 1, 1, 1)
 	var result := CombatRules.attack_monster(player, location, 20.0, 1.0)
-	if not bool(result["insufficient_resources"]) or int(player["current_energy"]) != 1 or int(location["content"]["current_life"]) != 6:
+	if not bool(result["insufficient_resources"]) or int(player["current_energy"]) != _basic_energy_cost() - 1 or int(location["content"]["current_life"]) != 6:
 		push_error("An attack should be rejected without enough energy and should not consume partial resources.")
 		quit(1)
 		return
@@ -450,3 +450,9 @@ func _location(location_type: String) -> Dictionary:
 		"visited": false,
 		"content": {},
 	}
+
+func _basic_damage() -> int:
+	return int(CombatRules.get_player_ability("basic_attack").get("damage", 0))
+
+func _basic_energy_cost() -> int:
+	return int(CombatRules.get_player_ability("basic_attack").get("energy_cost", 0))

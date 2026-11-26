@@ -5,10 +5,10 @@
     "unlock_level": 1,
     "type": "attack",
     "active": true,
-    "damage": 2,
+    "damage": 3,
     "critical_threshold": 20,
     "critical_damage_percent": 100,
-    "energy_cost": 2,
+    "energy_cost": 1,
     "mana_cost": 0,
     "class_requirements": [],
     "simple_skill_group": "level_1_simple",
@@ -27,7 +27,9 @@
     "mana_cost": 5,
     "class_requirements": [],
     "simple_skill_group": "",
-    "effects": ["rest"]
+    "effects": [
+      "rest"
+    ]
   },
   {
     "id": "heavy_attack",
@@ -55,7 +57,9 @@
     "critical_damage_percent": 10,
     "energy_cost": 1,
     "mana_cost": 3,
-    "class_requirements": ["mage"],
+    "class_requirements": [
+      "mage"
+    ],
     "simple_skill_group": "level_10_simple",
     "effects": []
   },
@@ -70,9 +74,13 @@
     "critical_damage_percent": 0,
     "energy_cost": 0,
     "mana_cost": 0,
-    "class_requirements": ["mage"],
+    "class_requirements": [
+      "mage"
+    ],
     "simple_skill_group": "level_10_simple",
-    "effects": ["mana_recovery"]
+    "effects": [
+      "mana_recovery"
+    ]
   },
   {
     "id": "shield_wall",
@@ -85,9 +93,13 @@
     "critical_damage_percent": 0,
     "energy_cost": 0,
     "mana_cost": 0,
-    "class_requirements": ["knight"],
+    "class_requirements": [
+      "knight"
+    ],
     "simple_skill_group": "level_10_simple",
-    "effects": ["armor_boost"]
+    "effects": [
+      "armor_boost"
+    ]
   },
   {
     "id": "quick_hands",
@@ -100,8 +112,12 @@
     "critical_damage_percent": 0,
     "energy_cost": 0,
     "mana_cost": 0,
-    "class_requirements": ["thief"],
+    "class_requirements": [
+      "thief"
+    ],
     "simple_skill_group": "level_10_simple",
-    "effects": ["energy_recovery"]
+    "effects": [
+      "energy_recovery"
+    ]
   }
 ]

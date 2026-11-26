@@ -183,7 +183,7 @@ The dungeon exploration view SHALL notify the player before returning to the new
 - **THEN** the app does not show an energy depleted defeat notification
 
 ### Requirement: Dungeon map follows level-scaled sparse generation rules
-The dungeon exploration view SHALL generate a traversable map with bounded objectives and empty traversal locations based on player level.
+The dungeon exploration view SHALL generate a traversable map with bounded objectives and empty traversal locations based on player level, keeping the monster count completable at every level.
 
 #### Scenario: Early dungeon is generated
 - **WHEN** a level 1 player starts exploration
@@ -198,10 +198,9 @@ The dungeon exploration view SHALL generate a traversable map with bounded objec
 - **AND** receives no completion reputation
 
 #### Scenario: Dungeon scale increases
-- **WHEN** the player reaches level 10
-- **THEN** each map dimension is selected randomly from 5 through 25
-- **AND** between 25 and 35 percent of all cells contain monsters
-- **AND** monster density is never lower than 25 percent
+- **WHEN** the player is level 10 or higher
+- **THEN** each map dimension is selected randomly from 5 through the player level, never above 25
+- **AND** the dungeon contains between `5 + floor((level - 1) / 3)` and two more monsters, limited by the free cells
 - **AND** map dimensions do not exceed 25 columns by 25 rows
 
 ### Requirement: Dungeon experience has an active-run lifecycle

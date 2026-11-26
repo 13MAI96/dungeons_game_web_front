@@ -62,7 +62,7 @@
   {
     "name": "Giant Spider",
     "life": 6,
-    "armor": 4,
+    "armor": 3,
     "mana": 10,
     "strength": 4,
     "speed": 5,
@@ -121,8 +121,8 @@
   },
   {
     "name": "Golem",
-    "life": 10,
-    "armor": 8,
+    "life": 8,
+    "armor": 5,
     "mana": 10,
     "strength": 4,
     "speed": 1,
@@ -152,7 +152,7 @@
   {
     "name": "Wasp",
     "life": 6,
-    "armor": 5,
+    "armor": 3,
     "mana": 10,
     "strength": 5,
     "speed": 12,
@@ -181,8 +181,8 @@
   },
   {
     "name": "Wolf",
-    "life": 8,
-    "armor": 8,
+    "life": 7,
+    "armor": 4,
     "mana": 10,
     "strength": 4,
     "speed": 9,
@@ -211,8 +211,8 @@
   },
   {
     "name": "Giant Scorpion",
-    "life": 8,
-    "armor": 9,
+    "life": 7,
+    "armor": 5,
     "mana": 10,
     "strength": 2,
     "speed": 2,
@@ -242,7 +242,7 @@
   {
     "name": "Kobold",
     "life": 7,
-    "armor": 8,
+    "armor": 3,
     "mana": 10,
     "strength": 1,
     "speed": 8,
@@ -272,7 +272,7 @@
   {
     "name": "Goblin",
     "life": 5,
-    "armor": 5,
+    "armor": 2,
     "mana": 10,
     "strength": 1,
     "speed": 6,

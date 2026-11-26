@@ -23,19 +23,21 @@ OpenSpec change `release-gameplay-fixes` (archived). Verified by `tests/verify_r
 | 1.8 | Mage armor growth `0.5` truncates to 0 | Integer growth in data + test that every class growth is a positive integer |
 | 1.9 | Start Game overwrites an unreadable save without asking | Confirm whenever a save file exists, readable or not |
 
-## Step 2 — Balance (next)
+## Step 2 — Balance ✅ done (2026-11-14)
 
-After step 1 (sanctuary no longer heals without limit) the same bot policy gave 80 retreats, 52 energy-outs,
-17 deaths, 1 game over and stayed at level 1 — the game got harder, so balance is now the top priority.
+OpenSpec change `progression-balance`. Measured with `tools/playtest.gd` (6 games × 80 runs, cautious bot):
 
-Measured with the play-through bot (cautious policy, 150 runs): **0 dungeons completed**, 87 retreats,
-57 energy-outs, 4 deaths; level 3 after 150 runs; reputation 0. Level 10+ dungeons average 68 monsters
-(up to 213) and require killing all of them.
+| Metric | Before | After |
+|---|---|---|
+| Dungeons completed | 0% | 56% |
+| Ran out of energy | 66% | 6% |
+| Died | 5% | 4.8% |
+| Runs to level 2 / 10 / 20 | ~140 / never / never | 5 / 25 / 54 |
+| Level 10+ dungeons completed | 0% | 51% |
 
-- Tune energy cost per attack / starting energy, player damage (strength currently adds no damage), monster life.
-- Pay something on energy-out (currently all run XP is lost) or make the rule explicit in the UI.
-- Cap monster count or use a completion threshold for large dungeons.
-- Add the bot to `tools/` with assertions (e.g. ≥ X % of level-1 runs completable).
+Main changes: basic attack 3 damage / 1 energy; Strength adds damage; easier level-1 monsters; monster XP × 4;
+bounded monster count at every level; post-10 thresholds grow ~11% per level instead of 120%; narrower monster
+level ranges. Guarded by `tests/verify_balance.gd`. Known: levels 5–9 are easy (~87% completed).
 
 ## Step 3 — Scope decisions (owner)
 

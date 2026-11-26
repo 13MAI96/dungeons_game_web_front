@@ -9,6 +9,16 @@ const LOCATION_ENTRANCE := "ENTRANCE"
 const LOCATION_EMPTY := "EMPTY"
 const MONSTER_TEMPLATES_PATH := "res://data/monsters.json"
 const EFFECT_TEMPLATES_PATH := "res://data/effects.json"
+## Experience a monster grants: template value x multiplier + monster level x per-level bonus.
+const MAX_DIMENSION := 25
+const MONSTER_LEVELS_BELOW_PLAYER := 2
+const MONSTER_LEVEL_SPREAD_HIGH := 3
+const MONSTER_LEVELS_ABOVE_PLAYER_HIGH := 1
+## Random stat points a monster receives per level above 1, rounded down over all levels
+## (players receive 3 per level). A var so tools/playtest.gd can try alternatives.
+static var monster_points_per_level: float = 2.0
+const EXPERIENCE_TEMPLATE_MULTIPLIER := 4
+const EXPERIENCE_PER_MONSTER_LEVEL := 0
 const STAT_GROWTH := {
 	"life": 5,
 	"mana": 4,
@@ -28,9 +38,10 @@ static func create_dungeon(_dungeon_type: int = 1, rng: RandomNumberGenerator = 
 
 	var normalized_level := maxi(1, player_level)
 	var min_columns := 5
-	var max_columns := 5 if normalized_level < 10 else 25
+	# From level 10 the map grows with the player (level x level), up to 25 x 25.
+	var max_columns := 5 if normalized_level < 10 else mini(MAX_DIMENSION, normalized_level)
 	var min_rows := 5
-	var max_rows := 7 if normalized_level < 10 else 25
+	var max_rows := 7 if normalized_level < 10 else mini(MAX_DIMENSION, normalized_level)
 	var dungeon := {
 		"_id": null,
 		"number_of_columns": random_source.randi_range(min_columns, max_columns),
@@ -105,11 +116,9 @@ static func create_dungeon(_dungeon_type: int = 1, rng: RandomNumberGenerator = 
 	return dungeon
 
 static func get_monster_count_target(player_level: int, available_cells: int, rng: RandomNumberGenerator = null) -> int:
+	# One formula for every level, so dungeons stay completable: level 1 has 5-7 monsters,
+	# level 10 has 8-10, level 25 has 13-15. Larger maps add exploration, not a wall of monsters.
 	var normalized_level := maxi(1, player_level)
-	if normalized_level >= 10:
-		var total_cells := available_cells + 1
-		var density_percent := rng.randi_range(25, 35) if rng != null else 30
-		return mini(available_cells, ceili(float(total_cells * density_percent) / 100.0))
 	var base_target := 5 + floori(float(normalized_level - 1) / 3.0)
 	var difficulty_variation := rng.randi_range(0, 2) if rng != null else 1
 	return mini(available_cells, base_target + difficulty_variation)
@@ -224,9 +233,10 @@ static func _create_quest_option(rng: RandomNumberGenerator) -> Dictionary:
 
 static func get_monster_level_range(player_level: int) -> Vector2i:
 	var normalized_player_level: int = maxi(1, player_level)
+	# Narrow ranges keep encounters close to the player's strength (playtest-tuned).
 	if normalized_player_level < 10:
-		return Vector2i(maxi(1, normalized_player_level - 5), normalized_player_level)
-	return Vector2i(maxi(1, normalized_player_level - 5), normalized_player_level + 5)
+		return Vector2i(maxi(1, normalized_player_level - MONSTER_LEVELS_BELOW_PLAYER), normalized_player_level)
+	return Vector2i(maxi(1, normalized_player_level - MONSTER_LEVEL_SPREAD_HIGH), normalized_player_level + MONSTER_LEVELS_ABOVE_PLAYER_HIGH)
 
 static func create_monster_from_template_for_level(template: Dictionary, rng: RandomNumberGenerator, player_level: int) -> Dictionary:
 	return _monster_from_template(template, rng, player_level)
@@ -250,7 +260,7 @@ static func _monster_from_template(template: Dictionary, rng: RandomNumberGenera
 		"current_strength": int(template.get("strength", template.get("damage", 1))),
 		"speed": int(template.get("speed", 3)),
 		"current_speed": int(template.get("speed", 3)),
-		"experience": int(template["experience"]),
+		"experience": int(template["experience"]) * EXPERIENCE_TEMPLATE_MULTIPLIER + monster_level * EXPERIENCE_PER_MONSTER_LEVEL,
 		"image": String(template["image"]),
 		"attacks": _create_monster_attacks(template, monster_level),
 	}
@@ -292,7 +302,7 @@ static func _normalize_monster_attack(attack: Dictionary) -> Dictionary:
 	}
 
 static func _apply_monster_level_scaling(monster: Dictionary, rng: RandomNumberGenerator) -> void:
-	var points_to_assign: int = maxi(0, int(monster.get("level", 1)) - 1) * 2
+	var points_to_assign: int = floori(maxi(0, int(monster.get("level", 1)) - 1) * monster_points_per_level)
 	var stat_keys: Array[String] = ["life", "mana", "armor", "speed", "strength"]
 	for _index: int in range(points_to_assign):
 		var stat_key: String = stat_keys[rng.randi_range(0, stat_keys.size() - 1)]

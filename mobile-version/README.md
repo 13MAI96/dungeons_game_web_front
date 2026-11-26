@@ -23,7 +23,7 @@ Behaviour is specified with **OpenSpec** before it is implemented.
 | `assets/` | SVG art: `characters/`, `monsters/`, `icons/`, `feedback/`. |
 | `localization/` | Gettext `.po` translations. |
 | `tests/` | Headless verification scripts (`verify_*.gd`). |
-| `tools/` | `run_tests.sh`, `run_android.sh`, `build_release.sh` and `analyze_balance.gd` (balance report). |
+| `tools/` | `run_tests.sh`, `run_android.sh`, `build_release.sh`, `playtest.gd` (balance bot) and `analyze_balance.gd` (balance report). |
 | `openspec/` | Specs (`specs/`), active changes (`changes/`) and archived changes. |
 | `export_presets.cfg` | Android, iOS and Web export presets. |
 
@@ -51,6 +51,7 @@ Behaviour is specified with **OpenSpec** before it is implemented.
 tools/run_tests.sh                                                # all tests
 godot --headless --path . -s res://tests/verify_combat_rules.gd   # single test
 godot --headless --path . -s res://tools/analyze_balance.gd       # balance report
+godot --headless --path . -s res://tools/playtest.gd -- runs=80 games=6   # automated play-through metrics
 tools/run_android.sh --logs                                       # build, install, launch, stream logs
 ```
 

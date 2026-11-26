@@ -1,7 +1,7 @@
 class_name CombatRules
 
 const ENERGY_MOVE_COST := 1
-const ENERGY_ATTACK_COST := 2
+const ENERGY_ATTACK_COST := 1
 const ENERGY_QUEST_COST := 1
 const ENERGY_RETREAT_COST := 1
 const REST_MANA_COST := 5
@@ -16,6 +16,8 @@ const DODGE_BASE_DIFFICULTY := 20
 const MIN_REQUIRED_DODGE_ROLL := 14
 const MAX_REQUIRED_DODGE_ROLL := 20
 const ATTRIBUTE_SCALE_DIVISOR := 2.0
+const STRENGTH_DAMAGE_BASELINE := 3
+const THRESHOLD_CAP := 1 << 52
 const PLAYER_ABILITIES_PATH := "res://data/player_abilities.json"
 const PLAYER_CLASSES_PATH := "res://data/player_classes.json"
 const STAT_GROWTH := {
@@ -32,7 +34,7 @@ const DEFAULT_PLAYER_ATTACK := {
 	"unlock_level": 1,
 	"type": "attack",
 	"active": true,
-	"damage": 2,
+	"damage": 3,
 	"critical_threshold": 20,
 	"critical_damage_percent": 100,
 	"mana_cost": 0,
@@ -42,7 +44,7 @@ const DEFAULT_PLAYER_ATTACK := {
 	"effects": [],
 }
 const FALLBACK_PLAYER_ABILITIES := [
-	{"id": "basic_attack", "name": "Strike", "unlock_level": 1, "type": "attack", "active": true, "damage": 2, "critical_threshold": 20, "critical_damage_percent": 100, "energy_cost": 2, "mana_cost": 0, "class_requirements": [], "simple_skill_group": "level_1_simple", "effects": []},
+	{"id": "basic_attack", "name": "Strike", "unlock_level": 1, "type": "attack", "active": true, "damage": 3, "critical_threshold": 20, "critical_damage_percent": 100, "energy_cost": 1, "mana_cost": 0, "class_requirements": [], "simple_skill_group": "level_1_simple", "effects": []},
 	{"id": "guarded_rest", "name": "Guarded Rest", "unlock_level": 1, "type": "self_effect", "active": true, "damage": 0, "critical_threshold": 20, "critical_damage_percent": 0, "energy_cost": 0, "mana_cost": REST_MANA_COST, "class_requirements": [], "simple_skill_group": "", "effects": ["rest"]},
 	{"id": "arcane_spark", "name": "Arcane Spark", "unlock_level": 10, "type": "attack", "active": true, "damage": 4, "critical_threshold": 19, "critical_damage_percent": 10, "energy_cost": 1, "mana_cost": 3, "class_requirements": ["mage"], "simple_skill_group": "level_10_simple", "effects": []},
 	{"id": "mana_shell", "name": "Mana Shell", "unlock_level": 10, "type": "passive", "active": false, "damage": 0, "critical_threshold": 20, "critical_damage_percent": 0, "energy_cost": 0, "mana_cost": 0, "class_requirements": ["mage"], "simple_skill_group": "level_10_simple", "effects": ["mana_recovery"]},
@@ -95,16 +97,19 @@ static func get_experience_threshold(level: int) -> int:
 		return maxi(1, level) * 100
 	var threshold := 1000.0
 	for current_level in range(11, level + 1):
-		threshold += threshold * (0.10 + float(current_level) / 10.0)
-	return roundi(threshold)
+		# Grows by (10 + level / 10) percent per level: level 11 needs 1111, level 20 about 2900.
+		threshold += threshold * (10.0 + float(current_level) / 10.0) / 100.0
+	# Capped far beyond any reachable level so the float never overflows into a negative int.
+	return mini(roundi(threshold), THRESHOLD_CAP)
 
 static func get_reputation_threshold(level: int) -> int:
 	if level <= 10:
 		return maxi(1, level) * 10
 	var threshold := 100.0
 	for current_level in range(11, level + 1):
-		threshold += threshold * (0.25 + float(current_level) / 10.0)
-	return roundi(threshold)
+		threshold += threshold * (25.0 + float(current_level) / 10.0) / 100.0
+	# Capped far beyond any reachable level so the float never overflows into a negative int.
+	return mini(roundi(threshold), THRESHOLD_CAP)
 
 static func refresh_level_up_state(player: Dictionary) -> Dictionary:
 	var current_level: int = int(player.get("level", 1))
@@ -223,6 +228,21 @@ static func get_player_ability(ability_id: String) -> Dictionary:
 		if String(ability.get("id", "")) == ability_id:
 			return ability.duplicate(true)
 	return {}
+
+## Replaces each saved player attack with the current definition from the ability data (matched
+## by id), so balance changes to attacks reach existing saves. Unknown ids are kept as saved.
+static func refresh_player_attacks(player: Dictionary) -> void:
+	var refreshed: Array = []
+	for attack_variant: Variant in player.get("attacks", []):
+		if not attack_variant is Dictionary:
+			continue
+		var attack := attack_variant as Dictionary
+		var current := get_player_ability(String(attack.get("id", "")))
+		refreshed.append(current if not current.is_empty() else attack)
+	if refreshed.is_empty():
+		var basic := get_player_ability("basic_attack")
+		refreshed.append(basic if not basic.is_empty() else DEFAULT_PLAYER_ATTACK.duplicate(true))
+	player["attacks"] = refreshed
 
 static func get_player_class(class_id: String) -> Dictionary:
 	for player_class: Dictionary in load_player_classes():
@@ -431,7 +451,7 @@ static func resolve_attack(attacker: Dictionary, defender: Dictionary, attack: D
 		"miss": false,
 		"critical": critical,
 		"dodged": false,
-		"damage": get_attack_damage(attack, critical),
+		"damage": get_attack_damage(attack, critical, _get_strength(attacker)),
 	}
 	if critical:
 		result["hit"] = true
@@ -454,8 +474,12 @@ static func resolve_attack(attacker: Dictionary, defender: Dictionary, attack: D
 	result["hit"] = true
 	return result
 
-static func get_attack_damage(attack: Dictionary, critical: bool = false) -> int:
-	var base_damage := int(attack.get("damage", 0))
+## Strength above the starting value adds damage: +1 for every 2 points above 3.
+static func get_strength_damage_bonus(strength: int) -> int:
+	return maxi(0, floori(float(strength - STRENGTH_DAMAGE_BASELINE) / 2.0))
+
+static func get_attack_damage(attack: Dictionary, critical: bool = false, strength: int = STRENGTH_DAMAGE_BASELINE) -> int:
+	var base_damage := int(attack.get("damage", 0)) + get_strength_damage_bonus(strength)
 	if not critical:
 		return base_damage
 	var critical_damage_percent := int(attack.get("critical_damage_percent", 100))

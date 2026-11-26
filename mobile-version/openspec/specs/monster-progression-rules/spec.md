@@ -47,18 +47,18 @@ The monster encounter view SHALL show monster combat stats as icon stat bars.
 - **THEN** armor, speed, and strength bars show their current values
 
 ### Requirement: Monster level range follows player level
-The mobile game SHALL generate monster levels from the current player level using rule-defined ranges.
+The mobile game SHALL generate monster levels from the current player level using rule-defined ranges that keep encounters close to the player's strength.
 
 #### Scenario: Monster level before player level ten
 - **WHEN** a dungeon generates a monster and the player level is less than 10
 - **THEN** the monster level is always greater than 0
 - **THEN** the monster level is not greater than the player level
-- **THEN** the monster level is not more than 5 levels below the player level
+- **THEN** the monster level is not more than 2 levels below the player level
 
 #### Scenario: Monster level from player level ten onward
 - **WHEN** a dungeon generates a monster and the player level is 10 or greater
-- **THEN** the monster level can be up to 5 levels below the player level
-- **THEN** the monster level can be up to 5 levels above the player level
+- **THEN** the monster level can be up to 3 levels below the player level
+- **THEN** the monster level can be up to 1 level above the player level
 - **THEN** the monster level is always greater than 0
 
 ### Requirement: Monster stats scale by random level points
@@ -91,3 +91,10 @@ The mobile game SHALL include only monster attacks whose unlock level is availab
 #### Scenario: Missing attack unlock level defaults to level one
 - **WHEN** a monster attack definition omits unlock level
 - **THEN** the generator treats that attack as unlock level 1
+
+### Requirement: Monster experience reward is data driven
+The mobile game SHALL compute the experience a monster grants from its template experience value with a fixed multiplier, so rewards keep pace with the per-level experience thresholds.
+
+#### Scenario: Monster is generated
+- **WHEN** a monster is created from a template
+- **THEN** its experience reward is the template experience multiplied by 4

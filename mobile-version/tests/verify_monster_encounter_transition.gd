@@ -63,7 +63,8 @@ func _init() -> void:
 
 	var monster_life_bar := root.monster_stat_bars.get_node("LifeStatBar/Bar") as ProgressBar
 	var monster_life_value := monster_life_bar.get_node("Value") as Label
-	if monster_life_value.text != "2/4" or int(monster_life_bar.value) != 2 or int(monster_life_bar.max_value) != 4:
+	var expected_life := 4 - int(preload("res://scripts/combat_rules.gd").get_player_ability("basic_attack")["damage"])
+	if monster_life_value.text != "%d/4" % expected_life or int(monster_life_bar.value) != expected_life or int(monster_life_bar.max_value) != 4:
 		push_error("Damaged monster life bar should show remaining life over original total.")
 		quit(1)
 		return
