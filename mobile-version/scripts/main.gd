@@ -6,6 +6,8 @@ const UiTheme := preload("res://scripts/ui_theme.gd")
 const AdSlotConfig := preload("res://scripts/ad_slot_config.gd")
 const LocalizedNames := preload("res://scripts/localized_names.gd")
 const StatHelp := preload("res://scripts/stat_help.gd")
+## Canonical stat order shared by every stat list on screen (DNG-19).
+const StatOrder := preload("res://scripts/stat_order.gd")
 const Tutorial := preload("res://scripts/tutorial.gd")
 ## Fight feedback (DNG-13): plain-language log entries, the log widget and floating numbers.
 const CombatFeedback := preload("res://scripts/combat_feedback.gd")
@@ -92,6 +94,18 @@ const RESULT_CONTINUE_KEY := "RESULT_CONTINUE"
 const RESULT_COMPLETED_TITLE_KEY := "RESULT_COMPLETED_TITLE"
 const RESULT_RETREATED_TITLE_KEY := "RESULT_RETREATED_TITLE"
 const RESULT_RETREATED_MESSAGE_KEY := "RESULT_RETREATED_MESSAGE"
+## Retreat result line with the dungeon experience banked by retreating ("You kept +47 experience").
+const RESULT_RETREATED_KEPT_KEY := "RESULT_RETREATED_KEPT"
+## Retreat result line when the run earned no experience, so the summary never says "+0".
+const RESULT_RETREATED_NOTHING_KEPT_KEY := "RESULT_RETREATED_NOTHING_KEPT"
+## Retreat result line with the total experience and what is missing for the next level.
+const RESULT_RETREATED_PROGRESS_KEY := "RESULT_RETREATED_PROGRESS"
+## Retreat result line when the total experience already reaches the next level.
+const RESULT_RETREATED_LEVEL_READY_KEY := "RESULT_RETREATED_LEVEL_READY"
+## Reason shown under the Retreat button while it is disabled (the player is not on the entrance).
+const RETREAT_BLOCKED_KEY := "EXPLORE_RETREAT_ENTRANCE_ONLY"
+## Fixed height of the Retreat reason caption: one CaptionLabel line, reserved even when empty.
+const RETREAT_HINT_HEIGHT := 18
 const RESULT_ENDED_TITLE_KEY := "RESULT_ENDED_TITLE"
 const RESULT_DEFEAT_TITLE_KEY := "RESULT_DEFEAT_TITLE"
 const RESULT_GAME_OVER_TITLE_KEY := "RESULT_GAME_OVER_TITLE"
@@ -129,8 +143,10 @@ const LEVEL_HINT_LEVEL_POINTS_KEY := "LEVEL_HINT_LEVEL_POINTS"
 const LEVEL_HINT_CLASS_UNLOCK_KEY := "LEVEL_HINT_CLASS_UNLOCK"
 const HUB_HINT_START_POINTS_KEY := "HUB_HINT_START_POINTS"
 const HUB_HINT_CLASS_READY_KEY := "HUB_HINT_CLASS_READY"
-## Stats that take level-up points, in the order of the allocation rows and the stat guide.
-const ALLOCATABLE_STATS := ["life", "energy", "mana", "armor", "speed", "strength"]
+## Stats that take level-up points (allocation rows and stat guide). Like every stat list
+## below, it says which stats a screen shows; the display order always comes from
+## StatOrder.CANONICAL through StatOrder.select() (DNG-19).
+const ALLOCATABLE_STATS := ["life", "energy", "mana", "armor", "strength", "speed"]
 const DIRECTION_ICON_PATHS := {
 	"left": "res://assets/icons/arrow_left.svg",
 	"right": "res://assets/icons/arrow_right.svg",
@@ -142,6 +158,11 @@ const MAP_CELL_MAX := 64
 const MAP_FRAME_PADDING := 8
 const LOCATION_COLOR_UNSEEN := Color(0.043, 0.031, 0.024, 1.0)
 const LOCATION_COLOR_ENTRANCE := Color(0.2, 0.7, 0.38, 1.0)
+## Light green of the ring inside the entrance cell and of the arrow pointing to an off-map entrance.
+const ENTRANCE_HIGHLIGHT_COLOR := Color("a6f7bd")
+## Icon of the arrow drawn at the map edge toward an entrance outside the visible window. It points
+## right and is rotated toward the entrance.
+const ENTRANCE_ARROW_ICON := "res://assets/icons/arrow_right.svg"
 const LOCATION_COLOR_VISITED := Color(0.38, 0.38, 0.38, 1.0)
 const LOCATION_COLOR_MONSTER := Color(0.65, 0.16, 0.16, 1.0)
 const LOCATION_COLOR_BLOCK := Color(0.17, 0.155, 0.14, 1.0)
@@ -166,6 +187,17 @@ const STAT_ICON_PATHS := {
 	"experience": "res://assets/icons/experience.svg",
 	"dungeon_experience": "res://assets/icons/dungeon_experience.svg",
 }
+## Height of the stat bar track. The number is drawn beside the track (DNG-18), so the track
+## can be slimmer than the 24 px row, which keeps the whole row as the tap target.
+const STAT_BAR_TRACK_HEIGHT := 14
+## Minimum width of the right-aligned "current/max" column of a stat row: fits "999/999" at
+## the stat value font size, so the values of stacked rows line up (DNG-18).
+const STAT_VALUE_MIN_WIDTH := 56
+## Minimum width of the hub character portrait: narrower than the other character images so
+## the hub stat rows, with their number column, fit large phones (DNG-18).
+const HUB_PORTRAIT_MIN_WIDTH := 112
+## Meta key holding the stat key on stat rows and Level Up guide entries (read by the tests).
+const STAT_KEY_META := &"stat_key"
 const STAT_COLORS := {
 	"life": "#eb8b8b",
 	"energy": "#e7e757",
@@ -194,55 +226,20 @@ const MONSTER_ASSET_PATHS := {
 	"Kobold": "res://assets/monsters/kobold.svg",
 	"Goblin": "res://assets/monsters/goblin.svg",
 }
-const PLAYER_STATS := [
-	{
-		"name": "Life",
-		"key": "life",
-	},
-	{
-		"name": "Energy",
-		"key": "energy",
-	},
-	{
-		"name": "Mana",
-		"key": "mana",
-	},
-	{
-		"name": "Armor",
-		"key": "armor",
-	},
-	{
-		"name": "Strength",
-		"key": "strength",
-	},
-	{
-		"name": "Speed",
-		"key": "speed",
-	},
-	{
-		"name": "Reputation",
-		"key": "reputation",
-	},
-	{
-		"name": "Experience",
-		"key": "experience",
-		"label_key": "STAT_EXPERIENCE",
-	},
-]
-const EXPLORATION_STATS := [
-	{"name": "Life", "key": "life"},
-	{"name": "Energy", "key": "energy"},
-	{"name": "Mana", "key": "mana"},
-	{"name": "Experience", "key": "experience", "label_key": "STAT_EXPERIENCE"},
-	{"name": "DungeonExperience", "key": "dungeon_experience", "label_key": "STAT_DUNGEON_EXPERIENCE"},
-]
-const MONSTER_STATS := [
-	{"name": "Life", "key": "life"},
-	{"name": "Mana", "key": "mana"},
-	{"name": "Armor", "key": "armor"},
-	{"name": "Speed", "key": "speed"},
-	{"name": "Strength", "key": "strength"},
-]
+## Player stats on the hub; the fight panel shows the same ones plus dungeon XP.
+const PLAYER_STATS := ["life", "energy", "mana", "armor", "strength", "speed", "reputation", "experience"]
+## Player stats on the fight panel: the hub stats plus the XP earned in this run.
+const ENCOUNTER_PLAYER_STATS := PLAYER_STATS + ["dungeon_experience"]
+## Player stats on the exploration HUD: the resources spent while exploring and both XP counters.
+const EXPLORATION_STATS := ["life", "energy", "mana", "experience", "dungeon_experience"]
+## Monster stats on the fight panel.
+const MONSTER_STATS := ["life", "mana", "armor", "strength", "speed"]
+## Stats whose bar carries a text label next to the icon (both XP counters share one icon
+## style, so the label tells them apart). Maps stat key to its translation key.
+const STAT_BAR_LABEL_KEYS := {
+	"experience": "STAT_EXPERIENCE",
+	"dungeon_experience": "STAT_DUNGEON_EXPERIENCE",
+}
 
 var dungeon: Dictionary = {}
 var current_location: Dictionary = {}
@@ -297,6 +294,8 @@ var hub_level_label: Label
 ## Hub caption under the level: starting points, class unlock level or class ready (DNG-15).
 var hub_progression_hint_label: Label
 var map_player_marker: Panel
+## Caption under the Rest/Retreat row that says why Retreat is disabled (DNG-17).
+var retreat_hint_label: Label
 ## True while a game (new or loaded) is in progress; controls saving when the app is backgrounded.
 var session_active: bool = false
 var save_failure_reported: bool = false
@@ -465,6 +464,7 @@ func _apply_menu_text() -> void:
 	exit_button.text = tr(EXIT_KEY)
 	rest_button.text = tr(REST_KEY) % str(CombatRules.REST_MANA_COST)
 	retreat_button.text = tr(RETREAT_KEY)
+	_update_retreat_hint()
 	collect_treasure_button.text = tr(COLLECT_TREASURE_KEY)
 	fight_button.text = tr(FIGHT_KEY)
 	flee_button.text = tr(FLEE_KEY)
@@ -997,6 +997,7 @@ func _render_map() -> void:
 	map_grid.columns = int(window["columns"])
 	var cell_size := _get_map_cell_size()
 	map_player_marker = null
+	var entrance_arrow := _get_entrance_arrow(window)
 
 	for row in range(int(window["start_row"]), int(window["end_row"]) + 1):
 		for column in range(int(window["start_column"]), int(window["end_column"]) + 1):
@@ -1024,11 +1025,79 @@ func _render_map() -> void:
 				icon.offset_bottom = -inset
 				icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 				cell.add_child(icon)
+			if _is_visible_entrance(location):
+				cell.add_child(_create_entrance_marker(cell_size))
+			if not entrance_arrow.is_empty() and int(entrance_arrow["column"]) == column and int(entrance_arrow["row"]) == row:
+				cell.add_child(_create_entrance_arrow(cell_size, float(entrance_arrow["angle"])))
 			if _is_current_location(location):
 				map_player_marker = _create_player_marker()
 				cell.add_child(map_player_marker)
 			map_grid.add_child(cell)
 			map_cells.append(cell)
+
+## True for the entrance cell once the player has seen it (always, since every run starts there).
+func _is_visible_entrance(location: Dictionary) -> bool:
+	return not location.is_empty() and location.get("type") == DungeonGenerator.LOCATION_ENTRANCE and bool(location.get("visible", false))
+
+## A light-green ring inset inside the entrance cell (DNG-17), so the way out stands out from the
+## other tiles. It is inset so the gold player ring, drawn at the cell edge, stays visible on top.
+func _create_entrance_marker(cell_size: int) -> Panel:
+	var marker := Panel.new()
+	marker.name = "EntranceMarker"
+	marker.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	marker.set_anchors_preset(Control.PRESET_FULL_RECT)
+	var inset := maxi(5, int(cell_size * 0.14))
+	marker.offset_left = inset
+	marker.offset_top = inset
+	marker.offset_right = -inset
+	marker.offset_bottom = -inset
+	var ring := StyleBoxFlat.new()
+	ring.bg_color = Color.TRANSPARENT
+	ring.border_color = ENTRANCE_HIGHLIGHT_COLOR
+	ring.set_border_width_all(3)
+	ring.set_corner_radius_all(4)
+	marker.add_theme_stylebox_override("panel", ring)
+	return marker
+
+## Where to point at the entrance when it is outside the visible map window (DNG-17).
+## Returns {} when the entrance is inside the window (or the map has none). Otherwise returns the
+## window cell nearest to the entrance ("column", "row": the entrance clamped into the window) and
+## "angle", the rotation in radians from that cell toward the entrance (0 = right, y grows down).
+func _get_entrance_arrow(window: Dictionary) -> Dictionary:
+	if dungeon.is_empty():
+		return {}
+	var entrance := DungeonGenerator.get_entrance(dungeon)
+	if entrance.is_empty():
+		return {}
+	var entrance_column := int(entrance["column"])
+	var entrance_row := int(entrance["row"])
+	var column := clampi(entrance_column, int(window["start_column"]), int(window["end_column"]))
+	var row := clampi(entrance_row, int(window["start_row"]), int(window["end_row"]))
+	if column == entrance_column and row == entrance_row:
+		return {}
+	return {
+		"column": column,
+		"row": row,
+		"angle": atan2(float(entrance_row - row), float(entrance_column - column)),
+	}
+
+## A light-green arrow over an edge cell of the map window, rotated by `angle` so it points to the
+## entrance hidden outside the window.
+func _create_entrance_arrow(cell_size: int, angle: float) -> TextureRect:
+	var arrow := TextureRect.new()
+	arrow.name = "EntranceArrow"
+	arrow.texture = load(ENTRANCE_ARROW_ICON)
+	arrow.modulate = ENTRANCE_HIGHLIGHT_COLOR
+	arrow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	arrow.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	arrow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	# Explicit size (no anchors) so the rotation pivot is known before the first layout.
+	var inset := maxi(3, int(cell_size * 0.18))
+	arrow.position = Vector2(inset, inset)
+	arrow.size = Vector2(cell_size - inset * 2, cell_size - inset * 2)
+	arrow.pivot_offset = arrow.size / 2.0
+	arrow.rotation = angle
+	return arrow
 
 func _is_current_location(location: Dictionary) -> bool:
 	if location.is_empty() or current_location.is_empty():
@@ -1121,9 +1190,7 @@ func _update_monster_encounter() -> void:
 	monster_stats.visible = false
 	encounter_player_stats.visible = false
 	_populate_stat_bars(monster_stat_bars, MONSTER_STATS, _normalize_monster_stat_source(monster), true)
-	var encounter_stats := PLAYER_STATS.duplicate(true)
-	encounter_stats.append({"name": "DungeonExperience", "key": "dungeon_experience", "label_key": "STAT_DUNGEON_EXPERIENCE"})
-	_populate_stat_bars(encounter_player_stat_bars, encounter_stats, player_state, true)
+	_populate_stat_bars(encounter_player_stat_bars, ENCOUNTER_PLAYER_STATS, player_state, true)
 	_update_monster_info_button()
 	_update_fight_availability()
 
@@ -1244,6 +1311,35 @@ func _show_explore_message(message: String) -> void:
 func _refresh_explore_feedback() -> void:
 	if is_instance_valid(explore_feedback):
 		explore_feedback.text = _join_lines([explore_message, _get_rest_block_hint()])
+
+## Localized reason why Retreat is disabled ("Return to the green entrance to retreat"), or "" when
+## the player stands on the entrance, is not in a dungeon, or the run is ending.
+func _get_retreat_block_hint() -> String:
+	if dungeon_exit_pending or dungeon.is_empty() or current_location.is_empty():
+		return ""
+	if current_location.get("type") == DungeonGenerator.LOCATION_ENTRANCE:
+		return ""
+	return tr(RETREAT_BLOCKED_KEY)
+
+## Shows the Retreat reason in its caption (empty when Retreat can be used).
+func _update_retreat_hint() -> void:
+	if is_instance_valid(retreat_hint_label):
+		retreat_hint_label.text = _get_retreat_block_hint()
+
+## Caption under the Rest/Retreat row for the Retreat reason (DNG-17). It has its own line, apart
+## from the feedback label, so the reason is always visible next to the button. It never wraps
+## and keeps its height when empty, so the map cell size does not change when it appears.
+func _add_retreat_hint() -> void:
+	retreat_hint_label = _create_label("RetreatHint", &"CaptionLabel", false)
+	retreat_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	retreat_hint_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	retreat_hint_label.clip_text = true
+	retreat_hint_label.custom_minimum_size = Vector2(0, RETREAT_HINT_HEIGHT)
+	retreat_hint_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var stack := $DungeonExploreView/ExploreActions/ExploreActionStack as VBoxContainer
+	var secondary_actions := stack.get_node("ExploreSecondaryActions")
+	stack.add_child(retreat_hint_label)
+	stack.move_child(retreat_hint_label, secondary_actions.get_index() + 1)
 
 func _collect_treasure() -> void:
 	if dungeon_exit_pending or current_location.is_empty() or current_location.get("type") != DungeonGenerator.LOCATION_QUEST or bool(current_location.get("visited", false)):
@@ -1420,6 +1516,7 @@ func _build_runtime_ui() -> void:
 	collect_treasure_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	collect_treasure_button.autowrap_mode = TextServer.AUTOWRAP_WORD
 	$DungeonExploreView/ExploreActions/ExploreActionStack/ExploreSecondaryActions.add_child(collect_treasure_button)
+	_add_retreat_hint()
 
 	monster_image_asset = _add_texture_child(monster_image.get_parent(), "MonsterImageAsset", FALLBACK_MONSTER_ASSET)
 	encounter_player_asset = _add_texture_child(encounter_player_image.get_parent(), "EncounterPlayerAsset", CHARACTER_ASSET)
@@ -1799,6 +1896,9 @@ func _add_explore_hud() -> void:
 func _add_character_portrait() -> void:
 	character_placeholder.visible = false
 	character_portrait = _add_texture_child(character_placeholder.get_parent(), "CharacterPortrait", CHARACTER_ASSET)
+	# The art scales to fit, so the hub portrait may give up width to the stat numbers, which
+	# now take their own column beside the bars (DNG-18).
+	character_portrait.custom_minimum_size.x = HUB_PORTRAIT_MIN_WIDTH
 
 func _add_progression_indicator() -> void:
 	progression_indicator = Panel.new()
@@ -2046,13 +2146,14 @@ func _rebuild_allocation_stat_guide() -> void:
 	var title := _create_label("Title", &"HeaderLabel")
 	title.text = tr(ALLOCATION_GUIDE_TITLE_KEY)
 	allocation_stat_guide.add_child(title)
-	for stat_key: String in ALLOCATABLE_STATS:
+	for stat_key: String in StatOrder.select(ALLOCATABLE_STATS):
 		allocation_stat_guide.add_child(_create_stat_guide_entry(stat_key))
 
 ## One stat guide entry: tinted icon, "Name: +N per point" heading and the description below.
 func _create_stat_guide_entry(stat_key: String) -> VBoxContainer:
 	var entry := VBoxContainer.new()
 	entry.name = "%sGuide" % stat_key.capitalize().replace(" ", "")
+	entry.set_meta(STAT_KEY_META, stat_key)
 	entry.add_theme_constant_override("separation", 2)
 	var heading_row := HBoxContainer.new()
 	heading_row.name = "Heading"
@@ -2078,24 +2179,30 @@ func _create_stat_guide_entry(stat_key: String) -> VBoxContainer:
 	entry.add_child(description)
 	return entry
 
-func _populate_stat_bars(container: Control, stats: Array, source: Dictionary, compact: bool) -> void:
+## Rebuilds `container` with one stat bar per stat of `stat_keys`, in the canonical stat order
+## (DNG-19), reading the values from `source` (player state or a normalized monster).
+func _populate_stat_bars(container: Control, stat_keys: Array, source: Dictionary, compact: bool) -> void:
 	for child: Node in container.get_children():
 		container.remove_child(child)
 		child.free()
-	for stat: Dictionary in stats:
-		container.add_child(_create_stat_bar(stat, source, compact))
+	for stat_key: String in StatOrder.select(stat_keys):
+		container.add_child(_create_stat_bar(stat_key, source, compact))
 
-func _create_stat_bar(stat: Dictionary, source: Dictionary, compact: bool) -> HBoxContainer:
-	var stat_key := String(stat["key"])
+## One stat row: tinted icon, optional text label, the bar and the "current/max" value.
+## The value sits outside the bar, right-aligned in a fixed-width column (DNG-18), so it is
+## always drawn on the plain row background and reads the same at any fill level.
+## The row is named "<Stat>StatBar" and remembers its stat key in the STAT_KEY_META meta.
+func _create_stat_bar(stat_key: String, source: Dictionary, compact: bool) -> HBoxContainer:
 	var current: int = _get_current_stat(source, stat_key)
 	var maximum: int = max(1, _get_max_stat(source, stat_key))
 	var clamped_current: int = clampi(current, 0, maximum)
 	var stat_color := _get_stat_color(stat_key)
 	var row := HBoxContainer.new()
-	row.name = "%sStatBar" % String(stat["name"])
+	row.name = "%sStatBar" % stat_key.capitalize().replace(" ", "")
+	row.set_meta(STAT_KEY_META, stat_key)
 	row.custom_minimum_size = Vector2(0, 24)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	row.add_theme_constant_override("separation", 6)
+	row.add_theme_constant_override("separation", 4 if compact else 6)
 	var icon := TextureRect.new()
 	icon.name = "Icon"
 	icon.texture = load(String(STAT_ICON_PATHS.get(stat_key, STAT_ICON_PATHS["life"])))
@@ -2104,10 +2211,11 @@ func _create_stat_bar(stat: Dictionary, source: Dictionary, compact: bool) -> HB
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.custom_minimum_size = Vector2(20, 20)
 	row.add_child(icon)
-	if stat.has("label_key"):
+	if STAT_BAR_LABEL_KEYS.has(stat_key):
 		var stat_label := Label.new()
 		stat_label.name = "Label"
-		stat_label.text = tr(String(stat["label_key"]))
+		stat_label.text = tr(String(STAT_BAR_LABEL_KEYS[stat_key]))
+		# Fits "Dungeon XP" / "XP mazmorra" at the stat font; longer texts are trimmed.
 		stat_label.custom_minimum_size = Vector2(82 if compact else 96, 0)
 		stat_label.add_theme_font_size_override("font_size", UiTheme.FONT_STAT)
 		stat_label.add_theme_color_override("font_color", UiTheme.TEXT_MUTED)
@@ -2119,27 +2227,33 @@ func _create_stat_bar(stat: Dictionary, source: Dictionary, compact: bool) -> HB
 	bar.show_percentage = false
 	bar.max_value = maximum
 	bar.value = clamped_current
-	bar.custom_minimum_size = Vector2(72 if compact else 96, 24)
+	# A slim track, centred in the row: it no longer has to hold the number.
+	# The number takes its own column now, so the track may shrink further on narrow panels.
+	bar.custom_minimum_size = Vector2(32 if compact else 80, STAT_BAR_TRACK_HEIGHT)
 	bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	bar.add_theme_stylebox_override("fill", _create_stat_stylebox(stat_color))
 	bar.add_theme_stylebox_override("background", _create_stat_stylebox(UiTheme.SURFACE_SUNKEN))
+	row.add_child(bar)
+	row.add_child(_create_stat_value_label(current, maximum))
+	# Tapping the bar (icon, label, bar or value) explains the stat in the shared popup.
+	if is_instance_valid(stat_help_popup):
+		stat_help_popup.attach(row, stat_key, stat_color)
+	return row
+
+## The "current/max" number of a stat row (DNG-18). Light text on the row background, right
+## aligned in a column at least STAT_VALUE_MIN_WIDTH wide, so the numbers of stacked rows line
+## up; a longer value widens its own column instead of being clipped.
+func _create_stat_value_label(current: int, maximum: int) -> Label:
 	var value := Label.new()
 	value.name = "Value"
 	value.text = "%s/%s" % [str(maxi(0, current)), str(maximum)]
 	value.add_theme_font_size_override("font_size", UiTheme.FONT_STAT_VALUE)
-	# White text with a dark outline stays readable on pastel fills and on the dark empty segment.
-	value.add_theme_color_override("font_color", Color.WHITE)
-	value.add_theme_color_override("font_outline_color", Color(0.05, 0.03, 0.02, 0.95))
-	value.add_theme_constant_override("outline_size", 5)
-	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	value.add_theme_color_override("font_color", UiTheme.TEXT)
+	value.custom_minimum_size = Vector2(STAT_VALUE_MIN_WIDTH, 0)
+	value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	value.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	value.set_anchors_preset(Control.PRESET_FULL_RECT)
-	bar.add_child(value)
-	row.add_child(bar)
-	# Tapping the bar (icon, label or value) explains the stat in the shared popup.
-	if is_instance_valid(stat_help_popup):
-		stat_help_popup.attach(row, stat_key, stat_color)
-	return row
+	return value
 
 func _create_stat_stylebox(color: Color) -> StyleBoxFlat:
 	var stylebox := StyleBoxFlat.new()
@@ -2239,7 +2353,7 @@ func _rebuild_allocation_rows(reserved_points: int, remaining: int) -> void:
 		if child is CanvasItem:
 			(child as CanvasItem).visible = false
 		child.queue_free()
-	for stat_key: String in ALLOCATABLE_STATS:
+	for stat_key: String in StatOrder.select(ALLOCATABLE_STATS):
 		allocation_buttons_container.add_child(_create_allocation_row(stat_key, reserved_points, remaining))
 
 func _create_allocation_row(stat_key: String, reserved_points: int, remaining: int) -> HBoxContainer:
@@ -2250,7 +2364,7 @@ func _create_allocation_row(stat_key: String, reserved_points: int, remaining: i
 	row.add_theme_constant_override("separation", 6)
 
 	var preview_source := _get_allocation_preview_source(stat_key)
-	var stat_bar := _create_stat_bar({"name": stat_key.capitalize(), "key": stat_key}, preview_source, true)
+	var stat_bar := _create_stat_bar(stat_key, preview_source, true)
 	stat_bar.name = "StatPreview"
 	stat_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	row.add_child(stat_bar)
@@ -2416,18 +2530,25 @@ func _update_exploration_actions() -> void:
 	# Rest is disabled with a visible reason when it cannot be used (like Fight, DNG-16).
 	rest_button.disabled = dungeon_exit_pending or CombatRules.get_rest_block_reason(player_state) != ""
 	_refresh_explore_feedback()
+	# Retreat only works on the entrance; elsewhere it is disabled and its caption says why (DNG-17).
 	retreat_button.disabled = current_location.get("type") != DungeonGenerator.LOCATION_ENTRANCE
+	_update_retreat_hint()
 
+## Retreat action: leaves the dungeon alive from the entrance, keeping the dungeon experience, and
+## shows a result with the experience kept and the progress toward the next level (DNG-17).
+## Away from the entrance it changes nothing: the button is disabled and its caption says why.
 func _retreat() -> void:
 	if dungeon_exit_pending:
 		return
 	if current_location.get("type") != DungeonGenerator.LOCATION_ENTRANCE:
-		_show_explore_message(tr("EXPLORE_RETREAT_ENTRANCE_ONLY"))
+		_update_exploration_actions()  # Keeps the button disabled and its reason visible.
 		return
 	var result := CombatRules.retreat_from_entrance(player_state)
 	if bool(result.get("depleted", false)):
 		_exit_dungeon_if_player_depleted()
 		return
+	# Read before committing: the commit moves it into the total and resets it to zero.
+	var experience_banked := int(player_state.get("dungeon_experience", 0))
 	CombatRules.commit_dungeon_experience(player_state)
 	dungeon = {}
 	current_location = {}
@@ -2437,7 +2558,29 @@ func _retreat() -> void:
 	_persist_player_state()
 	_apply_player_stats()
 	_show_new_game_view()
-	_show_game_result(tr(RESULT_RETREATED_TITLE_KEY), tr(RESULT_RETREATED_MESSAGE_KEY))
+	_show_game_result(tr(RESULT_RETREATED_TITLE_KEY), _format_retreat_summary(experience_banked))
+
+## Retreat result text: the safe-return line, the dungeon experience kept and, on its own line,
+## the total experience against the next level threshold (or that a level up is ready).
+## Call after commit_dungeon_experience(), so the total already includes the banked experience.
+func _format_retreat_summary(experience_banked: int) -> String:
+	var kept_line := tr(RESULT_RETREATED_NOTHING_KEPT_KEY)
+	if experience_banked > 0:
+		kept_line = tr(RESULT_RETREATED_KEPT_KEY) % str(experience_banked)
+	var level := int(player_state.get("level", 1))
+	var total := int(player_state.get("current_experience", 0))
+	var next_threshold := CombatRules.get_experience_threshold(level)
+	var progress_line: String
+	if total >= next_threshold:
+		progress_line = tr(RESULT_RETREATED_LEVEL_READY_KEY).format({"total": total})
+	else:
+		progress_line = tr(RESULT_RETREATED_PROGRESS_KEY).format({
+			"total": total,
+			"next": next_threshold,
+			"missing": next_threshold - total,
+			"level": level + 1,
+		})
+	return _join_lines([tr(RESULT_RETREATED_MESSAGE_KEY), kept_line, progress_line])
 
 func _show_damage_overlay(message: String) -> void:
 	_show_feedback_overlay(message, DAMAGE_FEEDBACK_ASSET)

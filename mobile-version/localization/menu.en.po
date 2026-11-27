@@ -73,6 +73,18 @@ msgstr "Expedition ended"
 msgid "RESULT_RETREATED_MESSAGE"
 msgstr "You returned safely from the dungeon."
 
+msgid "RESULT_RETREATED_KEPT"
+msgstr "You kept +%s experience from this run."
+
+msgid "RESULT_RETREATED_NOTHING_KEPT"
+msgstr "You earned no experience in this run."
+
+msgid "RESULT_RETREATED_PROGRESS"
+msgstr "Total experience: {total} / {next} ({missing} more for level {level})."
+
+msgid "RESULT_RETREATED_LEVEL_READY"
+msgstr "Total experience: {total}. You can level up in Progression."
+
 msgid "RESULT_ENDED_TITLE"
 msgstr "Expedition ended"
 
@@ -182,7 +194,7 @@ msgid "COMBAT_SANCTUARY"
 msgstr "Sanctuary restored you"
 
 msgid "EXPLORE_RETREAT_ENTRANCE_ONLY"
-msgstr "You can only retreat from the entrance"
+msgstr "Return to the green entrance to retreat"
 
 msgid "EXPLORE_RETREAT_SUCCESS"
 msgstr "You retreated"

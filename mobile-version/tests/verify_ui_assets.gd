@@ -101,7 +101,7 @@ func _init() -> void:
 		push_error("Exploration should display separate permanent and dungeon experience bars.")
 		quit(1)
 		return
-	if (permanent_experience.get_node("Bar/Value") as Label).text != "20/100" or (dungeon_experience.get_node("Bar/Value") as Label).text != "7/100":
+	if (permanent_experience.get_node("Value") as Label).text != "20/100" or (dungeon_experience.get_node("Value") as Label).text != "7/100":
 		push_error("Permanent and dungeon experience bars should display independent values.")
 		quit(1)
 		return

@@ -180,7 +180,8 @@ func _classify(title: String, message: String) -> String:
 		return "completed"
 	if title == main.tr("RESULT_DEFEAT_TITLE") or title == main.tr("RESULT_GAME_OVER_TITLE"):
 		return "died"
-	if message == main.tr("RESULT_RETREATED_MESSAGE"):
+	# The retreat result starts with this line, then the experience summary (DNG-17).
+	if message.begins_with(main.tr("RESULT_RETREATED_MESSAGE")):
 		return "retreated"
 	if message == main.tr("RESULT_ABANDONED_MESSAGE"):
 		return "abandoned"

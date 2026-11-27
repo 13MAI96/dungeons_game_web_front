@@ -18,7 +18,7 @@ Behaviour is specified with **OpenSpec** before it is implemented.
 | Path | Contents |
 |---|---|
 | `scenes/` | Godot scenes (`main.tscn` is the entry point). |
-| `scripts/` | GDScript: `main.gd` (UI/flow), `combat_rules.gd`, `dungeon_generator.gd`, `save_game.gd`, `settings_store.gd`, `localized_names.gd` (display names for data), `tutorial.gd` (how-to-play overlay), `stat_help.gd` (stat tap help), `combat_feedback.gd` / `fight_log.gd` / `damage_numbers.gd` (fight log and floating damage numbers). |
+| `scripts/` | GDScript: `main.gd` (UI/flow), `combat_rules.gd`, `dungeon_generator.gd`, `save_game.gd`, `settings_store.gd`, `localized_names.gd` (display names for data), `tutorial.gd` (how-to-play overlay), `stat_help.gd` (stat tap help), `stat_order.gd` (canonical stat order shared by every screen), `combat_feedback.gd` / `fight_log.gd` / `damage_numbers.gd` (fight log and floating damage numbers). |
 | `data/` | JSON game data: monsters, effects, player abilities and classes. |
 | `assets/` | SVG art: `characters/`, `monsters/`, `icons/`, `feedback/`, `ui/` (main menu logo). |
 | `localization/` | Gettext `.po` translations. |

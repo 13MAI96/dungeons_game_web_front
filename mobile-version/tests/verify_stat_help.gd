@@ -13,11 +13,12 @@ const DungeonGenerator := preload("res://scripts/dungeon_generator.gd")
 const StatHelp := preload("res://scripts/stat_help.gd")
 const TEST_SAVE_PATH := "user://verify_stat_help.json"
 const TEST_SETTINGS_PATH := "user://verify_stat_help.cfg"
-## Hub and fight panel player stats, in screen order (the fight panel adds dungeon XP).
+## Hub and fight panel player stats, in the canonical screen order (DNG-19; the fight panel
+## adds dungeon XP). Every list follows StatOrder.CANONICAL, checked in verify_stat_bars.gd.
 const PLAYER_STAT_KEYS := ["life", "energy", "mana", "armor", "strength", "speed", "reputation", "experience"]
 const EXPLORATION_STAT_KEYS := ["life", "energy", "mana", "experience", "dungeon_experience"]
-const MONSTER_STAT_KEYS := ["life", "mana", "armor", "speed", "strength"]
-const ALLOCATION_STAT_KEYS := ["life", "energy", "mana", "armor", "speed", "strength"]
+const MONSTER_STAT_KEYS := ["life", "mana", "armor", "strength", "speed"]
+const ALLOCATION_STAT_KEYS := ["life", "energy", "mana", "armor", "strength", "speed"]
 
 var main: Control
 

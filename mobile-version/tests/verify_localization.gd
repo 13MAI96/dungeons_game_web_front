@@ -230,7 +230,7 @@ func _capture_ui_texts(locale: String, switch_to: String = "") -> Dictionary:
 	_collect(main, main, "explore", texts)
 	main.next_quest_roll = 1.0  # trap: shows the feedback text and the damage overlay
 	main.move_player("right")
-	_collect(main, main, "quest_cell", texts)
+	_collect(main, main, "quest_cell", texts)  # off the entrance: Retreat reason caption (DNG-17)
 	main._collect_treasure()
 	_collect(main, main, "quest_trap", texts)
 	main._hide_damage_overlay()
@@ -259,8 +259,14 @@ func _capture_ui_texts(locale: String, switch_to: String = "") -> Dictionary:
 	_collect(main, main, "confirm_abandon", texts)
 	main._cancel_pending_action()
 	main.move_player("left")
+	# Retreat result with the experience kept and the progress toward level 2 (DNG-17).
+	main.player_state["dungeon_experience"] = 47
 	main._retreat()
 	_collect(main, main, "retreat_result", texts)
+	# The other retreat summary lines: nothing kept, and a level up ready in Progression.
+	main.player_state["current_experience"] = 999
+	main._show_game_result(main.tr(main.RESULT_RETREATED_TITLE_KEY), main._format_retreat_summary(0))
+	_collect(main, main, "retreat_result_level_ready", texts)
 
 	get_root().remove_child(main)
 	main.free()

@@ -10,6 +10,17 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
+## 2026-11-26 — Mobile: retreat feedback, readable stat bars, one stat order (DNG-17 to DNG-19)
+### Changes
+- DNG-17: a line under Retreat says "Return to the green entrance to retreat" when away from it; the entrance cell has a light-green ring, and an arrow on the map edge points to it when it is out of view; the retreat result shows the XP kept and the total XP toward the next level.
+- DNG-18: stat numbers sit in their own column beside a slimmer bar, on the plain background, readable at any fill level (contrast checked by the test).
+- DNG-19: one canonical stat order (`scripts/stat_order.gd`: life, energy, mana, armor, strength, speed, reputation, experience, dungeon XP) used by the hub, exploration HUD, Level Up, its guide and the fight panel.
+- New tests `verify_retreat_feedback`, `verify_stat_bars`, `verify_stat_order`; full suite 30/30. Checked on the Pixel 3a emulator (hub, map, retreat result, Level Up). OpenSpec changes `retreat-feedback`, `readable-stat-bars`, `consistent-stat-order`.
+### Issues
+- OpenSpec changes not validated/archived (CLI missing, DNG-24).
+- The Retreat reason line reserves about 28 px all the time, making map cells slightly smaller on short screens.
+- Not checked on the large-phone emulator or in Spanish on a device (covered by tests).
+
 ## 2026-11-26 — Mobile: progression hints and Rest rework (`867cf10`, DNG-14 to DNG-16)
 ### Changes
 - DNG-14 (decision): 1.0 gets attack selection only; follow-up DNG-25. No code change.

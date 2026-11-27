@@ -40,7 +40,9 @@ const FONT_TITLE := 28
 ## Game name on the main menu: the largest text in the app.
 const FONT_GAME_TITLE := 44
 const FONT_STAT := 12
-const FONT_STAT_VALUE := 13
+## Stat bar numbers ("12/25"), drawn beside the bar (DNG-18): a step above FONT_STAT so the
+## value reads at a glance.
+const FONT_STAT_VALUE := 14
 
 static func build() -> Theme:
 	var theme := Theme.new()

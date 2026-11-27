@@ -73,6 +73,18 @@ msgstr "Expedición finalizada"
 msgid "RESULT_RETREATED_MESSAGE"
 msgstr "Regresaste a salvo de la mazmorra."
 
+msgid "RESULT_RETREATED_KEPT"
+msgstr "Te llevás +%s de experiencia de esta expedición."
+
+msgid "RESULT_RETREATED_NOTHING_KEPT"
+msgstr "No ganaste experiencia en esta expedición."
+
+msgid "RESULT_RETREATED_PROGRESS"
+msgstr "Experiencia total: {total} / {next} (faltan {missing} para el nivel {level})."
+
+msgid "RESULT_RETREATED_LEVEL_READY"
+msgstr "Experiencia total: {total}. Podés subir de nivel en Progresión."
+
 msgid "RESULT_ENDED_TITLE"
 msgstr "Expedición finalizada"
 
@@ -182,7 +194,7 @@ msgid "COMBAT_SANCTUARY"
 msgstr "El santuario te restauró"
 
 msgid "EXPLORE_RETREAT_ENTRANCE_ONLY"
-msgstr "Solo podés retirarte desde la entrada"
+msgstr "Volvé a la entrada verde para retirarte"
 
 msgid "EXPLORE_RETREAT_SUCCESS"
 msgstr "Te retiraste"
