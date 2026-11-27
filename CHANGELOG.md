@@ -10,7 +10,7 @@ All notable changes to this project, **newest first**. Each entry lists what cha
 - Known problems, or "None known."
 -->
 
-## 2026-11-26 — Mobile: retreat feedback, readable stat bars, one stat order (DNG-17 to DNG-19)
+## 2026-11-26 — Mobile: retreat feedback, readable stat bars, one stat order (`591359e`, DNG-17 to DNG-19)
 ### Changes
 - DNG-17: a line under Retreat says "Return to the green entrance to retreat" when away from it; the entrance cell has a light-green ring, and an arrow on the map edge points to it when it is out of view; the retreat result shows the XP kept and the total XP toward the next level.
 - DNG-18: stat numbers sit in their own column beside a slimmer bar, on the plain background, readable at any fill level (contrast checked by the test).
